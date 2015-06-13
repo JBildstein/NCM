@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{80CE271C-3B13-4658-AFB8-26B481165E1C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ColorManager</RootNamespace>
+    <AssemblyName>ColorManager</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\ColorManager.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base\CAData.cs" />
+    <Compile Include="Base\ChromaticAdaption.cs" />
+    <Compile Include="Converter\ConversionCreator\ConversionCreator.cs" />
+    <Compile Include="Converter\ConversionCreator\ConversionCreator_ICC.cs" />
+    <Compile Include="Converter\ConversionCreator\ConversionCreator_Color.cs" />
+    <Compile Include="Base\Color.cs" />
+    <Compile Include="Converter\ColorConverter.cs" />
+    <Compile Include="Base\Colorspace.cs" />
+    <Compile Include="ChromaticAdaption\XYZ\CA_XYZ_Data.cs" />
+    <Compile Include="ChromaticAdaption\XYZ\CA_XYZ_Method.cs" />
+    <Compile Include="ChromaticAdaption\XYZ\CA_XYZ.cs" />
+    <Compile Include="Colorspaces\ColorspaceICC.cs" />
+    <Compile Include="Colors\ColorX.cs" />
+    <Compile Include="Colors\ColorCMYK.cs" />
+    <Compile Include="Colors\ColorCMY.cs" />
+    <Compile Include="Colors\ColorYCbCr.cs" />
+    <Compile Include="Conversions\LCHuv.cs" />
+    <Compile Include="Conversions\LCHab.cs" />
+    <Compile Include="Helper\Const.cs" />
+    <Compile Include="Converter\Helper\ConversionCommand.cs" />
+    <Compile Include="Helper\Delegates.cs" />
+    <Compile Include="Helper\Exceptions.cs" />
+    <Compile Include="Helper\UMath.cs" />
+    <Compile Include="Colorspaces\ColorspaceGray.cs" />
+    <Compile Include="Colorspaces\ColorspaceRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_BestRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_SMPTE_C_RGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_PAL_SECAMRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_EktaSpacePS5.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_DonRGB4.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_ColorMatchRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_BetaRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_WideGamutRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_ProPhotoRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_AppleRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_AdobeRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_CIERGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_BruceRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_NTSCRGB.cs" />
+    <Compile Include="Colorspaces\RGB\Colorspace_sRGB.cs" />
+    <Compile Include="Colors\Base\ColorHSx.cs" />
+    <Compile Include="Colors\ColorBCH.cs" />
+    <Compile Include="Colors\Base\ColorLCHBase.cs" />
+    <Compile Include="Colors\Base\ColorLCH99Base.cs" />
+    <Compile Include="Colors\ColorBef.cs" />
+    <Compile Include="Colors\ColorDEF.cs" />
+    <Compile Include="Colors\ColorHSL.cs" />
+    <Compile Include="Colors\ColorHSV.cs" />
+    <Compile Include="Colors\ColorLCHab.cs" />
+    <Compile Include="Colors\ColorLCHuv.cs" />
+    <Compile Include="Colors\ColorLuv.cs" />
+    <Compile Include="Colors\ColorGray.cs" />
+    <Compile Include="Colors\ColorYxy.cs" />
+    <Compile Include="Colors\ColorLCH99d.cs" />
+    <Compile Include="Colors\ColorLCH99c.cs" />
+    <Compile Include="Colors\ColorLCH99b.cs" />
+    <Compile Include="Colors\ColorLCH99.cs" />
+    <Compile Include="Colors\ColorXYZ.cs" />
+    <Compile Include="Colors\ColorLab.cs" />
+    <Compile Include="Colors\ColorRGB.cs" />
+    <Compile Include="Converter\Helper\ConversionData.cs" />
+    <Compile Include="Converter\Helper\ConversionPath.cs" />
+    <Compile Include="Conversions\BCH.cs" />
+    <Compile Include="Conversions\Gray.cs" />
+    <Compile Include="Conversions\Bef.cs" />
+    <Compile Include="Conversions\HSL.cs" />
+    <Compile Include="Conversions\HSV.cs" />
+    <Compile Include="Conversions\DEF.cs" />
+    <Compile Include="Conversions\Yxy.cs" />
+    <Compile Include="Conversions\Luv.cs" />
+    <Compile Include="Conversions\LCH99d.cs" />
+    <Compile Include="Conversions\LCH99c.cs" />
+    <Compile Include="Conversions\LCH99b.cs" />
+    <Compile Include="Conversions\LCH99.cs" />
+    <Compile Include="Conversions\Lab.cs" />
+    <Compile Include="Conversions\RGB.cs" />
+    <Compile Include="ICC\Conversion\ICCData.cs" />
+    <Compile Include="ICC\Enums.cs" />
+    <Compile Include="ICC\ICCProfileWriter.cs" />
+    <Compile Include="ICC\ICCValidator.cs" />
+    <Compile Include="ICC\Subclasses\CompareHelper.cs" />
+    <Compile Include="ICC\Subclasses\Curves.cs" />
+    <Compile Include="ICC\Subclasses\Exceptions.cs" />
+    <Compile Include="ICC\Subclasses\MatrixMath.cs" />
+    <Compile Include="ICC\Subclasses\Numbers.cs" />
+    <Compile Include="ICC\Subclasses\Tables.cs" />
+    <Compile Include="ICC\Subclasses\Various.cs" />
+    <Compile Include="ICC\ICCProfile.cs" />
+    <Compile Include="ICC\ICCProfileReader.cs" />
+    <Compile Include="ICC\Subclasses\MultiProcessElements.cs" />
+    <Compile Include="ICC\Subclasses\TagDataEntry.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Base\Whitepoint.cs" />
+    <Compile Include="Whitepoints\WhitepointA.cs" />
+    <Compile Include="Whitepoints\WhitepointB.cs" />
+    <Compile Include="Whitepoints\WhitepointC.cs" />
+    <Compile Include="Whitepoints\WhitepointD50.cs" />
+    <Compile Include="Whitepoints\WhitepointD55.cs" />
+    <Compile Include="Whitepoints\WhitepointD75.cs" />
+    <Compile Include="Whitepoints\WhitepointE.cs" />
+    <Compile Include="Whitepoints\WhitepointF7.cs" />
+    <Compile Include="Whitepoints\WhitepointF11.cs" />
+    <Compile Include="Whitepoints\WhitepointF2.cs" />
+    <Compile Include="Whitepoints\WhitepointD65.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="0-Notes.txt" />
+    <Content Include="ICC\ICC_Info.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

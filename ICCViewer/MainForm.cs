@@ -1,0 +1,640 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using ColorManager.ICC;
+
+namespace ICCViewer
+{
+    public partial class MainForm : Form
+    {
+        private ICCProfileReader Reader = new ICCProfileReader();
+        private string ProfilePath;
+        private ICCProfile Profile;
+
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
+        #region UI Events
+
+        private void OpenButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (OpenFileDialog dlg = new OpenFileDialog())
+                {
+                    dlg.Filter = "ICC Profile|*.icc;*.icm|All Files|*.*";
+
+                    var res = dlg.ShowDialog();
+                    if (res == DialogResult.OK)
+                    {
+                        ProfilePath = dlg.FileName;
+                        PathTextBox.Text = ProfilePath;
+                        Profile = Reader.Read(ProfilePath);
+                        SetHeaderUI();
+                        SetTagTableUI();
+                    }
+                }
+            }
+            catch (CorruptProfileException cex) { MessageBox.Show(cex.Message, "Profile Error", MessageBoxButtons.OK); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK); }
+        }
+
+        private void TagTableListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (TagTableListBox.SelectedIndex > -1)
+            {
+                using (DetailsForm frm = new DetailsForm())
+                {
+                    var data = Profile.Data[TagTableListBox.SelectedIndex];
+                    var ctrl = GetControl(data);
+                    frm.Controls.Add(ctrl);
+                    frm.Text = data.TagSignature.ToString() + " - " + data.Signature.ToString();
+                    frm.ShowDialog(this);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Header Detail
+
+        private void ProfileFlagsLabel_Click(object sender, EventArgs e)
+        {
+            if (Profile == null) return;
+
+            var flag = Profile.Flags;
+            string text = "Is Embedded:  " + flag.IsEmbedded + Environment.NewLine;
+            text += "Is Independent:  " + flag.IsIndependent + Environment.NewLine;
+            text += "Data:  " + flag.Flags[0] + "; " + flag.Flags[1] + Environment.NewLine;
+            for (int i = 0; i < flag.Flags.Length; i++) text += "Flag " + i + ": " + flag.Flags[i] + Environment.NewLine;
+
+            MessageBox.Show(text, "Profile Flag", MessageBoxButtons.OK);
+        }
+
+        private void DeviceAttributesLabel_Click(object sender, EventArgs e)
+        {
+            if (Profile == null) return;
+
+            var att = Profile.DeviceAttributes;
+            string text = "Opacity:  " + att.Opacity.ToString() + Environment.NewLine;
+            text += "Reflectivity:  " + att.Reflectivity.ToString() + Environment.NewLine;
+            text += "Polarity:  " + att.Polarity.ToString() + Environment.NewLine;
+            text += "Chroma:  " + att.Chroma.ToString() + Environment.NewLine;
+            for (int i = 0; i < att.VendorData.Length; i++) text += "Vendor Data Flag " + i + ":  " + att.VendorData[i] + Environment.NewLine;
+
+            MessageBox.Show(text, "Device Attributes", MessageBoxButtons.OK);
+        }
+
+        #endregion
+
+        #region Show Data
+
+        private Control GetControl(TagDataEntry entry)
+        {
+            switch (entry.Signature)
+            {
+                case TypeSignature.Unknown:
+                    return GetControlUnknown(entry);
+                case TypeSignature.Chromaticity:
+                    return GetControlChromaticity(entry);
+                case TypeSignature.ColorantOrder:
+                    return GetControlColorantOrder(entry);
+                case TypeSignature.ColorantTable:
+                    return GetControlColorantTable(entry);
+                case TypeSignature.Curve:
+                    return GetControlCurve(entry);
+                case TypeSignature.Data:
+                    return GetControlData(entry);
+                case TypeSignature.DateTime:
+                    return GetControlDateTime(entry);
+                case TypeSignature.Lut16:
+                    return GetControlLut16(entry);
+                case TypeSignature.Lut8:
+                    return GetControlLut8(entry);
+                case TypeSignature.LutAToB:
+                    return GetControlLutAToB(entry);
+                case TypeSignature.LutBToA:
+                    return GetControlLutBToA(entry);
+                case TypeSignature.Measurement:
+                    return GetControlMeasurement(entry);
+                case TypeSignature.MultiLocalizedUnicode:
+                    return GetControlMultiLocalizedUnicode(entry);
+                case TypeSignature.MultiProcessElements:
+                    return GetControlMultiProcessElements(entry);
+                case TypeSignature.NamedColor2:
+                    return GetControlNamedColor2(entry);
+                case TypeSignature.ParametricCurve:
+                    return GetControlParametricCurve(entry);
+                case TypeSignature.ProfileSequenceDesc:
+                    return GetControlProfileSequenceDesc(entry);
+                case TypeSignature.ProfileSequenceIdentifier:
+                    return GetControlProfileSequenceIdentifier(entry);
+                case TypeSignature.ResponseCurveSet16:
+                    return GetControlResponseCurveSet16(entry);
+                case TypeSignature.S15Fixed16Array:
+                    return GetControlS15Fixed16Array(entry);
+                case TypeSignature.Signature:
+                    return GetControlSignature(entry);
+                case TypeSignature.Text:
+                    return GetControlText(entry);
+                case TypeSignature.U16Fixed16Array:
+                    return GetControlU16Fixed16Array(entry);
+                case TypeSignature.UInt16Array:
+                    return GetControlUInt16Array(entry);
+                case TypeSignature.UInt32Array:
+                    return GetControlUInt32Array(entry);
+                case TypeSignature.UInt64Array:
+                    return GetControlUInt64Array(entry);
+                case TypeSignature.UInt8Array:
+                    return GetControlUInt8Array(entry);
+                case TypeSignature.ViewingConditions:
+                    return GetControlViewingConditions(entry);
+                case TypeSignature.XYZ:
+                    return GetControlXYZ(entry);
+
+                default:
+                    return new Label() { Text = "N/A" };
+            }
+        }
+
+        private Control GetControlUnknown(TagDataEntry entry)
+        {
+            var ctrl = entry as UnknownTagDataEntry;
+                        
+            return CreateTextBox(FromBytes(ctrl.Data, true));
+        }
+
+        private Control GetControlChromaticity(TagDataEntry entry)
+        {
+            var ctrl = entry as ChromaticityTagDataEntry;
+
+            string txt;
+            txt = "Channels: " + ctrl.ChannelCount;
+            txt += "Colorant Type: " + ctrl.ColorantType.ToString();
+
+            for (int i = 0; i < ctrl.ChannelValues.Length; i++)
+            {
+                txt += "Channel " + i + ": ";
+                for (int j = 0; j < ctrl.ChannelValues[i].Length; j++)
+                {
+                    txt += ctrl.ChannelValues[i][j].ToString("F3");
+                }
+                txt += Environment.NewLine;
+            }
+
+            return CreateTextBox(txt);
+        }
+
+        private Control GetControlColorantOrder(TagDataEntry entry)
+        {
+            var ctrl = entry as ColorantOrderTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlColorantTable(TagDataEntry entry)
+        {
+            var ctrl = entry as ColorantTableTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlCurve(TagDataEntry entry)
+        {
+            var ctrl = entry as CurveTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlData(TagDataEntry entry)
+        {
+            var ctrl = entry as DataTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlDateTime(TagDataEntry entry)
+        {
+            var ctrl = entry as DateTimeTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlLut16(TagDataEntry entry)
+        {
+            var ctrl = entry as Lut16TagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlLut8(TagDataEntry entry)
+        {
+            var ctrl = entry as Lut8TagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlLutAToB(TagDataEntry entry)
+        {
+            var ctrl = entry as LutAToBTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlLutBToA(TagDataEntry entry)
+        {
+            var ctrl = entry as LutBToATagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlMeasurement(TagDataEntry entry)
+        {
+            var ctrl = entry as MeasurementTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlMultiLocalizedUnicode(TagDataEntry entry)
+        {
+            var ctrl = entry as MultiLocalizedUnicodeTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlMultiProcessElements(TagDataEntry entry)
+        {
+            var ctrl = entry as MultiProcessElementsTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlNamedColor2(TagDataEntry entry)
+        {
+            var ctrl = entry as NamedColor2TagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlParametricCurve(TagDataEntry entry)
+        {
+            var ctrl = entry as ParametricCurveTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlProfileSequenceDesc(TagDataEntry entry)
+        {
+            var ctrl = entry as ProfileSequenceDescTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlProfileSequenceIdentifier(TagDataEntry entry)
+        {
+            var ctrl = entry as ProfileSequenceIdentifierTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlResponseCurveSet16(TagDataEntry entry)
+        {
+            var ctrl = entry as ResponseCurveSet16TagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlS15Fixed16Array(TagDataEntry entry)
+        {
+            var ctrl = entry as Fix16ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlSignature(TagDataEntry entry)
+        {
+            var ctrl = entry as SignatureTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlText(TagDataEntry entry)
+        {
+            var ctrl = entry as TextTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlU16Fixed16Array(TagDataEntry entry)
+        {
+            var ctrl = entry as UFix16ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlUInt16Array(TagDataEntry entry)
+        {
+            var ctrl = entry as UInt16ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlUInt32Array(TagDataEntry entry)
+        {
+            var ctrl = entry as UInt32ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlUInt64Array(TagDataEntry entry)
+        {
+            var ctrl = entry as UInt64ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlUInt8Array(TagDataEntry entry)
+        {
+            var ctrl = entry as UInt8ArrayTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlViewingConditions(TagDataEntry entry)
+        {
+            var ctrl = entry as ViewingConditionsTagDataEntry;
+
+            var lb = new Label();
+            lb.AutoSize = false;
+            lb.Dock = DockStyle.Fill;
+
+            lb.Text = entry.Signature.ToString();
+
+            return lb;
+        }
+
+        private Control GetControlXYZ(TagDataEntry entry)
+        {
+            var ctrl = entry as XYZTagDataEntry;
+
+            string txt = string.Empty;
+            for (int i = 0; i < ctrl.Data.Length; i++) txt += ctrl.Data[i].ToString("F3") + Environment.NewLine;
+            return CreateTextBox(txt);
+        }
+
+
+        #endregion
+
+        #region GetString
+
+        private string FromBytes(byte[] data, bool ASCII)
+        {
+            string txt = string.Empty;
+            string val;
+            for (int i = 0; i < data.Length; i++)
+            {
+                val = data[i].ToString().PadLeft(3, '0');
+                if ((i + 1) % 10 == 0) txt += val + Environment.NewLine;
+                else if (i + 1 == data.Length) txt += val;
+                else txt += val.PadRight(6);
+            }
+
+            if (ASCII)
+            {
+                txt += Environment.NewLine + Environment.NewLine + "ASCII:" + Environment.NewLine;
+                val = Encoding.ASCII.GetString(data);
+
+                string tmp;
+                for (int i = 0; i < val.Length; i++)
+                {
+                    if (val[i] == '\0') tmp = "\\0";
+                    else if (val[i] == '\r') tmp = "\\r";
+                    else if (val[i] == '\n') tmp = "\\n";
+                    else if (val[i] == ' ') tmp = "spc";
+                    else tmp = val[i].ToString();
+                    tmp = tmp.PadLeft(3);
+                    if ((i + 1) % 10 == 0) txt += tmp + Environment.NewLine;
+                    else if (i + 1 == data.Length) txt += tmp;
+                    else txt += tmp.PadRight(6);
+                }
+            }
+
+            return txt;
+        }
+        
+
+        #endregion
+
+        #region Create Control
+        
+        private TextBox CreateTextBox(string value)
+        {
+            var txt = new TextBox();
+            txt.ReadOnly = true;
+            txt.Multiline = true;
+            txt.WordWrap = false;
+            txt.ScrollBars = ScrollBars.Both;
+            txt.BorderStyle = BorderStyle.None;
+            txt.Dock = DockStyle.Fill;
+            txt.Text = value;
+            txt.Select(0, 0);
+            return txt;
+        }
+
+        private PictureBox CreateCurve(ResponseCurve value)
+        {
+            return new PictureBox();
+        }
+
+        #endregion
+
+        #region Subroutines
+
+        private void SetHeaderUI()
+        {
+            ProfileSizeLabel.Text = Profile.Size.ToString() + " bytes";
+            CMMTypeLabel.Text = Profile.CMMType;
+            ProfileVersionNumberLabel.Text = Profile.Version.ToString();
+            ProfileClassLabel.Text = Profile.Class.ToString();
+            DataColorspaceLabel.Text = Profile.DataColorspaceType.ToString();
+            PCSLabel.Text = Profile.PCSType.ToString();
+            CreationDateLabel.Text = Profile.CreationDate.ToString();
+            ProfileFileSignatureLabel.Text = Profile.FileSignature;
+            PrimaryPlatformSignatureLabel.Text = Profile.PrimaryPlatformSignature.ToString();
+            ProfileFlagsLabel.Text = Profile.Flags.ToString();
+            DeviceManufacturerLabel.Text = Profile.DeviceManufacturer.ToString();
+            DeviceAttributesLabel.Text = Profile.DeviceAttributes.ToString();
+            RenderingIntentLabel.Text = Profile.RenderingIntent.ToString();
+            PCSIlluminantLabel.Text = Profile.PCSIlluminant.ToString("F4");
+            ProfileCreatorSignatureLabel.Text = Profile.CreatorSignature;
+            ProfileIDLabel.Text = Profile.ID.StringValue;
+        }
+
+        private void SetTagTableUI()
+        {
+            TagTableListBox.Items.Clear();
+            foreach (var tag in Profile.Data)
+            {
+                TagTableListBox.Items.Add(tag.TagSignature.ToString());
+            }
+        }
+
+        #endregion
+    }
+}
