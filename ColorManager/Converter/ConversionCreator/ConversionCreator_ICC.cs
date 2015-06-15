@@ -667,7 +667,7 @@ namespace ColorManager
             {
                 double[][] data = new double[entries.Length][];
 
-                for (int i = 0; i < entries.Length; i++) data[i] = WriteCurve(entries[0], inverted, i, position + i, input);
+                for (int i = 0; i < entries.Length; i++) data[i] = WriteCurve(entries[i], inverted, i, position + i, input);
                 IsTempVar1 = !IsTempVar1;
 
                 return data;
@@ -813,32 +813,32 @@ namespace ColorManager
 
                     //int scopeStart = 0;
                     CMIL.Emit(OpCodes.Ldc_I4_0);
-                    CMIL.Emit(OpCodes.Stloc_0);
+                    var scopeStart = WriteStloc(typeof(int));
                     //int scopeEnd = curve.Length - 1;
-                    CMIL.Emit(OpCodes.Ldc_I4, curve.CurveData.Length - 1d);
-                    CMIL.Emit(OpCodes.Stloc_1);
+                    CMIL.Emit(OpCodes.Ldc_I4, curve.CurveData.Length - 1);
+                    var scopeEnd = WriteStloc(typeof(int));
                     //int foundIndex = 0;
                     CMIL.Emit(OpCodes.Ldc_I4_0);
-                    CMIL.Emit(OpCodes.Stloc_2);
+                    var foundIndex = WriteStloc(typeof(int));
 
                     //while start
                     CMIL.Emit(OpCodes.Br, whileEndLabel);
                     CMIL.MarkLabel(whileStartLabel);
 
                     //foundIndex = (scopeStart + scopeEnd) / 2;
-                    CMIL.Emit(OpCodes.Ldloc_0);
-                    CMIL.Emit(OpCodes.Ldloc_1);
+                    WriteLdloc(scopeStart);
+                    WriteLdloc(scopeEnd);
                     CMIL.Emit(OpCodes.Add);
                     CMIL.Emit(OpCodes.Ldc_I4_2);
                     CMIL.Emit(OpCodes.Div);
-                    CMIL.Emit(OpCodes.Stloc_2);
+                    WriteStloc(foundIndex);
 
                     //if (inColor[index] > curve[index])
                     WriteLdInput();
                     WriteLdPtr(index);
                     CMIL.Emit(OpCodes.Ldind_R8);
                     WriteLdICCData(input, position);
-                    CMIL.Emit(OpCodes.Ldloc_2);
+                    WriteLdloc(foundIndex);
                     CMIL.Emit(OpCodes.Conv_I);
                     CMIL.Emit(OpCodes.Ldc_I4_8);
                     CMIL.Emit(OpCodes.Mul);
@@ -847,30 +847,30 @@ namespace ColorManager
                     CMIL.Emit(OpCodes.Ble_Un, ifLabel);
 
                     //if == true: scopeStart = foundIndex + 1;
-                    CMIL.Emit(OpCodes.Ldloc_2);
+                    WriteLdloc(foundIndex);
                     CMIL.Emit(OpCodes.Ldc_I4_1);
                     CMIL.Emit(OpCodes.Add);
-                    CMIL.Emit(OpCodes.Stloc_0);
+                    WriteStloc(scopeStart);
                     CMIL.Emit(OpCodes.Br, whileEndLabel);
                     CMIL.MarkLabel(ifLabel);
 
-                    //else: scopeEnd = index;
-                    CMIL.Emit(OpCodes.Ldloc_2);
-                    CMIL.Emit(OpCodes.Stloc_1);
+                    //else: scopeEnd = foundIndex;
+                    WriteLdloc(foundIndex);
+                    WriteStloc(scopeEnd);
 
                     //while end
                     CMIL.MarkLabel(whileEndLabel);
 
                     //while condition
-                    CMIL.Emit(OpCodes.Ldloc_1);
-                    CMIL.Emit(OpCodes.Ldloc_0);
+                    WriteLdloc(scopeEnd);
+                    WriteLdloc(scopeStart);
                     CMIL.Emit(OpCodes.Bgt, whileStartLabel);
 
-                    //outColor[index] = curve[index];
+                    //outColor[index] = curve[foundIndex];
                     WriteLdOutput();
                     WriteLdPtr(index);
                     WriteLdICCData(input, position);
-                    CMIL.Emit(OpCodes.Ldloc_2);
+                    WriteLdloc(foundIndex);
                     CMIL.Emit(OpCodes.Conv_I);
                     CMIL.Emit(OpCodes.Ldc_I4_8);
                     CMIL.Emit(OpCodes.Mul);
@@ -1006,10 +1006,7 @@ namespace ColorManager
             }
 
             #endregion
-
-            //TODO: converting CMYK->Lab with LUT16 seems to be wrong (maybe LUT8 behaves the same way)
-            //TODO: LutAtoB and LutBtoA has to be tested (seems to have a problem with in/output(i.e. IsTempVar1) usage)
-
+            
             #region LUT
 
             /// <summary>
@@ -1035,7 +1032,7 @@ namespace ColorManager
                 //Matrix
                 if (inColor == ColorSpaceType.CIEXYZ)
                 {
-                    WriteLdICCData(input, 0);
+                    WriteLdICCData(input, convData.Count);
                     WriteLdArg();
                     var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
                     WriteMethodCall(m, false);
@@ -1115,7 +1112,7 @@ namespace ColorManager
                 //Matrix
                 if (inColor == ColorSpaceType.CIEXYZ)
                 {
-                    WriteLdICCData(input, 0);
+                    WriteLdICCData(input, convData.Count);
                     WriteLdArg();
                     var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
                     WriteMethodCall(m, false);
@@ -1195,7 +1192,7 @@ namespace ColorManager
                 {
                     convData.AddRange(WriteCurve(entry.CurveA, false, convData.Count, input));
                     IsFirst = false;
-                    WriteCLUT(entry.CLUTValues, convData.Count, input);
+                    convData.AddRange(WriteCLUT(entry.CLUTValues, convData.Count, input));
                     IsLast = true;
                     convData.AddRange(WriteCurve(entry.CurveB, false, convData.Count, input));
                 }
@@ -1319,6 +1316,16 @@ namespace ColorManager
             {
                 #region IL Code
 
+                /* int idx = (int)((inColor[0] * Math.Pow(lut.GridPointCount[0], 3)
+                                  + inColor[1] * Math.Pow(lut.GridPointCount[1], 2)
+                                  + inColor[2] * Math.Pow(lut.GridPointCount[2], 1)) + 0.5);
+                
+                    outColor[0] = data.InICCData[position + 0][idx];
+                    outColor[1] = data.InICCData[position + 1][idx];
+                    outColor[2] = data.InICCData[position + 2][idx];
+                    outColor[3] = data.InICCData[position + 3][idx];
+                */
+
                 int c = lut.InputChannelCount;
                 for (int i = 0; i < lut.InputChannelCount; i++, c--)
                 {
@@ -1404,7 +1411,7 @@ namespace ColorManager
 
                 #endregion
             }
-
+            
             /// <summary>
             /// Writes the IL code for (3x3 * 3x1) + 3x1 matrix calculation
             /// </summary>
@@ -1489,6 +1496,16 @@ namespace ColorManager
                     CMIL.Emit(OpCodes.Add);
                 }
                 CMIL.Emit(OpCodes.Ldind_I);
+            }
+
+            private void AdjustInputColor()
+            {
+                //TODO: write adjustment code
+            }
+
+            private void AdjustOutputColor()
+            {
+                //TODO: write adjustment code
             }
 
             #endregion

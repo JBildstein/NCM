@@ -313,6 +313,16 @@ namespace ColorManager
             protected LocalBuilder WriteStloc(Type tp)
             {
                 var lc = CMIL.DeclareLocal(tp);
+                WriteStloc(lc);
+                return lc;
+            }
+
+            /// <summary>
+            /// Writes the IL code to store a local variable
+            /// </summary>
+            /// <param name="lc">The information about the stored variable</param>
+            protected void WriteStloc(LocalBuilder lc)
+            {
                 switch (lc.LocalIndex)
                 {
                     case 0:
@@ -331,7 +341,6 @@ namespace ColorManager
                         CMIL.Emit(OpCodes.Stloc, lc.LocalIndex);
                         break;
                 }
-                return lc;
             }
 
             /// <summary>
