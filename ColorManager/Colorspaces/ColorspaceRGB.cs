@@ -114,6 +114,26 @@ namespace ColorManager
                 return hash;
             }
         }
+
+        #region Static List of RGB Colorspaces
+
+        public static readonly Colorspace_AdobeRGB AdobeRGB = new Colorspace_AdobeRGB();
+        public static readonly Colorspace_AppleRGB AppleRGB = new Colorspace_AppleRGB();
+        public static readonly Colorspace_BestRGB BestRGB = new Colorspace_BestRGB();
+        public static readonly Colorspace_BetaRGB BetaRGB = new Colorspace_BetaRGB();
+        public static readonly Colorspace_BruceRGB BruceRGB = new Colorspace_BruceRGB();
+        public static readonly Colorspace_CIERGB CIERGB = new Colorspace_CIERGB();
+        public static readonly Colorspace_ColorMatchRGB ColorMatchRGB = new Colorspace_ColorMatchRGB();
+        public static readonly Colorspace_DonRGB4 DonRGB4 = new Colorspace_DonRGB4();
+        public static readonly Colorspace_EktaSpacePS5 EktaSpacePS5 = new Colorspace_EktaSpacePS5();
+        public static readonly Colorspace_NTSCRGB NTSCRGB = new Colorspace_NTSCRGB();
+        public static readonly Colorspace_PAL_SECAMRGB PAL_SECAMRGB = new Colorspace_PAL_SECAMRGB();
+        public static readonly Colorspace_ProPhotoRGB ProPhotoRGB = new Colorspace_ProPhotoRGB();
+        public static readonly Colorspace_SMPTE_C_RGB SMPTE_C_RGB = new Colorspace_SMPTE_C_RGB();
+        public static readonly Colorspace_sRGB sRGB = new Colorspace_sRGB();
+        public static readonly Colorspace_WideGamutRGB WideGamutRGB = new Colorspace_WideGamutRGB();
+
+        #endregion
     }
 }
 

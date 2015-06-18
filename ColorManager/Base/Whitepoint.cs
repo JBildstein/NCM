@@ -105,5 +105,20 @@ namespace ColorManager
                 return hash;
             }
         }
+
+        #region Static List of Whitepoints
+
+        public static readonly WhitepointA A = new WhitepointA();
+        public static readonly WhitepointB B = new WhitepointB();
+        public static readonly WhitepointC C = new WhitepointC();
+        public static readonly WhitepointD50 D50 = new WhitepointD50();
+        public static readonly WhitepointD65 D65 = new WhitepointD65();
+        public static readonly WhitepointD75 D75 = new WhitepointD75();
+        public static readonly WhitepointE E = new WhitepointE();
+        public static readonly WhitepointF2 F2 = new WhitepointF2();
+        public static readonly WhitepointF7 F7 = new WhitepointF7();
+        public static readonly WhitepointF11 F11 = new WhitepointF11();
+
+        #endregion
     }
 }
