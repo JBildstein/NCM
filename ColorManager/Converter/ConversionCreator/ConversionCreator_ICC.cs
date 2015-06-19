@@ -11,10 +11,7 @@ namespace ColorManager.ICC.Conversion
     public sealed unsafe class ConversionCreator_ICC : ConversionCreator
     {
         #region Variables
-
-        private Type InType;
-        private Type OutType;
-
+        
         private ICCProfile Profile;
 
         private bool? IsInPCS
@@ -120,9 +117,6 @@ namespace ColorManager.ICC.Conversion
 
         private void Init()
         {
-            this.InType = InColor.GetType();
-            this.OutType = OutColor.GetType();
-
             if (InColor.ICCProfile != null) { Profile = InColor.ICCProfile; IsInput = true; }
             if (OutColor.ICCProfile != null)
             {
@@ -302,11 +296,12 @@ namespace ColorManager.ICC.Conversion
 
         //TODO: include chromatic adaption if CATag is existing
         //TODO: check for media white/black point tag and use it if existing
-
-        #region Conversion
-
+        
         #region PCS -> Data
 
+        /// <summary>
+        /// Writes the IL code for an ICC conversion from PCS to Data
+        /// </summary>
         private void ConvertICC_PCSData()
         {
             var entries = Profile.GetConversionTag(false);
@@ -318,6 +313,11 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException();
         }
 
+        /// <summary>
+        /// Writes the IL code for a LUT ICC conversion from PCS to Data
+        /// </summary>
+        /// <param name="entry">The entry with the LUT data</param>
+        /// <param name="inColor">The input color type</param>
         private void ConvertICC_PCSData_LUT(TagDataEntry entry, ColorSpaceType inColor)
         {
             switch (entry.Signature)
@@ -337,6 +337,10 @@ namespace ColorManager.ICC.Conversion
             }
         }
 
+        /// <summary>
+        /// Writes the IL code for a Matrix/TRC ICC conversion from PCS to Data
+        /// </summary>
+        /// <param name="entries">The entries containing the Matrix and TRC data</param>
         private void ConvertICC_PCSData_Matrix(TagDataEntry[] entries)
         {
             ICCData.Add(GetMatrix(entries, true));
@@ -350,6 +354,10 @@ namespace ColorManager.ICC.Conversion
             WriteRGBTRC(entries, true);
         }
 
+        /// <summary>
+        /// Writes the IL code for a monochrome ICC conversion from PCS to Data
+        /// </summary>
+        /// <param name="entries">The entries containing the monochrome TRC data</param>
         private void ConvertICC_PCSData_Monochrome(TagDataEntry[] entries)
         {
             IsLast = true;
@@ -360,6 +368,9 @@ namespace ColorManager.ICC.Conversion
 
         #region Data -> PCS
 
+        /// <summary>
+        /// Writes the IL code for an ICC conversion from Data to PCS
+        /// </summary>
         private void ConvertICC_DataPCS()
         {
             var entries = Profile.GetConversionTag(true);
@@ -371,6 +382,11 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException();
         }
 
+        /// <summary>
+        /// Writes the IL code for a LUT ICC conversion from Data to PCS
+        /// </summary>
+        /// <param name="entry">The entry with the LUT data</param>
+        /// <param name="inColor">The input color type</param>
         private void ConvertICC_DataPCS_LUT(TagDataEntry entry, ColorSpaceType inColor)
         {
             switch (entry.Signature)
@@ -390,6 +406,10 @@ namespace ColorManager.ICC.Conversion
             }
         }
 
+        /// <summary>
+        /// Writes the IL code for a Matrix/TRC ICC conversion from Data to PCS
+        /// </summary>
+        /// <param name="entries">The entries containing the Matrix and TRC data</param>
         private void ConvertICC_DataPCS_Matrix(TagDataEntry[] entries)
         {
             WriteRGBTRC(entries, false);
@@ -405,6 +425,10 @@ namespace ColorManager.ICC.Conversion
             ICCData.Add(GetMatrix(entries, false));
         }
 
+        /// <summary>
+        /// Writes the IL code for a monochrome ICC conversion from Data to PCS
+        /// </summary>
+        /// <param name="entries">The entries containing the monochrome TRC data</param>
         private void ConvertICC_DataPCS_Monochrome(TagDataEntry[] entries)
         {
             IsLast = true;
@@ -417,77 +441,28 @@ namespace ColorManager.ICC.Conversion
 
         private void ConvertICC_PCSPCS()
         {
-
+            throw new NotImplementedException();
         }
-
-
-
-        #region Subroutines
-
-
-        #endregion
-
+        
         #endregion
 
         #region Data -> Data
 
         private void ConvertICC_DataData()
         {
-
-        }
-
-
-        #region Subroutines
-
-
-        #endregion
-
-        #endregion
-
-
-        #region Subroutines
-
-        private double[] GetMatrix(TagDataEntry[] entries, bool inverted)
-        {
-            XYZNumber Mr = GetMatrixColumn(entries, TagSignature.RedMatrixColumn);
-            XYZNumber Mg = GetMatrixColumn(entries, TagSignature.GreenMatrixColumn);
-            XYZNumber Mb = GetMatrixColumn(entries, TagSignature.BlueMatrixColumn);
-
-            var matrix = new double[9]
-                {
-                    Mr.X, Mg.X, Mb.X,
-                    Mr.Y, Mg.Y, Mb.Y,
-                    Mr.Z, Mg.Z, Mb.Z,
-                };
-
-            if (!inverted) return matrix;
-            else
-            {
-                var matrixInv = new double[9];
-                fixed (double* mp = matrix)
-                fixed (double* mip = matrixInv)
-                {
-                    UMath.InvertMatrix_3x3(mp, mip);
-                }
-                return matrixInv;
-            }
-        }
-
-        private XYZNumber GetMatrixColumn(TagDataEntry[] entries, TagSignature signature)
-        {
-            XYZTagDataEntry entry = entries.FirstOrDefault(t => t.TagSignature == signature) as XYZTagDataEntry;
-            if (entry == null || entry.Data == null || entry.Data.Length < 1) throw new InvalidProfileException();
-            return entry.Data[0];
+            throw new NotImplementedException();
         }
 
         #endregion
 
-        #endregion
 
-        #region Write IL Code
+        #region Write Curves IL Code
 
-        #region Curves
-
+        /// <summary>
+        /// Writes the IL code for R, G and B TRC curves
+        /// </summary>
+        /// <param name="entries">The entries containing the RGB TRC curves</param>
+        /// <param name="inverted">True if the curves should be inverted, false otherwise</param>
         private void WriteRGBTRC(TagDataEntry[] entries, bool inverted)
         {
             var rtrc = entries.FirstOrDefault(t => t.TagSignature == TagSignature.RedTRC);
@@ -503,6 +478,11 @@ namespace ColorManager.ICC.Conversion
             WriteCurve(btrc, inverted, 2);
         }
 
+        /// <summary>
+        /// Writes the IL code for a Gray TRC curve
+        /// </summary>
+        /// <param name="entries">The entries containing the Gray TRC curve</param>
+        /// <param name="inverted">True if the curve should be inverted, false otherwise</param>
         private void WriteGrayTRC(TagDataEntry[] entries, bool inverted)
         {
             var gtrc = entries.FirstOrDefault(t => t.TagSignature == TagSignature.GrayTRC);
@@ -510,12 +490,23 @@ namespace ColorManager.ICC.Conversion
             WriteCurve(gtrc, inverted, 0);
         }
 
+        /// <summary>
+        /// Writes the IL code for a set of curves
+        /// </summary>
+        /// <param name="entries">The entries containing the curves</param>
+        /// <param name="inverted">True if the curves should be inverted, false otherwise</param>
         private void WriteCurve(TagDataEntry[] entries, bool inverted)
         {
             for (int i = 0; i < entries.Length; i++) WriteCurve(entries[i], inverted, i);
             SwitchTempVar();
         }
 
+        /// <summary>
+        /// Writes the IL code for a curve
+        /// </summary>
+        /// <param name="curve">The entry containing the curve data</param>
+        /// <param name="inverted">True if the curve should be inverted, false otherwise</param>
+        /// <param name="index">The channel index of this curve</param>
         private void WriteCurve(TagDataEntry curve, bool inverted, int index)
         {
             if (curve.Signature == TypeSignature.Curve && curve is CurveTagDataEntry)
@@ -531,7 +522,11 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException();
         }
 
-
+        /// <summary>
+        /// Writes the IL code for a curve
+        /// </summary>
+        /// <param name="curve">The entry containing the curve data</param>
+        /// <param name="index">The channel index of this curve</param>
         private void WriteCurve(CurveTagDataEntry curve, int index)
         {
             if (curve.IsIdentityResponse) WriteAssignSingle(index);
@@ -574,6 +569,11 @@ namespace ColorManager.ICC.Conversion
             ICCData.Add(curve.CurveData);
         }
 
+        /// <summary>
+        /// Writes the IL code for an inverted curve
+        /// </summary>
+        /// <param name="curve">The entry containing the curve data</param>
+        /// <param name="index">The channel index of this curve</param>
         private void WriteCurveInverted(CurveTagDataEntry curve, int index)
         {
             if (curve.IsIdentityResponse) WriteAssignSingle(index);
@@ -683,6 +683,11 @@ namespace ColorManager.ICC.Conversion
             ICCData.Add(curve.CurveData);
         }
 
+        /// <summary>
+        /// Writes the IL code for a parametric curve
+        /// </summary>
+        /// <param name="data">The entry containing the curve data</param>
+        /// <param name="index">The channel index of this curve</param>
         private void WriteParametricCurve(ParametricCurveTagDataEntry data)
         {
             ParametricCurve curve = data.Curve;
@@ -714,6 +719,11 @@ namespace ColorManager.ICC.Conversion
 
         }
 
+        /// <summary>
+        /// Writes the IL code for an inverted parametric curve
+        /// </summary>
+        /// <param name="data">The entry containing the curve data</param>
+        /// <param name="index">The channel index of this curve</param>
         private void WriteParametricCurveInverted(ParametricCurveTagDataEntry data)
         {
             ParametricCurve curve = data.Curve;
@@ -746,6 +756,10 @@ namespace ColorManager.ICC.Conversion
         }
 
 
+        /// <summary>
+        /// Writes the IL code for a one dimensional curve
+        /// </summary>
+        /// <param name="curve">The curve data</param>
         private void WriteOneDimensionalCurve(OneDimensionalCurve curve)
         {
             double input = 0;//TODO: IL for one-dimensional curve
@@ -765,17 +779,25 @@ namespace ColorManager.ICC.Conversion
             WriteCurveSegment(curve.Segments[idx]);
         }
 
+        /// <summary>
+        /// Writes the IL code for a curve segment
+        /// </summary>
+        /// <param name="segment">The curve segment</param>
         private void WriteCurveSegment(CurveSegment segment)
         {
             var formula = segment as FormulaCurveElement;
             if (formula != null) WriteFormulaCurveSegment(formula);
 
             var sampled = segment as SampledCurveElement;
-            if (sampled != null) WriteSampledCurveESegment(sampled);
+            if (sampled != null) WriteSampledCurveSegment(sampled);
 
             throw new InvalidProfileException();
         }
 
+        /// <summary>
+        /// Writes the IL code for a formula curve segment
+        /// </summary>
+        /// <param name="segment">The formula curve segment</param>
         private void WriteFormulaCurveSegment(FormulaCurveElement segment)
         {
             //TODO: WriteFormulaCurveSegment
@@ -789,7 +811,11 @@ namespace ColorManager.ICC.Conversion
             }*/
         }
 
-        private void WriteSampledCurveESegment(SampledCurveElement segment)
+        /// <summary>
+        /// Writes the IL code for a sampled curve segment
+        /// </summary>
+        /// <param name="segment">The sampled curve segment</param>
+        private void WriteSampledCurveSegment(SampledCurveElement segment)
         {
             //TODO: WriteSampledCurveESegment
 
@@ -804,15 +830,13 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
-        #region LUT
+        #region Write LUT IL Code
 
         /// <summary>
         /// Writes the IL code for an 8-bit LUT entry
         /// </summary>
         /// <param name="lut">The entry containing the LUT data</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
         /// <param name="inColor">The input color type</param>
-        /// <returns>The ICCData for this LUT entry</returns>
         private void WriteLUT8(Lut8TagDataEntry lut, ColorSpaceType inColor)
         {
             LUT8[] InCurve = lut.InputValues;
@@ -853,11 +877,6 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         /// <param name="lut">The LUT for this channel</param>
         /// <param name="index">The channel index</param>
-        /// <param name="position">The position of the ICCData</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
-        /// <param name="adjust">True to adjust the input color channel</param>
-        /// <param name="inColor">The input color type</param>
-        /// <returns>The ICCData for this LUT</returns>
         private void WriteLUT8(LUT8 lut, int index)
         {
             if (lut.Values.Length == 2) WriteAssignSingle(index);
@@ -873,9 +892,7 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for an 16-bit LUT entry
         /// </summary>
         /// <param name="lut">The entry containing the LUT data</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
         /// <param name="inColor">The input color type</param>
-        /// <returns>The ICCData for this LUT entry</returns>
         private void WriteLUT16(Lut16TagDataEntry lut, ColorSpaceType inColor)
         {
             LUT16[] InCurve = lut.InputValues;
@@ -916,11 +933,6 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         /// <param name="lut">The LUT for this channel</param>
         /// <param name="index">The channel index</param>
-        /// <param name="position">The position of the ICCData</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
-        /// <param name="adjust">True to adjust the input color channel</param>
-        /// <param name="inColor">The input color type</param>
-        /// <returns>The ICCData for this LUT</returns>
         private void WriteLUT16(LUT16 lut, int index)
         {
             if (lut.Values.Length == 2) WriteAssignSingle(index);
@@ -932,6 +944,10 @@ namespace ColorManager.ICC.Conversion
         }
 
 
+        /// <summary>
+        /// Writes the IL code for a LUT A to B entry
+        /// </summary>
+        /// <param name="entry">The entry containing the LUT data</param>
         private void WriteLutAToB(LutAToBTagDataEntry entry)
         {
             bool ca = entry.CurveA != null;
@@ -974,6 +990,10 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("AToB tag has an invalid configuration");
         }
 
+        /// <summary>
+        /// Writes the IL code for a LUT B to A entry
+        /// </summary>
+        /// <param name="entry">The entry containing the LUT data</param>
         private void WriteLutBToA(LutBToATagDataEntry entry)
         {
             bool ca = entry.CurveA != null;
@@ -1016,17 +1036,12 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
-
-
+        
         /// <summary>
         /// Writes the IL code for a LUT
         /// </summary>
         /// <param name="lut">The LUT for this channel</param>
         /// <param name="index">The channel index</param>
-        /// <param name="position">The position of the ICCData</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
-        /// <param name="adjustment">The adjustment value. e.g. 256 for 8-bit or -1 if no adjustment is wanted</param>
-        /// <param name="inColor">The input color type</param>
         private void WriteLUT(int length, int index)
         {
             //outColor[index] = lut.Values[(int)((inColor[index] * lut.Length - 1) + 0.5)];
@@ -1053,10 +1068,7 @@ namespace ColorManager.ICC.Conversion
         /// <summary>
         /// Writes the IL code for a CLUT
         /// </summary>
-        /// <param name="lut">The CLUT for this channel</param>
-        /// <param name="position">The position of the ICCData</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
-        /// <returns>The ICCData for this CLUT</returns>
+        /// <param name="lut">The CLUT to use</param>
         private void WriteCLUT(CLUT lut)
         {
             #region IL Code
@@ -1120,6 +1132,7 @@ namespace ColorManager.ICC.Conversion
                     }
                 }
                 ICCData.AddRange(vals);
+                return;
             }
 
             var lut16 = lut as CLUT16;
@@ -1135,6 +1148,7 @@ namespace ColorManager.ICC.Conversion
                     }
                 }
                 ICCData.AddRange(vals);
+                return;
             }
 
             var lutf32 = lut as CLUTf32;
@@ -1150,6 +1164,7 @@ namespace ColorManager.ICC.Conversion
                     }
                 }
                 ICCData.AddRange(vals);
+                return;
             }
 
             throw new InvalidProfileException();
@@ -1162,9 +1177,6 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         /// <param name="matrix3x3">The 3x3 matrix</param>
         /// <param name="matrix3x1">The 3x1 matrix</param>
-        /// <param name="position">The position of the ICCData</param>
-        /// <param name="input">True if the ICCData is from the input profile, false otherwise</param>
-        /// <returns>The ICCData for this matrix calculation</returns>
         private void WriteMatrix(double[,] matrix3x3, double[] matrix3x1)
         {
             WriteLdICCData(DataPos);
@@ -1193,6 +1205,10 @@ namespace ColorManager.ICC.Conversion
 
         #region Subroutines
 
+        /// <summary>
+        /// Writes the IL code to the appropriate ICC data
+        /// </summary>
+        /// <param name="position">The position of the wanted ICC data (zero based)</param>
         private void WriteLdICCData(int position)
         {
             string fname = (IsInput ? "In" : "Out") + "ICCData";//TODO: make typesafe
@@ -1244,6 +1260,10 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldind_I);
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust the input color for ICC conversion (if necessary)
+        /// </summary>
+        /// <param name="colorType">The input color type</param>
         private void AdjustInputColor(ColorSpaceType colorType)
         {
             //TODO: write adjustment code
@@ -1271,25 +1291,66 @@ namespace ColorManager.ICC.Conversion
             }
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust the output color back to the range used in this library (if necessary)
+        /// </summary>
+        /// <param name="colorType">The output color type</param>
         private void AdjustOutputColor(ColorSpaceType colorType)
         {
             //TODO: write adjustment code
         }
 
-        #endregion
-
-        #endregion
-
-
-        #region Subroutines
-
-        private bool IsSameColor(Color inColor, Color outColor)
+        /// <summary>
+        /// Gets the matrix from MatrixColumn entries
+        /// </summary>
+        /// <param name="entries">The entries containing the matrix data</param>
+        /// <param name="inverted">True if the matrix should be inverted, false otherwise</param>
+        /// <returns>The matrix</returns>
+        private double[] GetMatrix(TagDataEntry[] entries, bool inverted)
         {
-            return inColor.GetType() == outColor.GetType()
-                && inColor.Space.ReferenceWhite == outColor.Space.ReferenceWhite
-                && InColor.ChannelCount == OutColor.ChannelCount;
+            XYZNumber Mr = GetMatrixColumn(entries, TagSignature.RedMatrixColumn);
+            XYZNumber Mg = GetMatrixColumn(entries, TagSignature.GreenMatrixColumn);
+            XYZNumber Mb = GetMatrixColumn(entries, TagSignature.BlueMatrixColumn);
+
+            var matrix = new double[9]
+                {
+                    Mr.X, Mg.X, Mb.X,
+                    Mr.Y, Mg.Y, Mb.Y,
+                    Mr.Z, Mg.Z, Mb.Z,
+                };
+
+            if (!inverted) return matrix;
+            else
+            {
+                var matrixInv = new double[9];
+                fixed (double* mp = matrix)
+                fixed (double* mip = matrixInv)
+                {
+                    UMath.InvertMatrix_3x3(mp, mip);
+                }
+                return matrixInv;
+            }
         }
 
+        /// <summary>
+        /// Gets a specified matrix column and checks its validity
+        /// </summary>
+        /// <param name="entries">The entries containing the matrix column</param>
+        /// <param name="signature">The signature of the wanted matrix column</param>
+        /// <returns>The matrix column</returns>
+        private XYZNumber GetMatrixColumn(TagDataEntry[] entries, TagSignature signature)
+        {
+            XYZTagDataEntry entry = entries.FirstOrDefault(t => t.TagSignature == signature) as XYZTagDataEntry;
+            if (entry == null || entry.Data == null || entry.Data.Length < 1) throw new InvalidProfileException();
+            return entry.Data[0];
+        }
+
+        /// <summary>
+        /// Checks if a color is the PCS color of either ICC profiles
+        /// </summary>
+        /// <param name="color">The color to check</param>
+        /// <param name="otherProfile">The profile of the other color</param>
+        /// <returns>True if it's the PCS color, false if it's the Data color, null if neither</returns>
         private bool? IsPCS(Color color, ICCProfile otherProfile)
         {
             if (color.IsColorICC) return color.IsICCPCS;
@@ -1302,18 +1363,7 @@ namespace ColorManager.ICC.Conversion
             }
             else return null;
         }
-
-        private ICCProfile GetProfile(Colorspace space)
-        {
-            var iccspace = space as ColorspaceICC;
-            if (iccspace != null)
-            {
-                if (iccspace.Profile == null || iccspace.Profile.Validate() == false) throw new Exception("Invalid profile");
-                return iccspace.Profile;
-            }
-            return null;
-        }
-
+        
         #endregion
     }
 }

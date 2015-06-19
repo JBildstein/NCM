@@ -289,6 +289,8 @@ namespace ColorManager
 
         #endregion
 
+        #region Dispose
+
         ~ColorConverter()
         {
             Dispose(false);
@@ -316,6 +318,8 @@ namespace ColorManager
                 IsDisposed = true;
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Converts the colors given in the constructor
