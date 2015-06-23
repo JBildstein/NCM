@@ -9,14 +9,6 @@ namespace ColorManager.Conversion
         #region Variables
 
         /// <summary>
-        /// States which temporary variable for the color values should be used
-        /// </summary>
-        protected bool IsTempVar1
-        {
-            get { return _IsTempVar1; }
-            set { _IsTempVar1 = value; }
-        }
-        /// <summary>
         /// States if it's the first conversion within this <see cref="ConversionCreator"/>
         /// </summary>
         protected bool IsFirst
@@ -47,7 +39,11 @@ namespace ColorManager.Conversion
             get { return _IsLastG; }
         }
 
-        private bool _IsTempVar1 = true;
+        /// <summary>
+        /// States which temporary variable for the color values should be used
+        /// </summary>
+        private bool IsTempVar1 = true;
+
         private bool _IsFirst = true;
         private bool _IsLast = false;
         private bool _IsFirstG = true;
@@ -385,6 +381,15 @@ namespace ColorManager.Conversion
                     CMIL.Emit(OpCodes.Ldloc, lc);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Writes the IL code to call the Math.Pow(double, double) method
+        /// </summary>
+        protected void WriteCallPow()
+        {
+            var pow = typeof(Math).GetMethod("Pow");
+            WriteMethodCall(pow, false);
         }
 
 
