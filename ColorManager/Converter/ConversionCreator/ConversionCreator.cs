@@ -230,12 +230,8 @@ namespace ColorManager.Conversion
         protected void WriteAssignSingle(int index)
         {
             //outColor[index] = inColor[index];
-            WriteLdOutput();
-            WriteLdPtr(index);
-
-            WriteLdInput();
-            WriteLdPtr(index);
-
+            WriteLdOutput(index);
+            WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Stind_R8);
         }
@@ -284,12 +280,32 @@ namespace ColorManager.Conversion
         }
 
         /// <summary>
+        /// Writes the IL code to load the input value at a specific index
+        /// </summary>
+        /// <param name="index">The index to load</param>
+        protected void WriteLdInput(int index)
+        {
+            WriteLdInput();
+            WriteLdPtr(index);
+        }
+
+        /// <summary>
         /// Writes the IL code to load the output value pointer
         /// </summary>
         protected void WriteLdOutput()
         {
             if (IsLast) CMIL.Emit(OpCodes.Ldarg_2);
             else WriteLdVarX(false);
+        }
+
+        /// <summary>
+        /// Writes the IL code to load the output value at a specific index
+        /// </summary>
+        /// <param name="index">The index to load</param>
+        protected void WriteLdOutput(int index)
+        {
+            WriteLdOutput();
+            WriteLdPtr(index);
         }
 
         /// <summary>
@@ -491,7 +507,7 @@ namespace ColorManager.Conversion
         {
             WriteLdVarX(true);
             WriteLdVarX(false);
-            IsTempVar1 = !IsTempVar1;
+            SwitchTempVar();
         }
 
         /// <summary>
