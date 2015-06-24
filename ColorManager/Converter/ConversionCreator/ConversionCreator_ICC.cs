@@ -536,10 +536,8 @@ namespace ColorManager.ICC.Conversion
             else if (curve.IsGamma)
             {
                 //outColor[index] = Math.Pow(inColor[index], curve[0]);
-                WriteLdOutput();
-                WriteLdPtr(index);
-                WriteLdInput();
-                WriteLdPtr(index);
+                WriteLdOutput(index);
+                WriteLdInput(index);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 CMIL.Emit(OpCodes.Ldc_R8, curve.CurveData[0]);
                 WriteCallPow();
@@ -548,12 +546,9 @@ namespace ColorManager.ICC.Conversion
             else
             {
                 //outColor[index] = curve[(int)((inColor[index] * curve.Length - 1) + 0.5)];
-                WriteLdOutput();
-                WriteLdPtr(index);
+                WriteLdOutput(index);
                 WriteLdICCData(DataPos);
-                WriteLdInput();
-                WriteLdPtr(index);
-
+                WriteLdInput(index);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 CMIL.Emit(OpCodes.Ldc_R8, curve.CurveData.Length - 1d);
                 CMIL.Emit(OpCodes.Mul);
@@ -582,10 +577,8 @@ namespace ColorManager.ICC.Conversion
             else if (curve.IsGamma)
             {
                 //outColor[index] = Math.Pow(inColor[index], 1 / curve[0]);
-                WriteLdOutput();
-                WriteLdPtr(index);
-                WriteLdInput();
-                WriteLdPtr(index);
+                WriteLdOutput(index);
+                WriteLdInput(index);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 CMIL.Emit(OpCodes.Ldc_R8, 1d / curve.CurveData[0]);
                 WriteCallPow();
@@ -634,8 +627,7 @@ namespace ColorManager.ICC.Conversion
                 WriteStloc(foundIndex);
 
                 //if (inColor[index] > curve[index])
-                WriteLdInput();
-                WriteLdPtr(index);
+                WriteLdInput(index);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 WriteLdICCData(DataPos);
                 WriteLdloc(foundIndex);
@@ -667,8 +659,7 @@ namespace ColorManager.ICC.Conversion
                 CMIL.Emit(OpCodes.Bgt, whileStartLabel);
 
                 //outColor[index] = curve[foundIndex];
-                WriteLdOutput();
-                WriteLdPtr(index);
+                WriteLdOutput(index);
                 WriteLdICCData(DataPos);
                 WriteLdloc(foundIndex);
                 CMIL.Emit(OpCodes.Conv_I);
@@ -715,6 +706,8 @@ namespace ColorManager.ICC.Conversion
                 default:
                     throw new CorruptProfileException("ParametricCurve");
             }
+            
+            ICCData.Add(new double[] { curve.g, curve.a, curve.b, curve.c, curve.d, curve.e, curve.f });
         }
 
         /// <summary>
@@ -747,25 +740,47 @@ namespace ColorManager.ICC.Conversion
                 default:
                     throw new CorruptProfileException("ParametricCurve");
             }
+
+            ICCData.Add(new double[] { curve.g, curve.a, curve.b, curve.c, curve.d, curve.e, curve.f });
         }
 
 
         #region Parametric Curve
 
+        /// <summary>
+        /// Parametric curve parameter array positions
+        /// </summary>
+        private enum PC_Pos
+        {
+            g = 0,
+            a = 1,
+            b = 2,
+            c = 3,
+            d = 4,
+            e = 5,
+            f = 6,
+        }
+
+        /// <summary>
+        /// Writes the IL code to load a specific parametric curve value
+        /// </summary>
+        /// <param name="value">The wanted value</param>
+        private void WriteLdPC(PC_Pos value)
+        {
+            WriteLdICCData(DataPos);
+            WriteLdPtr((int)value);
+        }
+
+
         private void WriteParametricCurve_Type0(ParametricCurve curve, int index)
         {
             //outColor[index] = Math.Pow(inColor[index], curve.g);
-            
-            WriteLdOutput();
-            WriteLdPtr(index);
-            WriteLdInput();
-            WriteLdPtr(index);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);
+
+            WriteLdOutput(index);
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
-
-            ICCData.Add(new double[] { curve.g });
         }
 
         private void WriteParametricCurve_Type1(ParametricCurve curve, int index)
@@ -777,80 +792,96 @@ namespace ColorManager.ICC.Conversion
             var elseLabel = CMIL.DefineLabel();
 
             //if (inColor[index] >= -curve.b / curve.a)
-            WriteLdInput();
-            WriteLdPtr(index);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(1);//curve.b
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.b);
             CMIL.Emit(OpCodes.Neg);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);//curve.a
+            WriteLdPC(PC_Pos.a);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g);
-            WriteLdOutput();
-            WriteLdPtr(index);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);//curve.a
-            WriteLdInput();
-            WriteLdPtr(index);
+            WriteLdOutput(index);
+            WriteLdPC(PC_Pos.a);
+            WriteLdInput(index);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(1);//curve.b
+            WriteLdPC(PC_Pos.b);
             CMIL.Emit(OpCodes.Add);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(2);//curve.g
+            WriteLdPC(PC_Pos.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
 
             //else outColor[index] = 0;
             CMIL.MarkLabel(ifLabel);
-            WriteLdOutput();
-            WriteLdPtr(index);
+            WriteLdOutput(index);
             CMIL.Emit(OpCodes.Ldc_R8, 0.0);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
-
-            ICCData.Add(new double[] { curve.a, curve.b, curve.g });
         }
 
         private void WriteParametricCurve_Type2(ParametricCurve curve, int index)
         {
             //if (inColor[index] >= -curve.b / curve.a) outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g) + curve.c;
-            //else outColor[index] = curve.c;            
+            //else outColor[index] = curve.c;
+
+            var ifLabel = CMIL.DefineLabel();
+            var elseLabel = CMIL.DefineLabel();
+
+            //if (inColor[index] >= -curve.b / curve.a)
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Neg);
+            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Blt_Un, ifLabel);
+
+            //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g) + curve.c;
+            WriteLdOutput(index);
+            WriteLdPC(PC_Pos.a);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Mul);
+            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Add);
+            WriteLdPC(PC_Pos.g);
+            WriteCallPow();
+            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Stind_R8);
+            CMIL.Emit(OpCodes.Br, elseLabel);
+
+            //else outColor[index] = curve.c;
+            CMIL.MarkLabel(ifLabel);
+            WriteLdOutput(index);
+            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Stind_R8);
+            CMIL.MarkLabel(elseLabel);
         }
 
         private void WriteParametricCurve_Type3(ParametricCurve curve, int index)
         {
             //if (inColor[index] >= curve.d) outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g);
-            //else outColor[index] = curve.c * inColor[index];            
+            //else outColor[index] = curve.c * inColor[index];
         }
 
         private void WriteParametricCurve_Type4(ParametricCurve curve, int index)
         {
             //if (inColor[index] >= curve.d) outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g) + curve.c;
-            //else outColor[index] = curve.c * inColor[index] + curve.f;            
+            //else outColor[index] = curve.c * inColor[index] + curve.f;
         }
 
 
         private void WriteParametricCurveInverted_Type0(ParametricCurve curve, int index)
         {
             //outColor[index] = Math.Pow(inColor[index], 1 / curve.g);
-                     
-            WriteLdOutput();
-            WriteLdPtr(index);
-            WriteLdInput();
-            WriteLdPtr(index);
+
+            WriteLdOutput(index);
+            WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);//curve.g
+            WriteLdPC(PC_Pos.g);
             CMIL.Emit(OpCodes.Div);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
-
-            ICCData.Add(new double[] { curve.g });
         }
 
         private void WriteParametricCurveInverted_Type1(ParametricCurve curve, int index)
@@ -862,53 +893,74 @@ namespace ColorManager.ICC.Conversion
             var elseLabel = CMIL.DefineLabel();
 
             //if (inColor[index] >= -curve.b / curve.a)
-            WriteLdInput();
-            WriteLdPtr(index);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(1);//curve.b
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.b);
             CMIL.Emit(OpCodes.Neg);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);//curve.a
+            WriteLdPC(PC_Pos.a);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = (Math.Pow(curve.a, 1 / curve.g) - curve.b) / inColor[index];
-            WriteLdOutput();
-            WriteLdPtr(index);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(0);//curve.a
+            WriteLdOutput(index);
+            WriteLdPC(PC_Pos.a);
             CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdICCData(DataPos);
-            WriteLdPtr(2);//curve.g
+            WriteLdPC(PC_Pos.g);
             CMIL.Emit(OpCodes.Div);
             WriteCallPow();
-
-            WriteLdICCData(DataPos);
-            WriteLdPtr(1);//curve.b
+            WriteLdPC(PC_Pos.b);
             CMIL.Emit(OpCodes.Sub);
-
-            WriteLdInput();
-            WriteLdPtr(index);
+            WriteLdInput(index);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
-
             CMIL.Emit(OpCodes.Br, elseLabel);
 
             //else outColor[index] = 0;
             CMIL.MarkLabel(ifLabel);
-            WriteLdOutput();
-            WriteLdPtr(index);
+            WriteLdOutput(index);
             CMIL.Emit(OpCodes.Ldc_R8, 0.0);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
-
-            ICCData.Add(new double[] { curve.a, curve.b, curve.g });
         }
 
         private void WriteParametricCurveInverted_Type2(ParametricCurve curve, int index)
         {
             //if (inColor[index] >= -curve.b / curve.a) outColor[index] = (Math.Pow(inColor[index] - curve.c, 1 / curve.g) - curve.b) / curve.a;
             //else outColor[index] = curve.c;
+
+            var ifLabel = CMIL.DefineLabel();
+            var elseLabel = CMIL.DefineLabel();
+
+            //if (inColor[index] >= -curve.b / curve.a)
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Neg);
+            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Blt_Un, ifLabel);
+
+            //outColor[index] = outColor[index] = (Math.Pow(inColor[index] - curve.c, 1 / curve.g) - curve.b) / curve.a;
+            WriteLdOutput(index);
+
+            WriteLdInput(index);
+            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Sub);
+            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
+            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Div);
+            WriteCallPow();
+            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Sub);
+            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Stind_R8);
+            CMIL.Emit(OpCodes.Br, elseLabel);
+
+            //else outColor[index] = 0;
+            CMIL.MarkLabel(ifLabel);
+            WriteLdOutput(index);
+            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Stind_R8);
+            CMIL.MarkLabel(elseLabel);
         }
 
         private void WriteParametricCurveInverted_Type3(ParametricCurve curve, int index)
@@ -1214,12 +1266,9 @@ namespace ColorManager.ICC.Conversion
         private void WriteLUT(int length, int index)
         {
             //outColor[index] = lut.Values[(int)((inColor[index] * lut.Length - 1) + 0.5)];
-            WriteLdOutput();
-            WriteLdPtr(index);
+            WriteLdOutput(index);
             WriteLdICCData(DataPos);
-            WriteLdInput();
-            WriteLdPtr(index);
-
+            WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, length - 1d);
             CMIL.Emit(OpCodes.Mul);
@@ -1255,8 +1304,7 @@ namespace ColorManager.ICC.Conversion
             int c = lut.InputChannelCount;
             for (int i = 0; i < lut.InputChannelCount; i++, c--)
             {
-                WriteLdInput();
-                WriteLdPtr(i);
+                WriteLdInput(i);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 CMIL.Emit(OpCodes.Ldc_R8, Math.Pow(lut.GridPointCount[i], c));
                 CMIL.Emit(OpCodes.Mul);
@@ -1270,8 +1318,7 @@ namespace ColorManager.ICC.Conversion
 
             for (int i = 0; i < lut.OutputChannelCount; i++)
             {
-                WriteLdOutput();
-                WriteLdPtr(i);
+                WriteLdOutput(i);
                 WriteLdICCData(DataPos + i);
                 WriteLdloc(idx);
                 CMIL.Emit(OpCodes.Conv_I);
