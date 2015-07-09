@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using ColorManager.ICC;
 using ColorManager.Conversion;
 
 namespace ColorManager.ICC.Conversion
@@ -43,19 +42,19 @@ namespace ColorManager.ICC.Conversion
             /// <summary>
             /// ICC conversion from data to PCS
             /// </summary>
-            ICCToPCS,
+            DataToPCS,
             /// <summary>
             /// ICC conversion from PCS to data
             /// </summary>
-            ICCToData,
+            PCSToData,
             /// <summary>
             /// ICC conversion from data to data
             /// </summary>
-            ICCDataToData,
+            DataToData,
             /// <summary>
             /// ICC conversion from PCS to PCS
             /// </summary>
-            ICCPCSToPCS,
+            PCSToPCS,
         }
 
         private enum ConvIntent
@@ -133,25 +132,27 @@ namespace ColorManager.ICC.Conversion
         {
             switch (ConversionType)
             {
-                case ConvType.ICCToPCS:
+                case ConvType.DataToPCS:
                     AdjustInputColor(Profile.DataColorspaceType);
                     ConvertICC_DataPCS();
                     AdjustOutputColor(Profile.PCSType);
                     break;
 
-                case ConvType.ICCToData:
+                case ConvType.PCSToData:
                     AdjustInputColor(Profile.PCSType);
                     ConvertICC_PCSData();
                     AdjustOutputColor(Profile.DataColorspaceType);
                     break;
 
-                case ConvType.ICCDataToData:
+                case ConvType.DataToData:
                     AdjustInputColor(Profile.DataColorspaceType);
+                    ConvertICC_DataData();
                     AdjustOutputColor(Profile.DataColorspaceType);
                     throw new NotImplementedException();
 
-                case ConvType.ICCPCSToPCS:
+                case ConvType.PCSToPCS:
                     AdjustInputColor(Profile.PCSType);
+                    ConvertICC_PCSPCS();
                     AdjustOutputColor(Profile.PCSType);
                     throw new NotImplementedException();
 
@@ -198,12 +199,12 @@ namespace ColorManager.ICC.Conversion
 
         private void CheckDeviceLinkProfile()
         {
-            if (IsInPCS == false && IsOutPCS == false) ConversionType = ConvType.ICCDataToData;
+            if (IsInPCS == false && IsOutPCS == false) ConversionType = ConvType.DataToData;
         }
 
         private void CheckAbstractProfile()
         {
-            if (IsInPCS == true && IsOutPCS == true) ConversionType = ConvType.ICCPCSToPCS;
+            if (IsInPCS == true && IsOutPCS == true) ConversionType = ConvType.PCSToPCS;
         }
 
         private void CheckDevicePCS()
@@ -211,12 +212,12 @@ namespace ColorManager.ICC.Conversion
             if (IsInPCS == false)
             {
                 var spaceWP = OutColor.Space.ReferenceWhite.GetType();
-                if (IsOutPCS == true && spaceWP == typeof(WhitepointD50)) ConversionType = ConvType.ICCToPCS;
+                if (IsOutPCS == true && spaceWP == typeof(WhitepointD50)) ConversionType = ConvType.DataToPCS;
             }
             else if (IsOutPCS == false)
             {
                 var spaceWP = InColor.Space.ReferenceWhite.GetType();
-                if (IsInPCS == true && spaceWP == typeof(WhitepointD50)) ConversionType = ConvType.ICCToData;
+                if (IsInPCS == true && spaceWP == typeof(WhitepointD50)) ConversionType = ConvType.PCSToData;
             }
         }
 
@@ -296,7 +297,7 @@ namespace ColorManager.ICC.Conversion
 
         //TODO: include chromatic adaption if CATag is existing
         //TODO: check for media white/black point tag and use it if existing
-        
+
         #region PCS -> Data
 
         /// <summary>
@@ -343,11 +344,10 @@ namespace ColorManager.ICC.Conversion
         /// <param name="entries">The entries containing the Matrix and TRC data</param>
         private void ConvertICC_PCSData_Matrix(TagDataEntry[] entries)
         {
-            ICCData.Add(GetMatrix(entries, true));
             WriteLdICCData(DataPos);//Load Matrix
             WriteLdArg();//Load in and output values
-            var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
-            WriteMethodCall(m, false);
+            WriteCallMultiplyMatrix_3x3_3x1();
+            ICCData.Add(GetMatrix(entries, true));
 
             IsFirst = false;
             IsLast = true;
@@ -420,8 +420,7 @@ namespace ColorManager.ICC.Conversion
 
             WriteLdICCData(DataPos);//Load Matrix
             WriteLdArg();//Load in and output values
-            var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
-            WriteMethodCall(m, false);
+            WriteCallMultiplyMatrix_3x3_3x1();
             ICCData.Add(GetMatrix(entries, false));
         }
 
@@ -444,7 +443,7 @@ namespace ColorManager.ICC.Conversion
             //AtoB0
             throw new NotImplementedException();
         }
-        
+
         #endregion
 
         #region Data -> Data
@@ -524,6 +523,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException();
         }
 
+        #region Curve
 
         /// <summary>
         /// Writes the IL code for a curve
@@ -561,9 +561,9 @@ namespace ColorManager.ICC.Conversion
                 CMIL.Emit(OpCodes.Add);
                 CMIL.Emit(OpCodes.Ldind_R8);
                 CMIL.Emit(OpCodes.Stind_R8);
-            }
 
-            ICCData.Add(curve.CurveData);
+                ICCData.Add(curve.CurveData);
+            }
         }
 
         /// <summary>
@@ -670,11 +670,14 @@ namespace ColorManager.ICC.Conversion
                 CMIL.Emit(OpCodes.Stind_R8);
 
                 #endregion
-            }
 
-            ICCData.Add(curve.CurveData);
+                ICCData.Add(curve.CurveData);
+            }
         }
 
+        #endregion
+        
+        #region Parametric Curve
 
         /// <summary>
         /// Writes the IL code for a parametric curve
@@ -706,8 +709,6 @@ namespace ColorManager.ICC.Conversion
                 default:
                     throw new CorruptProfileException("ParametricCurve");
             }
-            
-            ICCData.Add(new double[] { curve.g, curve.a, curve.b, curve.c, curve.d, curve.e, curve.f });
         }
 
         /// <summary>
@@ -718,7 +719,7 @@ namespace ColorManager.ICC.Conversion
         private void WriteParametricCurveInverted(ParametricCurveTagDataEntry data, int index)
         {
             ParametricCurve curve = data.Curve;
-            
+
             switch (curve.type)
             {
                 case 0:
@@ -740,45 +741,19 @@ namespace ColorManager.ICC.Conversion
                 default:
                     throw new CorruptProfileException("ParametricCurve");
             }
-
-            ICCData.Add(new double[] { curve.g, curve.a, curve.b, curve.c, curve.d, curve.e, curve.f });
         }
 
 
         #region IL for Parametric Curve
-
-        /// <summary>
-        /// Parametric curve parameter array positions
-        /// </summary>
-        private enum PC_Pos
-        {
-            g = 0,
-            a = 1,
-            b = 2,
-            c = 3,
-            d = 4,
-            e = 5,
-            f = 6,
-        }
-
-        /// <summary>
-        /// Writes the IL code to load a specific parametric curve value
-        /// </summary>
-        /// <param name="value">The wanted value</param>
-        private void WriteLdPC(PC_Pos value)
-        {
-            WriteLdICCData(DataPos);
-            WriteLdPtr((int)value);
-        }
-
-
+        
         private void WriteParametricCurve_Type0(ParametricCurve curve, int index)
         {
             //outColor[index] = Math.Pow(inColor[index], curve.g);
 
             WriteLdOutput(index);
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
         }
@@ -793,20 +768,19 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= -curve.b / curve.a)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Neg);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, -curve.b/ curve.a);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g);
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Add);
-            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -814,7 +788,7 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = 0;
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            CMIL.Emit(OpCodes.Ldc_R8, 0.0);
+            CMIL.Emit(OpCodes.Ldc_R8, 0d);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
         }
@@ -829,22 +803,21 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= -curve.b / curve.a)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Neg);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, -curve.b / curve.a);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g) + curve.c;
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Add);
-            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.g);
             WriteCallPow();
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -852,7 +825,7 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = curve.c;
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
         }
@@ -867,17 +840,19 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= curve.d)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.d);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.d);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g);
-            WriteLdOutput(index);            
-            WriteLdPC(PC_Pos.a);
+            WriteLdOutput(index);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Add);
-            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -885,8 +860,9 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = curve.c * inColor[index];
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
@@ -902,19 +878,21 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= curve.d)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.d);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g) + curve.c;
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Add);
-            WriteLdPC(PC_Pos.g);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.g);
             WriteCallPow();
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -922,10 +900,11 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = curve.c * inColor[index] + curve.f;
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Mul);
-            WriteLdPC(PC_Pos.f);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.f);
             CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
@@ -939,9 +918,7 @@ namespace ColorManager.ICC.Conversion
             WriteLdOutput(index);
             WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
-            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdPC(PC_Pos.g);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldc_R8, 1d / curve.g);
             WriteCallPow();
             CMIL.Emit(OpCodes.Stind_R8);
         }
@@ -956,22 +933,15 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= -curve.b / curve.a)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Neg);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, -curve.b / curve.a);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = (Math.Pow(curve.a, 1 / curve.g) - curve.b) / inColor[index];
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdPC(PC_Pos.g);
-            CMIL.Emit(OpCodes.Div);
-            WriteCallPow();
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Sub);
+            CMIL.Emit(OpCodes.Ldc_R8, Math.Pow(curve.a, 1d / curve.g) - curve.b);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -979,7 +949,7 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = 0;
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            CMIL.Emit(OpCodes.Ldc_R8, 0.0);
+            CMIL.Emit(OpCodes.Ldc_R8, 0d);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
         }
@@ -994,24 +964,21 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= -curve.b / curve.a)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Neg);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, -curve.b / curve.a);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = (Math.Pow(inColor[index] - curve.c, 1 / curve.g) - curve.b) / curve.a;
             WriteLdOutput(index);
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Sub);
-            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdPC(PC_Pos.g);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldc_R8, 1d / curve.g);
             WriteCallPow();
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Sub);
-            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -1019,7 +986,7 @@ namespace ColorManager.ICC.Conversion
             //else outColor[index] = curve.c;
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
         }
@@ -1034,19 +1001,15 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= curve.d)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.d);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.d);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = (Math.Pow(curve.a, 1 / curve.g) - curve.b) / inColor[index];
             WriteLdOutput(index);
-            WriteLdPC(PC_Pos.a);
-            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdPC(PC_Pos.g);
-            CMIL.Emit(OpCodes.Div);
-            WriteCallPow();
-            WriteLdPC(PC_Pos.b);
-            CMIL.Emit(OpCodes.Sub);
+            CMIL.Emit(OpCodes.Ldc_R8, Math.Pow(curve.a, 1 / curve.g) - curve.b);
             WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -1055,7 +1018,8 @@ namespace ColorManager.ICC.Conversion
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
@@ -1071,21 +1035,21 @@ namespace ColorManager.ICC.Conversion
 
             //if (inColor[index] >= curve.d)
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.d);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.d);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = (Math.Pow(curve.a, 1 / curve.g) - curve.b) / inColor[index];
             WriteLdOutput(index);
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Sub);
-            CMIL.Emit(OpCodes.Ldc_R8, 1.0);
-            WriteLdPC(PC_Pos.g);
-            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Ldc_R8, 1d / curve.g);
             WriteCallPow();
-            WriteLdPC(PC_Pos.b);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.b);
             CMIL.Emit(OpCodes.Sub);
-            WriteLdPC(PC_Pos.a);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.a);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.Emit(OpCodes.Br, elseLabel);
@@ -1094,9 +1058,10 @@ namespace ColorManager.ICC.Conversion
             CMIL.MarkLabel(ifLabel);
             WriteLdOutput(index);
             WriteLdInput(index);
-            WriteLdPC(PC_Pos.f);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.f);
             CMIL.Emit(OpCodes.Sub);
-            WriteLdPC(PC_Pos.c);
+            CMIL.Emit(OpCodes.Ldc_R8, curve.c);
             CMIL.Emit(OpCodes.Div);
             CMIL.Emit(OpCodes.Stind_R8);
             CMIL.MarkLabel(elseLabel);
@@ -1104,7 +1069,9 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
+        #endregion
 
+        #region One Dimensional Curve
 
         /// <summary>
         /// Writes the IL code for a one dimensional curve
@@ -1112,8 +1079,9 @@ namespace ColorManager.ICC.Conversion
         /// <param name="curve">The curve data</param>
         private void WriteOneDimensionalCurve(OneDimensionalCurve curve)
         {
-            double input = 0;//TODO: IL for one-dimensional curve
+            //TODO: IL for one-dimensional curve
 
+            /*
             int idx = -1;
             if (curve.Segments.Length != 1)
             {
@@ -1126,7 +1094,7 @@ namespace ColorManager.ICC.Conversion
             else { idx = 0; }
 
             //var result = curve.Segments[idx].GetValue(input);
-            WriteCurveSegment(curve.Segments[idx]);
+            WriteCurveSegment(curve.Segments[idx]);*/
         }
 
         /// <summary>
@@ -1137,11 +1105,12 @@ namespace ColorManager.ICC.Conversion
         {
             var formula = segment as FormulaCurveElement;
             if (formula != null) WriteFormulaCurveSegment(formula);
-
-            var sampled = segment as SampledCurveElement;
-            if (sampled != null) WriteSampledCurveSegment(sampled);
-
-            throw new InvalidProfileException();
+            else
+            {
+                var sampled = segment as SampledCurveElement;
+                if (sampled != null) WriteSampledCurveSegment(sampled);
+                else throw new InvalidProfileException();
+            }
         }
 
         /// <summary>
@@ -1180,6 +1149,8 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
+        #endregion
+
         #region Write LUT IL Code
 
         /// <summary>
@@ -1191,11 +1162,11 @@ namespace ColorManager.ICC.Conversion
         {
             LUT8[] InCurve = lut.InputValues;
             LUT8[] OutCurve = lut.OutputValues;
-            double[] Matrix = new double[9]
+            double[] Matrix = new double[9]//TODO: matrix values might have to be divided by 255
                 {
                     lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
                     lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
-                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],                        
+                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],
                 };
 
             //Matrix
@@ -1203,8 +1174,7 @@ namespace ColorManager.ICC.Conversion
             {
                 WriteLdICCData(DataPos);
                 WriteLdArg();
-                var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
-                WriteMethodCall(m, false);
+                WriteCallMultiplyMatrix_3x3_3x1();
                 ICCData.Add(Matrix);
                 IsFirst = false;
             }
@@ -1251,7 +1221,7 @@ namespace ColorManager.ICC.Conversion
                 {
                     lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
                     lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
-                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],                        
+                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],
                 };
 
             //Matrix
@@ -1259,8 +1229,7 @@ namespace ColorManager.ICC.Conversion
             {
                 WriteLdICCData(DataPos);
                 WriteLdArg();
-                var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
-                WriteMethodCall(m, false);
+                WriteCallMultiplyMatrix_3x3_3x1();
                 ICCData.Add(Matrix);
                 IsFirst = false;
             }
@@ -1272,8 +1241,8 @@ namespace ColorManager.ICC.Conversion
 
             //CLUT
             WriteCLUT(lut.CLUTValues);
-            IsLast = true;
 
+            IsLast = true;
             //Output LUT
             for (int i = 0; i < OutCurve.Length; i++) WriteLUT16(OutCurve[i], i);
         }
@@ -1386,7 +1355,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
-        
+
         /// <summary>
         /// Writes the IL code for a LUT
         /// </summary>
@@ -1394,15 +1363,13 @@ namespace ColorManager.ICC.Conversion
         /// <param name="index">The channel index</param>
         private void WriteLUT(int length, int index)
         {
-            //outColor[index] = lut.Values[(int)((inColor[index] * lut.Length - 1) + 0.5)];
+            //outColor[index] = lut.Values[(int)(inColor[index] * lut.Length - 1)];
             WriteLdOutput(index);
             WriteLdICCData(DataPos);
             WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, length - 1d);
             CMIL.Emit(OpCodes.Mul);
-            CMIL.Emit(OpCodes.Ldc_R8, 0.5);
-            CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Conv_I4);
             CMIL.Emit(OpCodes.Conv_I);
             CMIL.Emit(OpCodes.Ldc_I4_8);
@@ -1411,7 +1378,7 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Stind_R8);
         }
-
+        
         /// <summary>
         /// Writes the IL code for a CLUT
         /// </summary>
@@ -1420,30 +1387,37 @@ namespace ColorManager.ICC.Conversion
         {
             #region IL Code
 
-            /* int idx = (int)((inColor[0] * Math.Pow(lut.GridPointCount[0], 3)
-                                  + inColor[1] * Math.Pow(lut.GridPointCount[1], 2)
-                                  + inColor[2] * Math.Pow(lut.GridPointCount[2], 1)) + 0.5);
+            /* int idx = (int)(inColor[2] * lut.GridPointCount[2])
+                       + (int)(inColor[1] * lut.GridPointCount[1]) * lut.GridPointCount[2]
+                       + (int)(inColor[0] * lut.GridPointCount[0]) * lut.GridPointCount[2] * lut.GridPointCount[1];
                 
                     outColor[0] = data.InICCData[position + 0][idx];
                     outColor[1] = data.InICCData[position + 1][idx];
                     outColor[2] = data.InICCData[position + 2][idx];
                     outColor[3] = data.InICCData[position + 3][idx];
-                */
+            */
 
-            int c = lut.InputChannelCount;
-            for (int i = 0; i < lut.InputChannelCount; i++, c--)
+            int gpc = 1;
+            for (int i = lut.InputChannelCount - 1; i >= 0; i--)
             {
                 WriteLdInput(i);
                 CMIL.Emit(OpCodes.Ldind_R8);
-                CMIL.Emit(OpCodes.Ldc_R8, Math.Pow(lut.GridPointCount[i], c));
+                CMIL.Emit(OpCodes.Ldc_R8, (double)lut.GridPointCount[i]);
                 CMIL.Emit(OpCodes.Mul);
-                if (i != 0) CMIL.Emit(OpCodes.Add);
-            }
 
-            CMIL.Emit(OpCodes.Ldc_R8, 0.5);
-            CMIL.Emit(OpCodes.Add);
-            CMIL.Emit(OpCodes.Conv_I4);
-            var idx = WriteStloc(typeof(Int32));
+                //CMIL.Emit(OpCodes.Ldc_R8, 0.5);
+                //CMIL.Emit(OpCodes.Add);
+
+                CMIL.Emit(OpCodes.Conv_I4);
+                if (i != lut.InputChannelCount - 1)
+                {
+                    CMIL.Emit(OpCodes.Ldc_I4, gpc);
+                    CMIL.Emit(OpCodes.Mul);
+                    CMIL.Emit(OpCodes.Add);
+                }
+                gpc *= lut.GridPointCount[i];
+            }
+            var idx = WriteStloc(typeof(int));
 
             for (int i = 0; i < lut.OutputChannelCount; i++)
             {
@@ -1526,19 +1500,18 @@ namespace ColorManager.ICC.Conversion
         {
             WriteLdICCData(DataPos);
             WriteLdArg();
-            var m = typeof(UMath).GetMethod("MultiplyMatrix_3x3_3x1");//TODO: make typesafe
-            WriteMethodCall(m, false);
+            WriteCallMultiplyMatrix_3x3_3x1();
 
             WriteLdICCData(DataPos + 1);
             WriteLdArg();
-            m = typeof(UMath).GetMethod("AddMatrix_3x1");//TODO: make typesafe
+            var m = typeof(UMath).GetMethod(nameof(UMath.AddMatrix_3x1));
             WriteMethodCall(m, false);
 
             double[] m3x3 = new double[9]
                 {
                     matrix3x3[0, 0], matrix3x3[0, 1], matrix3x3[0, 2],
                     matrix3x3[1, 0], matrix3x3[1, 1], matrix3x3[1, 2],
-                    matrix3x3[2, 0], matrix3x3[2, 1], matrix3x3[2, 2],                        
+                    matrix3x3[2, 0], matrix3x3[2, 1], matrix3x3[2, 2],
                 };
 
             ICCData.Add(m3x3);
@@ -1556,7 +1529,9 @@ namespace ColorManager.ICC.Conversion
         /// <param name="position">The position of the wanted ICC data (zero based)</param>
         private void WriteLdICCData(int position)
         {
-            string fname = (IsInput ? "In" : "Out") + "ICCData";//TODO: make typesafe
+            string fname;
+            if (IsInput) fname = nameof(ConversionData.InICCData);
+            else fname = nameof(ConversionData.OutICCData);
 
             CMIL.Emit(OpCodes.Ldarg_3);
             FieldInfo fi = typeof(ConversionData).GetField(fname);
@@ -1603,46 +1578,6 @@ namespace ColorManager.ICC.Conversion
                 CMIL.Emit(OpCodes.Add);
             }
             CMIL.Emit(OpCodes.Ldind_I);
-        }
-
-        /// <summary>
-        /// Writes the IL code to adjust the input color for ICC conversion (if necessary)
-        /// </summary>
-        /// <param name="colorType">The input color type</param>
-        private void AdjustInputColor(ColorSpaceType colorType)
-        {
-            //TODO: write adjustment code
-
-            switch (colorType)
-            {
-                case ColorSpaceType.CIELAB:
-                    // L / 100
-                    // (ab + 256) / 512
-                    break;
-                case ColorSpaceType.CIELUV:
-                    // L / 100
-                    // (uv + 256) / 512
-                    break;
-                case ColorSpaceType.YCbCr:
-                    // ?
-                    break;
-                case ColorSpaceType.HSV:
-                    // ?
-                    break;
-                case ColorSpaceType.HLS:
-                    // ?
-                    // switch L and S channel
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Writes the IL code to adjust the output color back to the range used in this library (if necessary)
-        /// </summary>
-        /// <param name="colorType">The output color type</param>
-        private void AdjustOutputColor(ColorSpaceType colorType)
-        {
-            //TODO: write adjustment code
         }
 
         /// <summary>
@@ -1708,7 +1643,130 @@ namespace ColorManager.ICC.Conversion
             }
             else return null;
         }
+
+
+        #region Adjust Colors
         
+        /// <summary>
+        /// Writes the IL code to adjust the input color for ICC conversion (if necessary)
+        /// </summary>
+        /// <param name="colorType">The input color type</param>
+        private void AdjustInputColor(ColorSpaceType colorType)
+        {
+            //TODO: write input adjustment code (YCbCr, HSV, HLS)
+            bool adjusted = true;
+
+            switch (colorType)
+            {
+                case ColorSpaceType.CIELUV:
+                case ColorSpaceType.CIELAB:
+                    //L / 100
+                    //(abuv + 256) / 512
+                    AdjustColor_Div(0, 100);
+                    AdjustColor_AddDiv(1, 256, 512);
+                    AdjustColor_AddDiv(2, 256, 512);
+                    break;
+                case ColorSpaceType.YCbCr:
+                    // ?
+                    break;
+                case ColorSpaceType.HSV:
+                    // ?
+                    break;
+                case ColorSpaceType.HLS:
+                    // ?
+                    // switch L and S channel
+                    break;
+
+                default:
+                    adjusted = false;
+                    break;
+            }
+
+            if (adjusted)
+            {
+                SwitchTempVar();
+                IsFirst = false;
+            }
+        }
+
+        /// <summary>
+        /// Writes the IL code to adjust the output color back to the range used in this library (if necessary)
+        /// </summary>
+        /// <param name="colorType">The output color type</param>
+        private void AdjustOutputColor(ColorSpaceType colorType)
+        {
+            //TODO: write output adjustment code
+            
+            IsLast = true;
+            switch (colorType)
+            {
+                //other color types?
+                case ColorSpaceType.CIELAB:
+                case ColorSpaceType.CIELUV:
+                    //L * 100
+                    //(abuv * 512) - 256
+                    AdjustColor_Mul(0, 100);
+                    AdjustColor_MulSub(1, 512, 256);
+                    AdjustColor_MulSub(2, 512, 256);
+                    break;
+
+                case ColorSpaceType.HLS:
+                    // ?
+                    // switch L and S channel
+                    break;
+            }
+        }
+
+        private void AdjustColor_Div(int index, double div)
+        {
+            //OutColor[index] = InColor[index] / div
+            WriteLdOutput(index);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, div);
+            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        private void AdjustColor_AddDiv(int index, double add, double div)
+        {
+            //OutColor[index] = (InColor[index] + add) / div
+            WriteLdOutput(index);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, add);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Ldc_R8, div);
+            CMIL.Emit(OpCodes.Div);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        private void AdjustColor_Mul(int index, double mul)
+        {
+            //OutColor[index] *= mul
+            WriteLdOutput(index);
+            CMIL.Emit(OpCodes.Dup);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, mul);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        private void AdjustColor_MulSub(int index, double mul, double sub)
+        {
+            //OutColor[index] = OutColor[index] * mul - sub
+            WriteLdOutput(index);
+            WriteLdOutput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, mul);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, sub);
+            CMIL.Emit(OpCodes.Sub);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        #endregion
+
         #endregion
     }
 }

@@ -11,7 +11,7 @@ namespace ColorManager.Conversion
         /// <summary>
         /// States if it's the first conversion within this <see cref="ConversionCreator"/>
         /// </summary>
-        protected bool IsFirst
+        protected virtual bool IsFirst
         {
             get { return _IsFirst && IsFirstG; }
             set { _IsFirst = value; }
@@ -19,7 +19,7 @@ namespace ColorManager.Conversion
         /// <summary>
         /// States if it's the last conversion within this <see cref="ConversionCreator"/>
         /// </summary>
-        protected bool IsLast
+        protected virtual bool IsLast
         {
             get { return _IsLast && IsLastG; }
             set { _IsLast = value; }
@@ -404,8 +404,17 @@ namespace ColorManager.Conversion
         /// </summary>
         protected void WriteCallPow()
         {
-            var pow = typeof(Math).GetMethod("Pow");
+            var pow = typeof(Math).GetMethod(nameof(Math.Pow));
             WriteMethodCall(pow, false);
+        }
+
+        /// <summary>
+        /// Writes the IL code to call the UMath.MultiplyMatrix_3x3_3x1(double*, double*, double*) method
+        /// </summary>
+        protected void WriteCallMultiplyMatrix_3x3_3x1()
+        {
+            var mm = typeof(UMath).GetMethod(nameof(UMath.MultiplyMatrix_3x3_3x1));
+            WriteMethodCall(mm, false);
         }
 
 
@@ -514,10 +523,12 @@ namespace ColorManager.Conversion
         /// Writes the IL code to load a ColVars field from data
         /// </summary>
         /// <param name="input">True to load the current input values, false to load the current output values</param>
-        private void WriteLdVarX(bool input)
+        private unsafe void WriteLdVarX(bool input)
         {
             bool tmp1 = input ? IsTempVar1 : !IsTempVar1;
-            string fname = "ColVars" + (tmp1 ? "1" : "2");//TODO: make typesafe
+            string fname;
+            if (tmp1) fname = nameof(ConversionData.ColVars1);
+            else fname = nameof(ConversionData.ColVars2);
 
             CMIL.Emit(OpCodes.Ldarg_3);
             FieldInfo fi = typeof(ConversionData).GetField(fname);

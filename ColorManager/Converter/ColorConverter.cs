@@ -232,7 +232,6 @@ namespace ColorManager
             }
         }
         
-
         private void SingleICCProfile(ILGenerator CMIL, ICCProfile profile)
         {
             var inType = InColor.GetType();
@@ -324,7 +323,7 @@ namespace ColorManager
         /// <summary>
         /// Converts the colors given in the constructor
         /// </summary>
-        public void Convert()
+        public virtual void Convert()
         {
             ConversionMethod(InValues, OutValues, Data);
         }
