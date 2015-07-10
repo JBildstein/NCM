@@ -41,6 +41,14 @@
   <ItemGroup>
     <Compile Include="Base\CAData.cs" />
     <Compile Include="Base\ChromaticAdaption.cs" />
+    <Compile Include="ColorDifference\ColorLabDifferenceCalculator.cs" />
+    <Compile Include="ColorDifference\ColorDifferenceCalculator.cs" />
+    <Compile Include="ColorDifference\ColorDifference_CIE76.cs" />
+    <Compile Include="ColorDifference\ColorDifference_CIE94.cs" />
+    <Compile Include="ColorDifference\ColorDifference_CIEDE2000.cs" />
+    <Compile Include="ColorDifference\ColorDifference_CMC.cs" />
+    <Compile Include="ColorDifference\ColorDifference_DIN99.cs" />
+    <Compile Include="ColorDifference\Helper\Enums.cs" />
     <Compile Include="Converter\ConversionCreator\ConversionCreator.cs" />
     <Compile Include="Converter\ConversionCreator\ConversionCreator_ICC.cs" />
     <Compile Include="Converter\ConversionCreator\ConversionCreator_Color.cs" />
