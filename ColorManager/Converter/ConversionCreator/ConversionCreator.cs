@@ -240,20 +240,53 @@ namespace ColorManager.Conversion
         /// Writes the IL code to load a pointer of an array at a specified zero-based index
         /// </summary>
         /// <param name="position">The index</param>
-        protected void WriteLdPtr(int position)
+        protected unsafe void WriteLdPtr(int position)
         {
             if (position == 0) return;
 
-            if (position == 1) CMIL.Emit(OpCodes.Ldc_I4_8);
-            else
-            {
-                var pos = position * 8;
-                if (pos < 256) CMIL.Emit(OpCodes.Ldc_I4_S, pos);
-                else CMIL.Emit(OpCodes.Ldc_I4, pos);
-            }
-
+            WriteLdInt(position * IntPtr.Size);
             CMIL.Emit(OpCodes.Conv_I);
             CMIL.Emit(OpCodes.Add);
+        }
+
+        /// <summary>
+        /// Writes the IL code to load an integer value (depending on size of value)
+        /// </summary>
+        /// <param name="value">The value to load</param>
+        protected void WriteLdInt(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    CMIL.Emit(OpCodes.Ldc_I4_1);
+                    break;
+                case 2:
+                    CMIL.Emit(OpCodes.Ldc_I4_2);
+                    break;
+                case 3:
+                    CMIL.Emit(OpCodes.Ldc_I4_3);
+                    break;
+                case 4:
+                    CMIL.Emit(OpCodes.Ldc_I4_4);
+                    break;
+                case 5:
+                    CMIL.Emit(OpCodes.Ldc_I4_5);
+                    break;
+                case 6:
+                    CMIL.Emit(OpCodes.Ldc_I4_6);
+                    break;
+                case 7:
+                    CMIL.Emit(OpCodes.Ldc_I4_7);
+                    break;
+                case 8:
+                    CMIL.Emit(OpCodes.Ldc_I4_8);
+                    break;
+
+                default:
+                    if (value < 256) CMIL.Emit(OpCodes.Ldc_I4_S, value);
+                    else CMIL.Emit(OpCodes.Ldc_I4, value);
+                    break;
+            }
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace ColorManager.ColorDifference
 {
-    public unsafe abstract class ColorDifferenceCalculator
+    public unsafe abstract class ColorDifferenceCalculator : IDisposable
     {
         #region Variables
 

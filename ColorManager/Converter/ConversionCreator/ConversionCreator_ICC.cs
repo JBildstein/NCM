@@ -1536,47 +1536,7 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldarg_3);
             FieldInfo fi = typeof(ConversionData).GetField(fname);
             CMIL.Emit(OpCodes.Ldfld, fi);
-            //TODO: this could probably be optimized (similar to WriteLdPtr) because sizeof(double*) should always be the same (=InPtr.Size) at runtime
-            if (position != 0)
-            {
-                switch (position)
-                {
-                    case 1:
-                        CMIL.Emit(OpCodes.Ldc_I4_1);
-                        break;
-                    case 2:
-                        CMIL.Emit(OpCodes.Ldc_I4_2);
-                        break;
-                    case 3:
-                        CMIL.Emit(OpCodes.Ldc_I4_3);
-                        break;
-                    case 4:
-                        CMIL.Emit(OpCodes.Ldc_I4_4);
-                        break;
-                    case 5:
-                        CMIL.Emit(OpCodes.Ldc_I4_5);
-                        break;
-                    case 6:
-                        CMIL.Emit(OpCodes.Ldc_I4_6);
-                        break;
-                    case 7:
-                        CMIL.Emit(OpCodes.Ldc_I4_7);
-                        break;
-                    case 8:
-                        CMIL.Emit(OpCodes.Ldc_I4_8);
-                        break;
-
-                    default:
-                        if (position < 256) CMIL.Emit(OpCodes.Ldc_I4_S, position);
-                        else CMIL.Emit(OpCodes.Ldc_I4, position);
-                        break;
-                }
-
-                CMIL.Emit(OpCodes.Conv_I);
-                CMIL.Emit(OpCodes.Sizeof, typeof(double*));
-                CMIL.Emit(OpCodes.Mul);
-                CMIL.Emit(OpCodes.Add);
-            }
+            WriteLdPtr(position);
             CMIL.Emit(OpCodes.Ldind_I);
         }
 
