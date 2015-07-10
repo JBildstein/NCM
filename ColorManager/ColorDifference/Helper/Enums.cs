@@ -6,7 +6,13 @@ namespace ColorManager.ColorDifference
     /// </summary>
     public enum CIE94DifferenceMethod
     {
+        /// <summary>
+        /// SL=1; K1=0.045; K2=0.015;
+        /// </summary>
         GraphicArts,
+        /// <summary>
+        /// SL=2; K1=0.048; K2=0.014;
+        /// </summary>
         Textiles,
     }
 
