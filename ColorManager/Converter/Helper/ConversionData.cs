@@ -9,7 +9,7 @@ namespace ColorManager.Conversion
     /// </summary>
     public unsafe class ConversionData : IDisposable
     {
-        #region Public/Internal Variables
+        #region Public Variables
 
         /// <summary>
         /// First array of color values for temporary conversion storage.
@@ -120,7 +120,8 @@ namespace ColorManager.Conversion
         private GCHandle CAMatrixHandle;
 
         #endregion
-        
+
+        #region Methods
 
         /// <summary>
         /// Creates a new instance of the <see cref="ConversionData"/> class
@@ -196,6 +197,8 @@ namespace ColorManager.Conversion
                 OutICCData = (double**)outProfileData.DataPointer;
             }
         }
+
+        #endregion
 
         #region Dispose
 

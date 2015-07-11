@@ -130,7 +130,6 @@
     <Compile Include="ICC\Subclasses\CompareHelper.cs" />
     <Compile Include="ICC\Subclasses\Curves.cs" />
     <Compile Include="ICC\Subclasses\Exceptions.cs" />
-    <Compile Include="ICC\Subclasses\MatrixMath.cs" />
     <Compile Include="ICC\Subclasses\Numbers.cs" />
     <Compile Include="ICC\Subclasses\Tables.cs" />
     <Compile Include="ICC\Subclasses\Various.cs" />

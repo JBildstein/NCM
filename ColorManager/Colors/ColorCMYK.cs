@@ -36,7 +36,7 @@ namespace ColorManager
             get { return this[3]; }
             set { this[3] = value; }
         }
-        //TODO: check min/max values of ColorCMYK
+
         public override string Name
         {
             get { return "CMYK"; }

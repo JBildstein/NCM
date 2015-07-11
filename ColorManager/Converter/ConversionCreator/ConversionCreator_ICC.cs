@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 using ColorManager.Conversion;
@@ -145,16 +144,18 @@ namespace ColorManager.ICC.Conversion
                     break;
 
                 case ConvType.DataToData:
-                    AdjustInputColor(Profile.DataColorspaceType);
-                    ConvertICC_DataData();
-                    AdjustOutputColor(Profile.DataColorspaceType);
                     throw new NotImplementedException();
+                    //AdjustInputColor(Profile.DataColorspaceType);
+                    //ConvertICC_DataData();
+                    //AdjustOutputColor(Profile.DataColorspaceType);
+                    //break;
 
                 case ConvType.PCSToPCS:
-                    AdjustInputColor(Profile.PCSType);
-                    ConvertICC_PCSPCS();
-                    AdjustOutputColor(Profile.PCSType);
                     throw new NotImplementedException();
+                    //AdjustInputColor(Profile.PCSType);
+                    //ConvertICC_PCSPCS();
+                    //AdjustOutputColor(Profile.PCSType);
+                    //break;
 
                 default:
                     throw new ConversionSetupException("Not able to perform conversion");
@@ -1203,7 +1204,7 @@ namespace ColorManager.ICC.Conversion
             else
             {
                 WriteLUT(lut.Values.Length, index);
-                ICCData.Add(lut.Values.Select(t => t / 255d).ToArray());
+                ICCData.Add(lut.Values.Select(t => t / (double)byte.MaxValue).ToArray());
             }
         }
 
@@ -1217,7 +1218,7 @@ namespace ColorManager.ICC.Conversion
         {
             LUT16[] InCurve = lut.InputValues;
             LUT16[] OutCurve = lut.OutputValues;
-            double[] Matrix = new double[9]
+            double[] Matrix = new double[9]//TODO: matrix values might have to be divided by 255
                 {
                     lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
                     lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
@@ -1258,7 +1259,7 @@ namespace ColorManager.ICC.Conversion
             else
             {
                 WriteLUT(lut.Values.Length, index);
-                ICCData.Add(lut.Values.Select(t => t / 65535d).ToArray());
+                ICCData.Add(lut.Values.Select(t => t / (double)ushort.MaxValue).ToArray());
             }
         }
 
@@ -1355,6 +1356,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
+        //TODO: unsure if LUT and CLUT lookup is correct (floor or normal rounding?)
 
         /// <summary>
         /// Writes the IL code for a LUT
@@ -1370,6 +1372,11 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, length - 1d);
             CMIL.Emit(OpCodes.Mul);
+
+            //Normal rounding
+            //CMIL.Emit(OpCodes.Ldc_R8, 0.5);
+            //CMIL.Emit(OpCodes.Add);
+
             CMIL.Emit(OpCodes.Conv_I4);
             CMIL.Emit(OpCodes.Conv_I);
             CMIL.Emit(OpCodes.Ldc_I4_8);
@@ -1405,6 +1412,7 @@ namespace ColorManager.ICC.Conversion
                 CMIL.Emit(OpCodes.Ldc_R8, (double)lut.GridPointCount[i]);
                 CMIL.Emit(OpCodes.Mul);
 
+                //Normal rounding
                 //CMIL.Emit(OpCodes.Ldc_R8, 0.5);
                 //CMIL.Emit(OpCodes.Add);
 
@@ -1447,7 +1455,7 @@ namespace ColorManager.ICC.Conversion
                     vals[i] = new double[lut8.Values.Length];
                     for (int j = 0; j < vals[i].Length; j++)
                     {
-                        vals[i][j] = lut8.Values[j][i] / 255d;
+                        vals[i][j] = lut8.Values[j][i] / (double)byte.MaxValue;
                     }
                 }
                 ICCData.AddRange(vals);
@@ -1463,7 +1471,7 @@ namespace ColorManager.ICC.Conversion
                     vals[i] = new double[lut16.Values.Length];
                     for (int j = 0; j < vals[i].Length; j++)
                     {
-                        vals[i][j] = lut16.Values[j][i] / 65535d;
+                        vals[i][j] = lut16.Values[j][i] / (double)ushort.MaxValue;
                     }
                 }
                 ICCData.AddRange(vals);
@@ -1519,8 +1527,7 @@ namespace ColorManager.ICC.Conversion
         }
 
         #endregion
-
-
+        
         #region Subroutines
 
         /// <summary>
@@ -1533,9 +1540,7 @@ namespace ColorManager.ICC.Conversion
             if (IsInput) fname = nameof(ConversionData.InICCData);
             else fname = nameof(ConversionData.OutICCData);
 
-            CMIL.Emit(OpCodes.Ldarg_3);
-            FieldInfo fi = typeof(ConversionData).GetField(fname);
-            CMIL.Emit(OpCodes.Ldfld, fi);
+            WriteDataLdfld(fname);
             WriteLdPtr(position);
             CMIL.Emit(OpCodes.Ldind_I);
         }
@@ -1603,8 +1608,7 @@ namespace ColorManager.ICC.Conversion
             }
             else return null;
         }
-
-
+        
         #region Adjust Colors
         
         /// <summary>
@@ -1613,7 +1617,6 @@ namespace ColorManager.ICC.Conversion
         /// <param name="colorType">The input color type</param>
         private void AdjustInputColor(ColorSpaceType colorType)
         {
-            //TODO: write input adjustment code (YCbCr, HSV, HLS)
             bool adjusted = true;
 
             switch (colorType)
@@ -1626,15 +1629,18 @@ namespace ColorManager.ICC.Conversion
                     AdjustColor_AddDiv(1, 256, 512);
                     AdjustColor_AddDiv(2, 256, 512);
                     break;
-                case ColorSpaceType.YCbCr:
-                    // ?
-                    break;
+                    
                 case ColorSpaceType.HSV:
-                    // ?
+                    //H / 360
+                    AdjustColor_Div(0, 360);
                     break;
+
                 case ColorSpaceType.HLS:
-                    // ?
-                    // switch L and S channel
+                    //H / 360
+                    AdjustColor_Div(0, 360);
+                    //Switch S and L channel
+                    Adjust_SwitchChannel(1, 2, true);
+                    WriteAssignSingle(0);
                     break;
 
                 default:
@@ -1654,13 +1660,10 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         /// <param name="colorType">The output color type</param>
         private void AdjustOutputColor(ColorSpaceType colorType)
-        {
-            //TODO: write output adjustment code
-            
+        {            
             IsLast = true;
             switch (colorType)
             {
-                //other color types?
                 case ColorSpaceType.CIELAB:
                 case ColorSpaceType.CIELUV:
                     //L * 100
@@ -1669,14 +1672,26 @@ namespace ColorManager.ICC.Conversion
                     AdjustColor_MulSub(1, 512, 256);
                     AdjustColor_MulSub(2, 512, 256);
                     break;
+                    
+                case ColorSpaceType.HSV:
+                    //H * 360
+                    AdjustColor_Mul(0, 360);
+                    break;
 
                 case ColorSpaceType.HLS:
-                    // ?
-                    // switch L and S channel
+                    //H * 360
+                    AdjustColor_Mul(0, 360);
+                    //Switch S and L channel
+                    Adjust_SwitchChannel(1, 2, false);
                     break;
             }
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust a color with division: x / div
+        /// </summary>
+        /// <param name="index">Zero based channel index</param>
+        /// <param name="div">The number to divide with</param>
         private void AdjustColor_Div(int index, double div)
         {
             //OutColor[index] = InColor[index] / div
@@ -1688,6 +1703,12 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Stind_R8);
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust a color with addition and division: (x + add) / div
+        /// </summary>
+        /// <param name="index">Zero based channel index</param>
+        /// <param name="add">The number to add</param>
+        /// <param name="div">The number to divide with</param>
         private void AdjustColor_AddDiv(int index, double add, double div)
         {
             //OutColor[index] = (InColor[index] + add) / div
@@ -1701,6 +1722,11 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Stind_R8);
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust the output color with multiplication: x * mul
+        /// </summary>
+        /// <param name="index">Zero based channel index</param>
+        /// <param name="mul">The number to multiply with</param>
         private void AdjustColor_Mul(int index, double mul)
         {
             //OutColor[index] *= mul
@@ -1712,6 +1738,12 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Stind_R8);
         }
 
+        /// <summary>
+        /// Writes the IL code to adjust the output color with multiplication and subtraction: x * mul - sub
+        /// </summary>
+        /// <param name="index">Zero based channel index</param>
+        /// <param name="mul">The number to multiply with</param>
+        /// <param name="sub">The number to subtract</param>
         private void AdjustColor_MulSub(int index, double mul, double sub)
         {
             //OutColor[index] = OutColor[index] * mul - sub
@@ -1723,6 +1755,50 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldc_R8, sub);
             CMIL.Emit(OpCodes.Sub);
             CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        /// <summary>
+        /// Writes the IL code to switch two channels
+        /// </summary>
+        /// <param name="index1">Index of the first channel</param>
+        /// <param name="index2">Index of the second channel</param>
+        /// <param name="input">True to change an input color, false to change an output color</param>
+        private void Adjust_SwitchChannel(int index1, int index2, bool input)
+        {
+            if (input)
+            {
+                //OutValues[index1] = InValues[index2];
+                WriteLdOutput(index1);
+                WriteLdInput(index2);
+                CMIL.Emit(OpCodes.Ldind_R8);
+                CMIL.Emit(OpCodes.Stind_R8);
+
+                //OutValues[index2] = InValues[index1];
+                WriteLdOutput(index2);
+                WriteLdInput(index1);
+                CMIL.Emit(OpCodes.Ldind_R8);
+                CMIL.Emit(OpCodes.Stind_R8);
+            }
+            else
+            {
+                //Data.Vars[0] = OutValues[index1];
+                WriteDataLdfld(nameof(ConversionData.Vars));
+                WriteLdOutput(index1);
+                CMIL.Emit(OpCodes.Ldind_R8);
+                CMIL.Emit(OpCodes.Stind_R8);
+
+                //OutValues[index1] = OutValues[index2];
+                WriteLdOutput(index1);
+                WriteLdOutput(index2);
+                CMIL.Emit(OpCodes.Ldind_R8);
+                CMIL.Emit(OpCodes.Stind_R8);
+
+                //OutValues[index2] = Data.Vars[0];
+                WriteLdOutput(index2);
+                WriteDataLdfld(nameof(ConversionData.Vars));
+                CMIL.Emit(OpCodes.Ldind_R8);
+                CMIL.Emit(OpCodes.Stind_R8);
+            }
         }
 
         #endregion

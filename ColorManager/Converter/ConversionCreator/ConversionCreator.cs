@@ -433,6 +433,17 @@ namespace ColorManager.Conversion
         }
 
         /// <summary>
+        /// Writes the IL code to load a field from the Data parameter
+        /// </summary>
+        /// <param name="field">The name of the field</param>
+        protected void WriteDataLdfld(string field)
+        {
+            CMIL.Emit(OpCodes.Ldarg_3);
+            FieldInfo fi = typeof(ConversionData).GetField(field);
+            CMIL.Emit(OpCodes.Ldfld, fi);
+        }
+
+        /// <summary>
         /// Writes the IL code to call the Math.Pow(double, double) method
         /// </summary>
         protected void WriteCallPow()
@@ -563,9 +574,7 @@ namespace ColorManager.Conversion
             if (tmp1) fname = nameof(ConversionData.ColVars1);
             else fname = nameof(ConversionData.ColVars2);
 
-            CMIL.Emit(OpCodes.Ldarg_3);
-            FieldInfo fi = typeof(ConversionData).GetField(fname);
-            CMIL.Emit(OpCodes.Ldfld, fi);
+            WriteDataLdfld(fname);
         }
 
         #endregion

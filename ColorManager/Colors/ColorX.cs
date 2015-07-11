@@ -5,7 +5,6 @@ namespace ColorManager
 {
     public sealed class ColorX : Color
     {
-        //TODO: check min/max values of ColorX
         public override string Name
         {
             get { return "Color " + ChannelCount; }
@@ -90,10 +89,10 @@ namespace ColorManager
             int c = this.Values.Length;
 
             min = new double[this.Values.Length];
-            for (int i = 0; i < c; i++) min[i] = 0;
+            for (int i = 0; i < c; i++) min[i] = 0d;
 
             max = new double[this.Values.Length];
-            for (int i = 0; i < c; i++) max[i] = 1;
+            for (int i = 0; i < c; i++) max[i] = 1d;
 
             sNames = new string[this.Values.Length];
             for (int i = 0; i < c; i++) sNames[i] = "C" + (i + 1);

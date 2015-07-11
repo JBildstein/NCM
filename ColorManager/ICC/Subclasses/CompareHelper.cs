@@ -2,7 +2,7 @@
 
 namespace ColorManager.ICC
 {
-    public static unsafe class CMP
+    internal static unsafe class CMP
     {
         #region Compare One Dimensional Arrays
 
