@@ -129,46 +129,7 @@ namespace ColorManager.ICC
                 else return (uint)(data[start++] | (data[start++] << 8) | (data[start++] << 16) | (data[start++] << 24));
             }
         }
-
-
-        /// <summary>
-        /// Reads an ushort without checking for endianness
-        /// </summary>
-        /// <returns>the value</returns>
-        private ushort ReadUInt16_Direct()
-        {
-            unchecked { return (ushort)(Data[Index++] | (Data[Index++] << 8)); }
-        }
-
-        /// <summary>
-        /// Reads a short without checking for endianness
-        /// </summary>
-        /// <returns>the value</returns>
-        private short ReadInt16_Direct()
-        {
-            unchecked { return (short)(Data[Index++] | (Data[Index++] << 8)); }
-        }
-
-        /// <summary>
-        /// Reads an uint without checking for endianness
-        /// </summary>
-        /// <returns>the value</returns>
-        private uint ReadUInt32_Direct()
-        {
-            unchecked { return (uint)(Data[Index++] | (Data[Index++] << 8) | (Data[Index++] << 16) | (Data[Index++] << 24)); }
-        }
-
-        /// <summary>
-        /// Reads an int without checking for endianness
-        /// </summary>
-        /// <returns>the value</returns>
-        private int ReadInt32_Direct()
-        {
-            unchecked { return (int)(Data[Index++] | (Data[Index++] << 8) | (Data[Index++] << 16) | (Data[Index++] << 24)); }
-        }
-
-
-
+        
         /// <summary>
         /// Reads an ushort
         /// </summary>
@@ -188,11 +149,7 @@ namespace ColorManager.ICC
         /// <returns>the value</returns>
         private short ReadInt16()
         {
-            unchecked
-            {
-                if (LittleEndian) return (short)((Data[Index++] << 8) | Data[Index++]);
-                else return (short)(Data[Index++] | (Data[Index++] << 8));
-            }
+            unchecked { return (short)(ReadUInt16() - ushort.MaxValue - 1); }
         }
 
         /// <summary>
@@ -214,11 +171,7 @@ namespace ColorManager.ICC
         /// <returns>the value</returns>
         private int ReadInt32()
         {
-            unchecked
-            {
-                if (LittleEndian) return (int)((Data[Index++] << 24) | (Data[Index++] << 16) | (Data[Index++] << 8) | Data[Index++]);
-                else return (int)(Data[Index++] | (Data[Index++] << 8) | (Data[Index++] << 16) | (Data[Index++] << 24));
-            }
+            unchecked { return (int)(ReadUInt32() - uint.MaxValue - 1); }
         }
 
         /// <summary>
@@ -240,11 +193,7 @@ namespace ColorManager.ICC
         /// <returns>the value</returns>
         private long ReadInt64()
         {
-            unchecked
-            {
-                if (LittleEndian) return (long)ReadUInt32() << 32 | ReadUInt32();
-                else return ReadUInt32() | (long)ReadUInt32() << 32;
-            }
+            unchecked { return (long)(ReadUInt64() - ulong.MaxValue - 1); }
         }
 
         /// <summary>
@@ -254,7 +203,7 @@ namespace ColorManager.ICC
         private unsafe float ReadSingle()
         {
             int val = ReadInt32();
-            return *(float*)&val;
+            return *(&val);
         }
 
         /// <summary>
@@ -264,7 +213,7 @@ namespace ColorManager.ICC
         private unsafe double ReadDouble()
         {
             long val = ReadInt64();
-            return *(double*)&val;
+            return *(&val);
         }
 
 
@@ -295,11 +244,7 @@ namespace ColorManager.ICC
         /// <returns>The number as double</returns>
         private double ReadFix16()
         {
-            short value = ReadInt16_Direct();
-            double fraction = ReadUInt16() / 65536d;
-
-            if (value < 0) return -(Math.Abs(value) + fraction);
-            else return value + fraction;
+            return ReadInt32() / 65536d;
         }
 
         /// <summary>
@@ -308,7 +253,7 @@ namespace ColorManager.ICC
         /// <returns>The number as double</returns>
         private double ReadUFix16()
         {
-            return ReadInt16_Direct() + ReadUInt16() / 65536d;
+            return ReadUInt32() / 65536d;
         }
 
         /// <summary>
@@ -317,11 +262,7 @@ namespace ColorManager.ICC
         /// <returns>The number as double</returns>
         private double ReadU1Fix15()
         {
-            unchecked
-            {
-                ushort val = ReadUInt16_Direct();
-                return (val >> 15) + ((val & 0x7FFFF) / 32768d);
-            }
+            return ReadUInt16() / 32768d;
         }
 
         /// <summary>
@@ -681,11 +622,11 @@ namespace ColorManager.ICC
             var outChCount = Data[AIndex(1)];
             AIndex(2);//2 bytes reserved
 
-            var bCurveOffset = ReadUInt32();
-            var matrixOffset = ReadUInt32();
-            var mCurveOffset = ReadUInt32();
-            var CLUTOffset = ReadUInt32();
-            var aCurveOffset = ReadUInt32();
+            uint bCurveOffset = ReadUInt32();
+            uint matrixOffset = ReadUInt32();
+            uint mCurveOffset = ReadUInt32();
+            uint CLUTOffset = ReadUInt32();
+            uint aCurveOffset = ReadUInt32();
 
             TagDataEntry[] bCurve = null;
             TagDataEntry[] mCurve = null;
@@ -1350,7 +1291,7 @@ namespace ColorManager.ICC
         private TagDataEntry GetTagDataEntry(TagTableEntry info)
         {
             Index = (int)info.Offset;
-            var t = ReadTagDataEntryHeader();
+            TypeSignature t = ReadTagDataEntryHeader();
 
             switch (t)
             {
