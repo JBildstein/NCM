@@ -3,13 +3,14 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 using ColorManager.Conversion;
+using System.Reflection;
 
 namespace ColorManager.ICC.Conversion
 {
     public sealed unsafe class ConversionCreator_ICC : ConversionCreator
     {
         #region Variables
-        
+
         private ICCProfile Profile;
 
         private bool? IsInPCS
@@ -145,17 +146,17 @@ namespace ColorManager.ICC.Conversion
 
                 case ConvType.DataToData:
                     throw new NotImplementedException();
-                    //AdjustInputColor(Profile.DataColorspaceType);
-                    //ConvertICC_DataData();
-                    //AdjustOutputColor(Profile.DataColorspaceType);
-                    //break;
+                //AdjustInputColor(Profile.DataColorspaceType);
+                //ConvertICC_DataData();
+                //AdjustOutputColor(Profile.DataColorspaceType);
+                //break;
 
                 case ConvType.PCSToPCS:
                     throw new NotImplementedException();
-                    //AdjustInputColor(Profile.PCSType);
-                    //ConvertICC_PCSPCS();
-                    //AdjustOutputColor(Profile.PCSType);
-                    //break;
+                //AdjustInputColor(Profile.PCSType);
+                //ConvertICC_PCSPCS();
+                //AdjustOutputColor(Profile.PCSType);
+                //break;
 
                 default:
                     throw new ConversionSetupException("Not able to perform conversion");
@@ -240,13 +241,12 @@ namespace ColorManager.ICC.Conversion
 
         #region Profile Conversion Type
 
+        //TODO: recheck profile conversion types (#8 page 25+)
+
         private bool IsNComponentLUT()
         {
             switch (Profile.Class)
             {
-                case ProfileClassName.InputDevice:
-                    return Profile.HasTag(TagSignature.AToB0);
-
                 case ProfileClassName.DisplayDevice:
                     return Profile.HasTag(TagSignature.AToB0) && Profile.HasTag(TagSignature.BToA0);
 
@@ -258,46 +258,29 @@ namespace ColorManager.ICC.Conversion
                         && Profile.HasTag(TagSignature.Gamut);
 
                 default:
-                    return false;
+                    return Profile.HasTag(TagSignature.AToB0);
             }
         }
 
         private bool IsMonochrome()
         {
-            switch (Profile.Class)
-            {
-                case ProfileClassName.InputDevice:
-                case ProfileClassName.DisplayDevice:
-                case ProfileClassName.OutputDevice:
-                    return Profile.HasTag(TagSignature.GrayTRC);
-
-                default:
-                    return false;
-            }
+            return Profile.HasTag(TagSignature.GrayTRC);
         }
 
         private bool IsThreeComponentMatrix()
         {
-            switch (Profile.Class)
-            {
-                case ProfileClassName.InputDevice:
-                case ProfileClassName.DisplayDevice:
-                    return Profile.HasTag(TagSignature.RedMatrixColumn)
-                        && Profile.HasTag(TagSignature.GreenMatrixColumn)
-                        && Profile.HasTag(TagSignature.BlueMatrixColumn)
-                        && Profile.HasTag(TagSignature.RedTRC)
-                        && Profile.HasTag(TagSignature.GreenTRC)
-                        && Profile.HasTag(TagSignature.BlueTRC);
-
-                default:
-                    return false;
-            }
+            return Profile.HasTag(TagSignature.RedMatrixColumn)
+                && Profile.HasTag(TagSignature.GreenMatrixColumn)
+                && Profile.HasTag(TagSignature.BlueMatrixColumn)
+                && Profile.HasTag(TagSignature.RedTRC)
+                && Profile.HasTag(TagSignature.GreenTRC)
+                && Profile.HasTag(TagSignature.BlueTRC);
         }
 
         #endregion
 
         //TODO: include chromatic adaption if CATag is existing
-        //TODO: check for media white/black point tag and use it if existing
+        //TODO: check for media white/black point tag and use it if existing and appropriate
 
         #region PCS -> Data
 
@@ -677,7 +660,7 @@ namespace ColorManager.ICC.Conversion
         }
 
         #endregion
-        
+
         #region Parametric Curve
 
         /// <summary>
@@ -746,7 +729,7 @@ namespace ColorManager.ICC.Conversion
 
 
         #region IL for Parametric Curve
-        
+
         private void WriteParametricCurve_Type0(ParametricCurve curve, int index)
         {
             //outColor[index] = Math.Pow(inColor[index], curve.g);
@@ -770,7 +753,7 @@ namespace ColorManager.ICC.Conversion
             //if (inColor[index] >= -curve.b / curve.a)
             WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
-            CMIL.Emit(OpCodes.Ldc_R8, -curve.b/ curve.a);
+            CMIL.Emit(OpCodes.Ldc_R8, -curve.b / curve.a);
             CMIL.Emit(OpCodes.Blt_Un, ifLabel);
 
             //outColor[index] = Math.Pow(curve.a * inColor[index] + curve.b, curve.g);
@@ -1102,14 +1085,14 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a curve segment
         /// </summary>
         /// <param name="segment">The curve segment</param>
-        private void WriteCurveSegment(CurveSegment segment)
+        private void WriteCurveSegment(CurveSegment segment, int index)
         {
             var formula = segment as FormulaCurveElement;
-            if (formula != null) WriteFormulaCurveSegment(formula);
+            if (formula != null) WriteFormulaCurveSegment(formula, index);
             else
             {
                 var sampled = segment as SampledCurveElement;
-                if (sampled != null) WriteSampledCurveSegment(sampled);
+                if (sampled != null) WriteSampledCurveSegment(sampled, index);
                 else throw new InvalidProfileException();
             }
         }
@@ -1118,34 +1101,119 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a formula curve segment
         /// </summary>
         /// <param name="segment">The formula curve segment</param>
-        private void WriteFormulaCurveSegment(FormulaCurveElement segment)
+        private void WriteFormulaCurveSegment(FormulaCurveElement segment, int index)
         {
-            //TODO: WriteFormulaCurveSegment
-
-            /*switch (type)
+            switch (segment.type)
             {
-                case 0: return Math.Pow(a * X + b, gamma) + c;
-                case 1: return a * Math.Log10(b * Math.Pow(X, gamma) + c) + d;
-                case 2: return a * Math.Pow(b, c * X + d) + e;
-                default: return 0;
-            }*/
+                case 0:
+                    WriteFormulaCurveSegment_Type0(segment, index);
+                    break;
+                case 1:
+                    WriteFormulaCurveSegment_Type1(segment, index);
+                    break;
+                case 2:
+                    WriteFormulaCurveSegment_Type2(segment, index);
+                    break;
+                default:
+                    throw new InvalidProfileException("FormulaCurveElement has an unknown type.");
+            }
         }
+
+        #region Formula Curve Segment
+
+        //TODO: test formula curve segment implementation
+
+        private void WriteFormulaCurveSegment_Type0(FormulaCurveElement segment, int index)
+        {
+            //OutColor[index] = Math.Pow(InColor[index] * segment.a + segment.b, segment.gamma) + segment.c;
+
+            WriteLdOutput(index);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.a);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.b);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.gamma);
+            WriteCallPow();
+            CMIL.Emit(OpCodes.Ldc_R8, segment.c);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        private void WriteFormulaCurveSegment_Type1(FormulaCurveElement segment, int index)
+        {
+            //OutColor[index] = Math.Log10(segment.b * Math.Pow(InColor[index], segment.gamma) + segment.c) * segment.a + segment.d;
+
+            WriteLdOutput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.b);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.gamma);
+            WriteCallPow();
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.c);
+            CMIL.Emit(OpCodes.Add);
+            MethodInfo m = typeof(Math).GetMethod(nameof(Math.Log10));
+            WriteMethodCall(m, false);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.a);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.d);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        private void WriteFormulaCurveSegment_Type2(FormulaCurveElement segment, int index)
+        {
+            //OutColor[index] = Math.Pow(segment.b, InColor[index] * segment.c + segment.d) * segment.a + segment.e;
+
+            WriteLdOutput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.b);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.c);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.d);
+            CMIL.Emit(OpCodes.Add);
+            WriteCallPow();
+            CMIL.Emit(OpCodes.Ldc_R8, segment.a);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.e);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Stind_R8);
+        }
+
+        #endregion
 
         /// <summary>
         /// Writes the IL code for a sampled curve segment
         /// </summary>
         /// <param name="segment">The sampled curve segment</param>
-        private void WriteSampledCurveSegment(SampledCurveElement segment)
+        private void WriteSampledCurveSegment(SampledCurveElement segment, int index)
         {
-            //TODO: WriteSampledCurveESegment
+            //TODO: WriteSampledCurveSegment is probably incorrect. inColor[index] goes from 0-1 while this is a segment >=0 - <=1
 
-            /*double t = X * (CurveEntries.Length - 1);
-            if (t % 1 != 0)
-            {
-                int i = (int)Math.Floor(t);
-                return CurveEntries[i] + ((CurveEntries[i + 1] - CurveEntries[i]) * (t % 1));
-            }
-            else { return CurveEntries[(int)t]; }*/
+            //outColor[index] = lut.Values[(int)(inColor[index] * lut.Length - 1)];
+            WriteLdOutput(index);
+            WriteLdICCData(DataPos);
+            WriteLdInput(index);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Ldc_R8, segment.CurveEntries.Length - 1d);
+            CMIL.Emit(OpCodes.Mul);
+
+            //Normal rounding
+            //CMIL.Emit(OpCodes.Ldc_R8, 0.5);
+            //CMIL.Emit(OpCodes.Add);
+
+            CMIL.Emit(OpCodes.Conv_I4);
+            CMIL.Emit(OpCodes.Conv_I);
+            CMIL.Emit(OpCodes.Ldc_I4_8);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            CMIL.Emit(OpCodes.Stind_R8);
+
+            ICCData.Add(segment.CurveEntries);
         }
 
         #endregion
@@ -1163,7 +1231,7 @@ namespace ColorManager.ICC.Conversion
         {
             LUT8[] InCurve = lut.InputValues;
             LUT8[] OutCurve = lut.OutputValues;
-            double[] Matrix = new double[9]//TODO: matrix values might have to be divided by 255
+            double[] Matrix = new double[9]
                 {
                     lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
                     lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
@@ -1218,7 +1286,7 @@ namespace ColorManager.ICC.Conversion
         {
             LUT16[] InCurve = lut.InputValues;
             LUT16[] OutCurve = lut.OutputValues;
-            double[] Matrix = new double[9]//TODO: matrix values might have to be divided by 255
+            double[] Matrix = new double[9]
                 {
                     lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
                     lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
@@ -1356,7 +1424,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
-        //TODO: unsure if LUT and CLUT lookup is correct (floor or normal rounding?)
+        //TODO: LUT and CLUT lookup doesn't seem to be completely correct
 
         /// <summary>
         /// Writes the IL code for a LUT
@@ -1385,7 +1453,7 @@ namespace ColorManager.ICC.Conversion
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Stind_R8);
         }
-        
+
         /// <summary>
         /// Writes the IL code for a CLUT
         /// </summary>
@@ -1395,13 +1463,13 @@ namespace ColorManager.ICC.Conversion
             #region IL Code
 
             /* int idx = (int)(inColor[2] * lut.GridPointCount[2])
-                       + (int)(inColor[1] * lut.GridPointCount[1]) * lut.GridPointCount[2]
-                       + (int)(inColor[0] * lut.GridPointCount[0]) * lut.GridPointCount[2] * lut.GridPointCount[1];
-                
-                    outColor[0] = data.InICCData[position + 0][idx];
-                    outColor[1] = data.InICCData[position + 1][idx];
-                    outColor[2] = data.InICCData[position + 2][idx];
-                    outColor[3] = data.InICCData[position + 3][idx];
+                   + (int)(inColor[1] * lut.GridPointCount[1]) * lut.GridPointCount[2]
+                   + (int)(inColor[0] * lut.GridPointCount[0]) * lut.GridPointCount[1] * lut.GridPointCount[2];
+
+                outColor[0] = data.InICCData[position + 0][idx];
+                outColor[1] = data.InICCData[position + 1][idx];
+                outColor[2] = data.InICCData[position + 2][idx];
+                outColor[3] = data.InICCData[position + 3][idx];
             */
 
             int gpc = 1;
@@ -1527,7 +1595,7 @@ namespace ColorManager.ICC.Conversion
         }
 
         #endregion
-        
+
         #region Subroutines
 
         /// <summary>
@@ -1608,9 +1676,9 @@ namespace ColorManager.ICC.Conversion
             }
             else return null;
         }
-        
+
         #region Adjust Colors
-        
+
         /// <summary>
         /// Writes the IL code to adjust the input color for ICC conversion (if necessary)
         /// </summary>
@@ -1629,7 +1697,7 @@ namespace ColorManager.ICC.Conversion
                     AdjustColor_AddDiv(1, 256, 512);
                     AdjustColor_AddDiv(2, 256, 512);
                     break;
-                    
+
                 case ColorSpaceType.HSV:
                     //H / 360
                     AdjustColor_Div(0, 360);
@@ -1660,7 +1728,7 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         /// <param name="colorType">The output color type</param>
         private void AdjustOutputColor(ColorSpaceType colorType)
-        {            
+        {
             IsLast = true;
             switch (colorType)
             {
@@ -1672,7 +1740,7 @@ namespace ColorManager.ICC.Conversion
                     AdjustColor_MulSub(1, 512, 256);
                     AdjustColor_MulSub(2, 512, 256);
                     break;
-                    
+
                 case ColorSpaceType.HSV:
                     //H * 360
                     AdjustColor_Mul(0, 360);

@@ -165,7 +165,7 @@ namespace ColorManager.ICC
         
         private Color GetColor(bool useICC, ColorSpaceType type)
         {
-            //TODO: when creating a color from an ICC profile, what is the WP of a device link or abstract profile
+            //TODO: Whitepoint might be different for different kind of profiles (Abstract, DeviceLink)
             var wp = new WhitepointD50();
 
             switch (type)
