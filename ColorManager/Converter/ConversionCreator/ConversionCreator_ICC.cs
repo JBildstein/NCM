@@ -279,8 +279,8 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
-        //TODO: include chromatic adaption if CATag is existing
-        //TODO: check for media white/black point tag and use it if existing and appropriate
+        //LTODO: include chromatic adaption if CATag is existing
+        //LTODO: check for media white/black point tag and use it if existing and appropriate
 
         #region PCS -> Data
 

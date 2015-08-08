@@ -2,7 +2,7 @@
 
 namespace ColorManager.Conversion
 {
-    //TODO: DEF/XYZ Matrix is currently fixed for every call. It should be pre-pinned
+    //LTODO: DEF/XYZ Matrix is currently fixed for every call. It should be pre-pinned
 
     public sealed unsafe class Path_XYZ_DEF : ConversionPath<ColorXYZ, ColorDEF>
     {

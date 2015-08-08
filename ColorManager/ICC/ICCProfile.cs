@@ -124,7 +124,7 @@ namespace ColorManager.ICC
         /// <returns>True if valid, false otherwise</returns>
         public bool Validate()
         {
-            //TODO: write ICC profile validation (partially see Annex G)
+            //LTODO: write ICC profile validation (partially see Annex G)
             return true;
         }
 
@@ -159,7 +159,7 @@ namespace ColorManager.ICC
         /// <returns>An instance of the <see cref="PCSType"/></returns>
         public Color GetPCSColor(bool useICC = false)
         {
-            //TODO: GetPCSColor should actually only return either Lab or XYZ
+            //LTODO: GetPCSColor should actually only return either Lab or XYZ
             return GetColor(useICC, PCSType);
         }
         
@@ -401,7 +401,7 @@ namespace ColorManager.ICC
         
         #endregion
 
-        //TODO: comparison of ICC profiles currently just checks for the ID. When creating a profile instead of reading, this might be set to zero
+        //LTODO: comparison of ICC profiles currently just checks for the ID. When creating a profile instead of reading, this might be set to zero
 
         #region Comparison
 

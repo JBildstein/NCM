@@ -4,7 +4,7 @@ namespace ColorManager.ICC
 {
     public static class ICCValidator
     {
-        //TODO: implement ICCValidator
+        //LTODO: implement ICCValidator
 
         public static bool Validate(ICCProfile profile)
         {

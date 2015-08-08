@@ -396,7 +396,7 @@ namespace ColorManager.ICC
 
         #endregion
 
-        //TODO: Lut16TagDataEntry can have legacy Lab values. See page 51/52
+        //LTODO: Lut16TagDataEntry can have legacy Lab values. See page 51/52
 
         #region Read Tag Data Entries
 

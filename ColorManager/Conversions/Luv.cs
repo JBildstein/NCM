@@ -39,7 +39,7 @@ namespace ColorManager.Conversion
         }
     }
 
-    //TODO: Somewhere in here is a problem with negative u/v values (when L and v is low. The lower v, the less low L has to be)
+    //LTODO: Somewhere in here is a problem with negative u/v values (when L and v is low. The lower v, the less low L has to be)
     public sealed unsafe class Path_Luv_XYZ : ConversionPath<ColorLuv, ColorXYZ>
     {
         public override IConversionCommand[] Commands

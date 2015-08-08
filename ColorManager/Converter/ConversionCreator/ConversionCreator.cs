@@ -187,7 +187,7 @@ namespace ColorManager.Conversion
                 }
                 else
                 {
-                    //TODO: make separate functions for when either max or min should not be checked
+                    //LTODO: make separate functions for when either max or min should not be checked
                     if (max[i] != double.MaxValue && min[i] != double.MinValue)
                     {
 
