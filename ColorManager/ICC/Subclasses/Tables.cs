@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Linq;
 
 namespace ColorManager.ICC
 {
-    //TODO: unify all of the bit-depth-specific classes to one double class
-
-    public abstract class CLUT
+    public sealed class CLUT
     {
+        public double[][] Values
+        {
+            get { return _Values; }
+        }
+        private double[][] _Values;
+
         public int InputChannelCount
         {
             get { return _InputChannelCount; }
@@ -24,15 +27,75 @@ namespace ColorManager.ICC
         private int _OutputChannelCount;
         private byte[] _GridPointCount;
 
-        protected CLUT(int inChCount, int outChCount, byte[] gridPointCount)
-        {
-            if (gridPointCount == null) throw new ArgumentNullException("gridPointCount");
 
-            this._InputChannelCount = inChCount;
-            this._OutputChannelCount = outChCount;
-            this._GridPointCount = gridPointCount;
+        private CLUT(int inChCount, int outChCount, byte[] gridPointCount)
+        {
+            if (gridPointCount == null) throw new ArgumentNullException(nameof(gridPointCount));
+
+            _InputChannelCount = inChCount;
+            _OutputChannelCount = outChCount;
+            _GridPointCount = gridPointCount;
         }
-        
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CLUT"/> class
+        /// </summary>
+        /// <param name="values">The CLUT values</param>
+        /// <param name="inChCount">The input channel count</param>
+        /// <param name="outChCount">The output channel count</param>
+        /// <param name="gridPointCount">The gridpoint count</param>
+        public CLUT(double[][] values, int inChCount, int outChCount, byte[] gridPointCount)
+            :this(inChCount, outChCount, gridPointCount)
+        {
+            if (values == null) throw new ArgumentNullException(nameof(values));
+            _Values = values;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CLUT"/> class
+        /// </summary>
+        /// <param name="values">The CLUT values</param>
+        /// <param name="inChCount">The input channel count</param>
+        /// <param name="outChCount">The output channel count</param>
+        /// <param name="gridPointCount">The gridpoint count</param>
+        public CLUT(ushort[][] values, int inChCount, int outChCount, byte[] gridPointCount)
+            : this(inChCount, outChCount, gridPointCount)
+        {
+            if (values == null) throw new ArgumentNullException(nameof(values));
+
+            const double max = ushort.MaxValue;
+
+            _Values = new double[values.Length][];
+            for (int i = 0; i < values.Length; i++)
+            {
+                _Values[i] = new double[values[i].Length];
+                for (int j = 0; j < values[i].Length; j++) _Values[i][j] = values[i][j] / max;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CLUT"/> class
+        /// </summary>
+        /// <param name="values">The CLUT values</param>
+        /// <param name="inChCount">The input channel count</param>
+        /// <param name="outChCount">The output channel count</param>
+        /// <param name="gridPointCount">The gridpoint count</param>
+        public CLUT(byte[][] values, int inChCount, int outChCount, byte[] gridPointCount)
+            : this(inChCount, outChCount, gridPointCount)
+        {
+            if (values == null) throw new ArgumentNullException(nameof(values));
+
+            const double max = byte.MaxValue;
+
+            _Values = new double[values.Length][];
+            for (int i = 0; i < values.Length; i++)
+            {
+                _Values[i] = new double[values[i].Length];
+                for (int j = 0; j < values[i].Length; j++) _Values[i][j] = values[i][j] / max;
+            }
+        }
+
+
         /// <summary>
         /// Determines whether the specified <see cref="CLUT"/>s are equal to each other.
         /// </summary>
@@ -44,7 +107,7 @@ namespace ColorManager.ICC
             if (object.ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
-                && CMP.Compare(a.GridPointCount, b.GridPointCount);
+                && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);
         }
 
         /// <summary>
@@ -82,323 +145,95 @@ namespace ColorManager.ICC
                 hash *= 16777619 ^ InputChannelCount.GetHashCode();
                 hash *= 16777619 ^ OutputChannelCount.GetHashCode();
                 hash *= CMP.GetHashCode(GridPointCount);
-                return hash;
-            }
-        }
-    }
-
-    public sealed class CLUTf32 : CLUT
-    {
-        public double[][] Values
-        {
-            get { return _Values; }
-        }
-        private double[][] _Values;
-
-        public CLUTf32(double[][] Values, int inChCount, int outChCount, byte[] gridPointCount)
-            : base(inChCount, outChCount, gridPointCount)
-        {
-            this._Values = Values;
-        }
-        
-        /// <summary>
-        /// Determines whether the specified <see cref="CLUTf32"/>s are equal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="CLUTf32"/></param>
-        /// <param name="b">The second <see cref="CLUTf32"/></param>
-        /// <returns>True if the <see cref="CLUTf32"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(CLUTf32 a, CLUTf32 b)
-        {
-            if (object.ReferenceEquals(a, b)) return true;
-            if ((object)a == null || (object)b == null) return false;
-            return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
-                && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="CLUTf32"/>s are unequal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="CLUTf32"/></param>
-        /// <param name="b">The second <see cref="CLUTf32"/></param>
-        /// <returns>True if the <see cref="CLUTf32"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(CLUTf32 a, CLUTf32 b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="CLUTf32"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="CLUTf32"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="CLUTf32"/>; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            CLUTf32 c = obj as CLUTf32;
-            if ((object)c == null) return false;
-            return c == this;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for a <see cref="CLUTf32"/>.
-        /// </summary>
-        /// <returns>A hash code for the current <see cref="CLUTf32"/></returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = (int)2166136261;
-                hash *= 16777619 ^ InputChannelCount.GetHashCode();
-                hash *= 16777619 ^ OutputChannelCount.GetHashCode();
-                hash *= CMP.GetHashCode(GridPointCount);
                 hash *= CMP.GetHashCode(Values);
                 return hash;
             }
         }
     }
     
-    public sealed class CLUT16 : CLUT
+    public sealed class LUT
     {
-        public ushort[][] Values
+        public double[] Values
         {
             get { return _Values; }
         }
-        private ushort[][] _Values;
+        private double[] _Values;
 
-        public CLUT16(ushort[][] Values, int inChCount, int outChCount, byte[] gridPointCount)
-            : base(inChCount, outChCount, gridPointCount)
-        {
-            if (Values == null) throw new ArgumentNullException("Values");
-            this._Values = Values;
-        }
-        
         /// <summary>
-        /// Determines whether the specified <see cref="CLUT16"/>s are equal to each other.
+        /// Creates a new instance of the <see cref="LUT"/> class
         /// </summary>
-        /// <param name="a">The first <see cref="CLUT16"/></param>
-        /// <param name="b">The second <see cref="CLUT16"/></param>
-        /// <returns>True if the <see cref="CLUT16"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(CLUT16 a, CLUT16 b)
+        /// <param name="values">The LUT values</param>
+        public LUT(double[] values)
         {
-            if (object.ReferenceEquals(a, b)) return true;
-            if ((object)a == null || (object)b == null) return false;
-            return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
-                && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);
+            if (Values == null) throw new ArgumentNullException(nameof(values));
+
+            _Values = values;
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="CLUT16"/>s are unequal to each other.
+        /// Creates a new instance of the <see cref="LUT"/> class
         /// </summary>
-        /// <param name="a">The first <see cref="CLUT16"/></param>
-        /// <param name="b">The second <see cref="CLUT16"/></param>
-        /// <returns>True if the <see cref="CLUT16"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(CLUT16 a, CLUT16 b)
+        /// <param name="values">The LUT values</param>
+        public LUT(ushort[] values)
         {
-            return !(a == b);
+            if (Values == null) throw new ArgumentNullException(nameof(values));
+
+            const double max = ushort.MaxValue;
+
+            _Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) _Values[i] = values[i] / max;
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="CLUT16"/>.
+        /// Creates a new instance of the <see cref="LUT"/> class
         /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="CLUT16"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="CLUT16"/>; otherwise, false.</returns>
-        public override bool Equals(object obj)
+        /// <param name="values">The LUT values</param>
+        public LUT(byte[] values)
         {
-            CLUT16 c = obj as CLUT16;
-            if ((object)c == null) return false;
-            return c == this;
+            if (Values == null) throw new ArgumentNullException(nameof(values));
+
+            const double max = byte.MaxValue;
+
+            _Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) _Values[i] = values[i] / max;
         }
 
         /// <summary>
-        /// Serves as a hash function for a <see cref="CLUT16"/>.
+        /// Determines whether the specified <see cref="LUT"/>s are equal to each other.
         /// </summary>
-        /// <returns>A hash code for the current <see cref="CLUT16"/></returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = (int)2166136261;
-                hash *= 16777619 ^ InputChannelCount.GetHashCode();
-                hash *= 16777619 ^ OutputChannelCount.GetHashCode();
-                hash *= CMP.GetHashCode(GridPointCount);
-                hash *= CMP.GetHashCode(Values);
-                return hash;
-            }
-        }
-    }
-
-    public sealed class CLUT8 : CLUT
-    {
-        public byte[][] Values
-        {
-            get { return _Values; }
-        }
-        private byte[][] _Values;
-
-        public CLUT8(byte[][] Values, int inChCount, int outChCount, byte[] gridPointCount)
-            : base(inChCount, outChCount, gridPointCount)
-        {
-            if (Values == null) throw new ArgumentNullException("Values");
-            this._Values = Values;
-        }
-        
-        /// <summary>
-        /// Determines whether the specified <see cref="CLUT8"/>s are equal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="CLUT8"/></param>
-        /// <param name="b">The second <see cref="CLUT8"/></param>
-        /// <returns>True if the <see cref="CLUT8"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(CLUT8 a, CLUT8 b)
-        {
-            if (object.ReferenceEquals(a, b)) return true;
-            if ((object)a == null || (object)b == null) return false;
-            return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
-                && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="CLUT8"/>s are unequal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="CLUT8"/></param>
-        /// <param name="b">The second <see cref="CLUT8"/></param>
-        /// <returns>True if the <see cref="CLUT8"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(CLUT8 a, CLUT8 b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="CLUT8"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="CLUT8"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="CLUT8"/>; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            CLUT8 c = obj as CLUT8;
-            if ((object)c == null) return false;
-            return c == this;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for a <see cref="CLUT8"/>.
-        /// </summary>
-        /// <returns>A hash code for the current <see cref="CLUT8"/></returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = (int)2166136261;
-                hash *= 16777619 ^ InputChannelCount.GetHashCode();
-                hash *= 16777619 ^ OutputChannelCount.GetHashCode();
-                hash *= CMP.GetHashCode(GridPointCount);
-                hash *= CMP.GetHashCode(Values);
-                return hash;
-            }
-        }
-    }
-
-    public struct LUT16
-    {
-        public ushort[] Values;
-
-        public LUT16(ushort[] Values)
-        {
-            if (Values == null) throw new ArgumentNullException("Values");
-            this.Values = Values;
-        }
-        
-        /// <summary>
-        /// Determines whether the specified <see cref="LUT16"/>s are equal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="LUT16"/></param>
-        /// <param name="b">The second <see cref="LUT16"/></param>
-        /// <returns>True if the <see cref="LUT16"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(LUT16 a, LUT16 b)
+        /// <param name="a">The first <see cref="LUT"/></param>
+        /// <param name="b">The second <see cref="LUT"/></param>
+        /// <returns>True if the <see cref="LUT"/>s are equal; otherwise, false</returns>
+        public static bool operator ==(LUT a, LUT b)
         {
             return CMP.Compare(a.Values, b.Values);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="LUT16"/>s are unequal to each other.
+        /// Determines whether the specified <see cref="LUT"/>s are unequal to each other.
         /// </summary>
-        /// <param name="a">The first <see cref="LUT16"/></param>
-        /// <param name="b">The second <see cref="LUT16"/></param>
-        /// <returns>True if the <see cref="LUT16"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(LUT16 a, LUT16 b)
+        /// <param name="a">The first <see cref="LUT"/></param>
+        /// <param name="b">The second <see cref="LUT"/></param>
+        /// <returns>True if the <see cref="LUT"/>s are unequal; otherwise, false</returns>
+        public static bool operator !=(LUT a, LUT b)
         {
             return !(a == b);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="LUT16"/>.
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="LUT"/>.
         /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="LUT16"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="LUT16"/>; otherwise, false.</returns>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="LUT"/></param>
+        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="LUT"/>; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is LUT16 && this == (LUT16)obj;
+            return obj is LUT && this == (LUT)obj;
         }
 
         /// <summary>
-        /// Serves as a hash function for a <see cref="LUT16"/>.
+        /// Serves as a hash function for a <see cref="LUT"/>.
         /// </summary>
-        /// <returns>A hash code for the current <see cref="LUT16"/></returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = (int)2166136261;
-                hash *= CMP.GetHashCode(Values);
-                return hash;
-            }
-        }
-    }
-
-    public struct LUT8
-    {
-        public byte[] Values;
-
-        public LUT8(byte[] Values)
-        {
-            if (Values == null) throw new ArgumentNullException("Values");
-            this.Values = Values;
-        }
-        
-        /// <summary>
-        /// Determines whether the specified <see cref="LUT8"/>s are equal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="LUT8"/></param>
-        /// <param name="b">The second <see cref="LUT8"/></param>
-        /// <returns>True if the <see cref="LUT8"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(LUT8 a, LUT8 b)
-        {
-            return CMP.Compare(a.Values, b.Values);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="LUT8"/>s are unequal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="LUT8"/></param>
-        /// <param name="b">The second <see cref="LUT8"/></param>
-        /// <returns>True if the <see cref="LUT8"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(LUT8 a, LUT8 b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="LUT8"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="LUT8"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="LUT8"/>; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            return obj is LUT8 && this == (LUT8)obj;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for a <see cref="LUT8"/>.
-        /// </summary>
-        /// <returns>A hash code for the current <see cref="LUT8"/></returns>
+        /// <returns>A hash code for the current <see cref="LUT"/></returns>
         public override int GetHashCode()
         {
             unchecked
