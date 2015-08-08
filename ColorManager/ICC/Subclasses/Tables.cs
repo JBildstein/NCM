@@ -104,7 +104,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="CLUT"/>s are equal; otherwise, false</returns>
         public static bool operator ==(CLUT a, CLUT b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
                 && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);

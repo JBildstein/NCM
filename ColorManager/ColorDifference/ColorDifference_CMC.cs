@@ -2,29 +2,37 @@
 
 namespace ColorManager.ColorDifference
 {
+    /// <summary>
+    /// Provides methods to calculate the difference between two colors by the CMC formula
+    /// </summary>
     public unsafe sealed class ColorDifference_CMC : ColorLabDifferenceCalculator
     {
         #region Variables
         
         /// <summary>
-        /// 35 degree in radian
+        /// 35 degree in radians
         /// </summary>
         private const double Rad35 = 0.61086523819801535192329176897101;
         /// <summary>
-        /// 164 degree in radian
+        /// 164 degree in radians
         /// </summary>
         private const double Rad164 = 2.8623399732707005061548528603213;
         /// <summary>
-        /// 168 degree in radian
+        /// 168 degree in radians
         /// </summary>
         private const double Rad168 = 2.9321531433504736892318004910609;
         /// <summary>
-        /// 345 degree in radian
+        /// 345 degree in radians
         /// </summary>
         private const double Rad345 = 6.0213859193804370403867331512857;
 
         #endregion
-        
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorDifference_CMC"/> class
+        /// </summary>
+        /// <param name="Color1">First color to compare</param>
+        /// <param name="Color2">Second color to compare</param>
         public ColorDifference_CMC(ColorLab Color1, ColorLab Color2)
             : base(Color1, Color2)
         {

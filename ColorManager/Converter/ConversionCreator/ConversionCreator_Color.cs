@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace ColorManager.Conversion
 {
+    /// <summary>
+    /// Factory to create a conversion method for normal colors
+    /// </summary>
     public sealed class ConversionCreator_Color : ConversionCreator
     {
         #region Variables
@@ -57,6 +60,9 @@ namespace ColorManager.Conversion
             : base(parent, inColor, outColor, isLast)
         { }
 
+        /// <summary>
+        /// Sets the conversion method
+        /// </summary>
         public override void SetConversionMethod()
         {
             Type inType = InColor.GetType();
@@ -272,7 +278,7 @@ namespace ColorManager.Conversion
         /// Resolves a <see cref="CC_Condition"/> command into a set of commands of type
         /// <see cref="CC_Assign"/> or <see cref="CC_ExecuteMethod"/>
         /// </summary>
-        /// <param name="cmd">The command to resolve</param>
+        /// <param name="condition">The command to resolve</param>
         /// <param name="outCmds">The resolved output commands</param>
         private void FindCommand(CC_Condition condition, List<IConversionCommand> outCmds)
         {

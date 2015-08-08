@@ -2,8 +2,16 @@
 
 namespace ColorManager.ColorDifference
 {
+    /// <summary>
+    /// Provides methods to calculate the difference between two Lab colors (abstract class)
+    /// </summary>
     public unsafe abstract class ColorLabDifferenceCalculator : ColorDifferenceCalculator
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorLabDifferenceCalculator"/> class
+        /// </summary>
+        /// <param name="Color1">First color to compare</param>
+        /// <param name="Color2">Second color to compare</param>
         protected ColorLabDifferenceCalculator(ColorLab Color1, ColorLab Color2)
             : base(Color1, Color2)
         { }

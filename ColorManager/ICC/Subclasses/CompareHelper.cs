@@ -1155,7 +1155,7 @@ namespace ColorManager.ICC
         private static bool CompareBase<T>(T[] a, T[] b)
         {
             if (a == null || b == null) return false;
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if (a.Length != b.Length) return false;
 
             return true;
@@ -1164,7 +1164,7 @@ namespace ColorManager.ICC
         private static bool CompareBase<T>(T[][] a, T[][] b)
         {
             if (a == null || b == null) return false;
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if (a.Length != b.Length) return false;
 
             return true;
@@ -1173,7 +1173,7 @@ namespace ColorManager.ICC
         private static bool CompareBase<T>(T[,] a, T[,] b)
         {
             if (a == null || b == null) return false;
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if (a.GetLength(0) != b.GetLength(0) || a.GetLength(1) != b.GetLength(1)) return false;
 
             return true;

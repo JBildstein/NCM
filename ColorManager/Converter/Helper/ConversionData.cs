@@ -126,8 +126,8 @@ namespace ColorManager.Conversion
         /// <summary>
         /// Creates a new instance of the <see cref="ConversionData"/> class
         /// </summary>
-        /// <param name="inColor"></param>
-        /// <param name="outColor"></param>
+        /// <param name="inColor">The input color</param>
+        /// <param name="outColor">The output color</param>
         protected internal ConversionData(Color inColor, Color outColor)
         {
             if (inColor == null || outColor == null) throw new ArgumentNullException();
@@ -202,17 +202,27 @@ namespace ColorManager.Conversion
 
         #region Dispose
 
+        /// <summary>
+        /// Finalizer of the <see cref="ConversionData"/> class
+        /// </summary>
         ~ConversionData()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Releases all allocated resources
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Releases all allocated resources
+        /// </summary>
+        /// <param name="managed">True if called by user, false if called by finalizer</param>
         protected virtual void Dispose(bool managed)
         {
             if (!IsDisposed)

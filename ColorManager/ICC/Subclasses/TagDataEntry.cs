@@ -28,7 +28,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="TagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(TagDataEntry a, TagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature;
         }
@@ -97,7 +97,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UnknownTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UnknownTagDataEntry a, UnknownTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -229,7 +229,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ChromaticityTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ChromaticityTagDataEntry a, ChromaticityTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.ChannelCount == b.ChannelCount
                 && a.ColorantType == b.ColorantType && CMP.Compare(a.ChannelValues, b.ChannelValues);
@@ -310,7 +310,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ColorantOrderTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ColorantOrderTagDataEntry a, ColorantOrderTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.ColorantCount == b.ColorantCount
                 && CMP.Compare(a.ColorantNumber, b.ColorantNumber);
@@ -391,7 +391,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ColorantTableTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ColorantTableTagDataEntry a, ColorantTableTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.ColorantCount == b.ColorantCount
                 && CMP.Compare(a.ColorantData, b.ColorantData);
@@ -493,7 +493,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="CurveTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(CurveTagDataEntry a, CurveTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.CurveData, b.CurveData);
         }
@@ -579,7 +579,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="DataTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(DataTagDataEntry a, DataTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.IsASCII == b.IsASCII
                 && CMP.Compare(a.Data, b.Data);
@@ -650,7 +650,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="DateTimeTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(DateTimeTagDataEntry a, DateTimeTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.Value == b.Value;
         }
@@ -744,7 +744,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="Lut16TagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(Lut16TagDataEntry a, Lut16TagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.CLUTValues == b.CLUTValues
                 && CMP.Compare(a.Matrix, b.Matrix) && CMP.Compare(a.InputValues, b.InputValues)
@@ -843,7 +843,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="Lut8TagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(Lut8TagDataEntry a, Lut8TagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.CLUTValues == b.CLUTValues
                 && CMP.Compare(a.Matrix, b.Matrix) && CMP.Compare(a.InputValues, b.InputValues)
@@ -961,7 +961,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="LutAToBTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(LutAToBTagDataEntry a, LutAToBTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && a.CLUTValues == b.CLUTValues
@@ -1085,7 +1085,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="LutBToATagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(LutBToATagDataEntry a, LutBToATagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && a.CLUTValues == b.CLUTValues
@@ -1193,7 +1193,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="MeasurementTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(MeasurementTagDataEntry a, MeasurementTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.Observer == b.Observer
                 && a.XYZBacking == b.XYZBacking && a.Geometry == b.Geometry
@@ -1270,7 +1270,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="MultiLocalizedUnicodeTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(MultiLocalizedUnicodeTagDataEntry a, MultiLocalizedUnicodeTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Text, b.Text);
         }
@@ -1360,7 +1360,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="MultiProcessElementsTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(MultiProcessElementsTagDataEntry a, MultiProcessElementsTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && a.ProcessingElementCount == b.ProcessingElementCount
@@ -1463,7 +1463,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="NamedColor2TagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(NamedColor2TagDataEntry a, NamedColor2TagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.NamedColorCount == b.NamedColorCount
                 && a.Prefix == b.Prefix && a.Suffix == b.Suffix && CMP.Compare(a.VendorFlag, b.VendorFlag)
@@ -1539,7 +1539,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ParametricCurveTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ParametricCurveTagDataEntry a, ParametricCurveTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.Curve == b.Curve;
         }
@@ -1611,7 +1611,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ProfileSequenceDescTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ProfileSequenceDescTagDataEntry a, ProfileSequenceDescTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Descriptions, b.Descriptions);
         }
@@ -1698,7 +1698,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ProfileSequenceIdentifierTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ProfileSequenceIdentifierTagDataEntry a, ProfileSequenceIdentifierTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.ProfileID == b.ProfileID && a.ProfileDescription == b.ProfileDescription
                 && CMP.Compare(a.PositionTable, b.PositionTable);
@@ -1781,7 +1781,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ResponseCurveSet16TagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ResponseCurveSet16TagDataEntry a, ResponseCurveSet16TagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.MeasurmentTypesCount == b.MeasurmentTypesCount
                 && CMP.Compare(a.Curves, b.Curves);
@@ -1853,7 +1853,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="Fix16ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(Fix16ArrayTagDataEntry a, Fix16ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -1923,7 +1923,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="SignatureTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(SignatureTagDataEntry a, SignatureTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.SignatureData == b.SignatureData;
         }
@@ -1992,7 +1992,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="TextTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(TextTagDataEntry a, TextTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.Text == b.Text;
         }
@@ -2062,7 +2062,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UFix16ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UFix16ArrayTagDataEntry a, UFix16ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -2132,7 +2132,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UInt16ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UInt16ArrayTagDataEntry a, UInt16ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -2202,7 +2202,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UInt32ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UInt32ArrayTagDataEntry a, UInt32ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -2272,7 +2272,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UInt64ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UInt64ArrayTagDataEntry a, UInt64ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -2342,7 +2342,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="UInt8ArrayTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(UInt8ArrayTagDataEntry a, UInt8ArrayTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
@@ -2424,7 +2424,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ViewingConditionsTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ViewingConditionsTagDataEntry a, ViewingConditionsTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.IlluminantXYZ == b.IlluminantXYZ
                 && a.SurroundXYZ == b.SurroundXYZ && a.Illuminant == b.Illuminant;
@@ -2497,7 +2497,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="XYZTagDataEntry"/>s are equal; otherwise, false</returns>
         public static bool operator ==(XYZTagDataEntry a, XYZTagDataEntry b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }

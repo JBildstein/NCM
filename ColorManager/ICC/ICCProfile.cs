@@ -413,7 +413,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ICCProfile"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ICCProfile a, ICCProfile b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.ID == b.ID;
         }

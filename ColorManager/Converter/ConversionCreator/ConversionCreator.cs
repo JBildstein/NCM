@@ -4,6 +4,9 @@ using System.Reflection.Emit;
 
 namespace ColorManager.Conversion
 {
+    /// <summary>
+    /// Factory to create a conversion method (abstract class)
+    /// </summary>
     public abstract class ConversionCreator
     {
         #region Variables
@@ -128,7 +131,7 @@ namespace ColorManager.Conversion
         }
 
         /// <summary>
-        /// Sets the conversion method with the provided ILGenerator
+        /// Sets the conversion method
         /// </summary>
         public abstract void SetConversionMethod();
 
@@ -136,6 +139,9 @@ namespace ColorManager.Conversion
 
         #region Subroutines
 
+        /// <summary>
+        /// Switches the value of the temp variable
+        /// </summary>
         protected void SwitchTempVar()
         {
             IsTempVar1 = !IsTempVar1;

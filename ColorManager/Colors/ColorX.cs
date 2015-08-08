@@ -3,12 +3,21 @@ using ColorManager.ICC;
 
 namespace ColorManager
 {
+    /// <summary>
+    /// Stores information and values of a color model with x number of channels
+    /// </summary>
     public sealed class ColorX : Color
     {
+        /// <summary>
+        /// The name of this model
+        /// </summary>
         public override string Name
         {
             get { return "Color " + ChannelCount; }
         }
+        /// <summary>
+        /// Number of channels this model has
+        /// </summary>
         public override int ChannelCount
         {
             get
@@ -17,6 +26,9 @@ namespace ColorManager
                 else return -1;
             }
         }
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
         public override double[] MinValues
         {
             get
@@ -26,6 +38,9 @@ namespace ColorManager
                 return arr;
             }
         }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
         public override double[] MaxValues
         {
             get
@@ -35,6 +50,9 @@ namespace ColorManager
                 return arr;
             }
         }
+        /// <summary>
+        /// Names of channels short
+        /// </summary>
         public override string[] ChannelShortNames
         {
             get
@@ -44,6 +62,9 @@ namespace ColorManager
                 return arr;
             }
         }
+        /// <summary>
+        /// Names of channels full
+        /// </summary>
         public override string[] ChannelFullNames
         {
             get
@@ -53,25 +74,54 @@ namespace ColorManager
                 return arr;
             }
         }
-        
+
+        /// <summary>
+        /// Maximum number of channels for <see cref="ColorX"/>
+        /// </summary>
+        public new const int MaxChannels = 15;
+        /// <summary>
+        /// Minimum number of channels for <see cref="ColorX"/>
+        /// </summary>
+        public const int MinChannels = 2;
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorX"/> class
+        /// </summary>
+        /// <param name="profile">The ICC profile for this color</param>
+        /// <param name="channelCount">The number of channels for this color (Max=15, Min=2)</param>
         public ColorX(ICCProfile profile, int channelCount)
             : base(new ColorspaceICC(profile), new double[channelCount])
         {
             InitArrays();
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorX"/> class
+        /// </summary>
+        /// <param name="profile">The ICC profile for this color</param>
+        /// <param name="values">The values for this color (Length Max=15, Min=2)</param>
         public ColorX(ICCProfile profile, params double[] values)
             : base(new ColorspaceICC(profile), values)
         {
             InitArrays();
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorX"/> class
+        /// </summary>
+        /// <param name="space">The ICC space for this color</param>
+        /// <param name="channelCount">The number of channels for this color (Max=15, Min=2)</param>
         public ColorX(ColorspaceICC space, int channelCount)
             : base(space, new double[channelCount])
         {
             InitArrays();
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorX"/> class
+        /// </summary>
+        /// <param name="space">The ICC space for this color</param>
+        /// <param name="values">The values for this color (Length Max=15, Min=2)</param>
         public ColorX(ColorspaceICC space, params double[] values)
             : base(space, values)
         {
@@ -86,6 +136,8 @@ namespace ColorManager
 
         private void InitArrays()
         {
+            if (Values.Length > MaxChannels) throw new ArgumentOutOfRangeException(nameof(Values));
+
             int c = this.Values.Length;
 
             min = new double[this.Values.Length];

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ColorManager.ICC
+﻿namespace ColorManager.ICC
 {
     public struct VersionNumber
     {

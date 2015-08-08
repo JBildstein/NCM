@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 using ColorManager.Conversion;
-using System.Reflection;
 
 namespace ColorManager.ICC.Conversion
 {
+    /// <summary>
+    /// Factory to create a conversion method for ICC colors
+    /// </summary>
     public sealed unsafe class ConversionCreator_ICC : ConversionCreator
     {
         #region Variables
@@ -128,6 +131,9 @@ namespace ColorManager.ICC.Conversion
             CheckProfileClassValidity();
         }
 
+        /// <summary>
+        /// Sets the conversion method
+        /// </summary>
         public override void SetConversionMethod()
         {
             switch (ConversionType)
@@ -1085,6 +1091,7 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a curve segment
         /// </summary>
         /// <param name="segment">The curve segment</param>
+        /// <param name="index">The index of the color channel</param>
         private void WriteCurveSegment(CurveSegment segment, int index)
         {
             var formula = segment as FormulaCurveElement;
@@ -1101,6 +1108,7 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a formula curve segment
         /// </summary>
         /// <param name="segment">The formula curve segment</param>
+        /// <param name="index">The index of the color channel</param>
         private void WriteFormulaCurveSegment(FormulaCurveElement segment, int index)
         {
             switch (segment.type)
@@ -1189,6 +1197,7 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a sampled curve segment
         /// </summary>
         /// <param name="segment">The sampled curve segment</param>
+        /// <param name="index">The index of the color channel</param>
         private void WriteSampledCurveSegment(SampledCurveElement segment, int index)
         {
             //TODO: WriteSampledCurveSegment is probably incorrect. inColor[index] goes from 0-1 while this is a segment >=0 - <=1
@@ -1249,6 +1258,7 @@ namespace ColorManager.ICC.Conversion
         /// <param name="clut">CLUT</param>
         /// <param name="matrix">Matrix</param>
         /// <param name="inColor">The input color type</param>
+        /// </summary>
         private void WriteLUT(LUT[] InCurve, LUT[] OutCurve, CLUT clut, double[,] matrix, ColorSpaceType inColor)
         {
             double[] Matrix = new double[9]
@@ -1394,7 +1404,7 @@ namespace ColorManager.ICC.Conversion
         /// <summary>
         /// Writes the IL code for a LUT
         /// </summary>
-        /// <param name="lut">The LUT for this channel</param>
+        /// <param name="length">The number of values of the LUT</param>
         /// <param name="index">The channel index</param>
         private void WriteLUT(int length, int index)
         {

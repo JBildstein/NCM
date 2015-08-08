@@ -1,6 +1,9 @@
 ﻿
 namespace ColorManager
 {
+    /// <summary>
+    /// Stores information and values of the BCH color model
+    /// </summary>
     public sealed unsafe class ColorBCH : Color
     {
         /// <summary>
@@ -27,48 +30,91 @@ namespace ColorManager
             get { return this[2]; }
             set { this[2] = value; }
         }
-        
+
+        /// <summary>
+        /// The index of the channel that is cylindrical
+        /// <para>If the value is bigger than 360° or smaller than 0, it will start over</para>
+        /// <para>If not used, it's simply -1</para>
+        /// </summary>
         public override int CylinderChannel
         {
             get { return 2; }
         }
+        /// <summary>
+        /// The name of this model
+        /// </summary>
         public override string Name
         {
             get { return "BCH"; }
         }
+        /// <summary>
+        /// Number of channels this model has
+        /// </summary>
         public override int ChannelCount
         {
             get { return 3; }
         }
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
         public override double[] MinValues
         {
             get { return new double[] { 0.0, 0.0, 0.0 }; }
         }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
         public override double[] MaxValues
         {
             get { return new double[] { 1.5, 1.5, 360.0 }; }
         }
+        /// <summary>
+        /// Names of channels short
+        /// </summary>
         public override string[] ChannelShortNames
         {
             get { return new string[] { "B", "C", "H" }; }
         }
+        /// <summary>
+        /// Names of channels full
+        /// </summary>
         public override string[] ChannelFullNames
         {
             get { return new string[] { "Brightness", "Chromaticity", "Hue"}; }
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorBCH"/> class
+        /// </summary>
         public ColorBCH()
             : base(Colorspace.Default, 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorBCH"/> class
+        /// </summary>
+        /// <param name="B">Value for the Brightness channel</param>
+        /// <param name="C">Value for the Chromaticity channel</param>
+        /// <param name="H">Value for the Hue channel</param>
         public ColorBCH(double B, double C, double H)
             : base(Colorspace.Default, B, C, H)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorBCH"/> class
+        /// </summary>
+        /// <param name="wp">The reference white for this color</param>
         public ColorBCH(Whitepoint wp)
             : base(new Colorspace(wp), 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorBCH"/> class
+        /// </summary>
+        /// <param name="B">Value for the Brightness channel</param>
+        /// <param name="C">Value for the Chromaticity channel</param>
+        /// <param name="H">Value for the Hue channel</param>
+        /// <param name="wp">The reference white for this color</param>
         public ColorBCH(double B, double C, double H, Whitepoint wp)
             : base(new Colorspace(wp), B, C, H)
         { }

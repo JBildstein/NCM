@@ -2,6 +2,9 @@
 
 namespace ColorManager
 {
+    /// <summary>
+    /// Stores information and values of a colorspace
+    /// </summary>
     public class Colorspace
     {
         /// <summary>
@@ -33,49 +36,84 @@ namespace ColorManager
         }
         private static Colorspace _Default = new Colorspace(Whitepoint.Default);
 
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="Colorspace"/> class with the default reference white
+        /// </summary>
         public Colorspace()
         {
             RefWhite = Whitepoint.Default;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Colorspace"/> class
+        /// </summary>
+        /// <param name="wp">The reference white</param>
         public Colorspace(Whitepoint wp)
         {
             if (wp != null) RefWhite = wp;
             else RefWhite = Whitepoint.Default;
         }
 
-
+        /// <summary>
+        /// If overridden, returns a custom delegate to transform a color or null otherwise
+        /// <para>An example would be a gamma adjustment.</para>
+        /// </summary>
+        /// <param name="IsInput">True if used for the input color, false otherwise</param>
+        /// <returns>A custom delegate to transform a color</returns>
         public virtual TransformToDelegate GetTransformation(bool IsInput)
         {
             return null;
         }
 
+        /// <summary>
+        /// If overridden, returns some custom data to transform a color or null otherwise
+        /// <para>An example would be a conversion matrix.</para>
+        /// </summary>
+        /// <param name="IsInput">True if used for the input color, false otherwise</param>
+        /// <returns>Custom data to transform a color</returns>
         public virtual CustomData GetData(bool IsInput)
         {
             return null;
         }
 
 
+        /// <summary>
+        /// Compares two colorspaces for their equality of values
+        /// </summary>
+        /// <param name="a">First colorspace</param>
+        /// <param name="b">Second colorspace</param>
+        /// <returns>True if they are the same, false otherwise</returns>
         public static bool operator ==(Colorspace a, Colorspace b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.RefWhite == b.RefWhite;
         }
-
+        /// <summary>
+        /// Compares two colorspaces for their inequality of values
+        /// </summary>
+        /// <param name="a">First colorspace</param>
+        /// <param name="b">Second colorspace</param>
+        /// <returns>False if they are the same, true otherwise</returns>
         public static bool operator !=(Colorspace a, Colorspace b)
         {
             return !(a == b);
         }
-
+        /// <summary>
+        /// Compares this colorspace with another for their equality of values
+        /// </summary>
+        /// <param name="obj">The colorspace to compare to</param>
+        /// <returns>True if they are the same, false otherwise</returns>
         public override bool Equals(object obj)
         {
             Colorspace c = obj as Colorspace;
             if ((object)c == null) return false;
             return c.RefWhite == this.RefWhite;
         }
-
+        /// <summary>
+        /// Calculates a hash code of this colorspace
+        /// </summary>
+        /// <returns>The hash code of this colorspace</returns>
         public override int GetHashCode()
         {
             unchecked

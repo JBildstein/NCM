@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace ColorManager.ICC
 {
@@ -49,7 +48,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="MultiProcessElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(MultiProcessElement a, MultiProcessElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount;
@@ -124,7 +123,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="CurveSetProcessElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(CurveSetProcessElement a, CurveSetProcessElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && CMP.Compare(a.Curves, b.Curves);
@@ -206,7 +205,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="MatrixProcessElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(MatrixProcessElement a, MatrixProcessElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && CMP.Compare(a.MatrixIxO, b.MatrixIxO)
@@ -281,7 +280,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="CLUTProcessElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(CLUTProcessElement a, CLUTProcessElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
                 && a.OutputChannelCount == b.OutputChannelCount && a.CLUTValue == b.CLUTValue;

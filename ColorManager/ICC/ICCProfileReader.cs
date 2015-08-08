@@ -1206,7 +1206,6 @@ namespace ColorManager.ICC
         /// Reads curve data
         /// </summary>
         /// <param name="count">Input channel count</param>
-        /// <param name="size">The size of this tag</param>
         /// <returns>the curve data</returns>
         private TagDataEntry[] ReadCurve(int count)
         {
@@ -1236,9 +1235,9 @@ namespace ColorManager.ICC
         }
 
         /// <summary>
-        /// Gets the type of a color from an uint representing a ColorSpaceType
+        /// Gets the type of a color from a given <see cref="ColorSpaceType"/>
         /// </summary>
-        /// <param name="i">Uint value representing a ColorSpaceType</param>
+        /// <param name="tp">The ColorSpaceType</param>
         /// <returns>The type of the color</returns>
         private Type GetColorType(ColorSpaceType tp)
         {

@@ -2,13 +2,25 @@
 
 namespace ColorManager.Conversion
 {
+    /// <summary>
+    /// Stores data about a conversion from <see cref="ColorDEF"/> to <see cref="ColorBCH"/>
+    /// </summary>
     public sealed unsafe class Path_DEF_BCH : ConversionPath<ColorDEF, ColorBCH>
     {
+        /// <summary>
+        /// An array of commands that convert from <see cref="ColorDEF"/> to <see cref="ColorBCH"/>
+        /// </summary>
         public override IConversionCommand[] Commands
         {
             get { return new IConversionCommand[] { new CC_ExecuteMethod(Convert) }; }
         }
-        
+
+        /// <summary>
+        /// The conversion method
+        /// </summary>
+        /// <param name="inColor">The pointer to the input color values</param>
+        /// <param name="outColor">The pointer to the output color values</param>
+        /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
             //inColor[2]^2
@@ -39,13 +51,25 @@ namespace ColorManager.Conversion
         }
     }
 
+    /// <summary>
+    /// Stores data about a conversion from <see cref="ColorBCH"/> to <see cref="ColorDEF"/>
+    /// </summary>
     public sealed unsafe class Path_BCH_DEF : ConversionPath<ColorBCH, ColorDEF>
     {
+        /// <summary>
+        /// An array of commands that convert from <see cref="ColorBCH"/> to <see cref="ColorDEF"/>
+        /// </summary>
         public override IConversionCommand[] Commands
         {
             get { return new IConversionCommand[] { new CC_ExecuteMethod(Convert) }; }
         }
 
+        /// <summary>
+        /// The conversion method
+        /// </summary>
+        /// <param name="inColor">The pointer to the input color values</param>
+        /// <param name="outColor">The pointer to the output color values</param>
+        /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
             data.Vars[0] = inColor[0] * Math.Sin(inColor[1]);

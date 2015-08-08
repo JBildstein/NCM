@@ -2,8 +2,14 @@
 
 namespace ColorManager.Conversion
 {
+    /// <summary>
+    /// Stores data about a conversion from <see cref="ColorXYZ"/> to <see cref="ColorLCH99d"/>
+    /// </summary>
     public sealed unsafe class Path_XYZ_LCH99d : ConversionPath<ColorXYZ, ColorLCH99d>
     {
+        /// <summary>
+        /// An array of commands that convert from <see cref="ColorXYZ"/> to <see cref="ColorLCH99d"/>
+        /// </summary>
         public override IConversionCommand[] Commands
         {
             get
@@ -17,6 +23,11 @@ namespace ColorManager.Conversion
             }
         }
 
+        /// <summary>
+        /// The adaption method
+        /// </summary>
+        /// <param name="inColor">The pointer to the input color values</param>
+        /// <param name="outColor">The pointer to the output color values</param>
         public static void Adapt(double* inColor, double* outColor)
         {
             //X'= 1.12 * X − 0.12 * Z
@@ -25,6 +36,12 @@ namespace ColorManager.Conversion
             outColor[2] = inColor[2];
         }
 
+        /// <summary>
+        /// The conversion method
+        /// </summary>
+        /// <param name="inColor">The pointer to the input color values</param>
+        /// <param name="outColor">The pointer to the output color values</param>
+        /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
             outColor[0] = Const.LCH99d_L1 * Math.Log(1 + Const.LCH99d_L2 * inColor[0]);                                                             //L
@@ -35,8 +52,14 @@ namespace ColorManager.Conversion
         }
     }
 
+    /// <summary>
+    /// Stores data about a conversion from <see cref="ColorLCH99d"/> to <see cref="ColorXYZ"/>
+    /// </summary>
     public sealed unsafe class Path_LCH99d_XYZ : ConversionPath<ColorLCH99d, ColorXYZ>
     {
+        /// <summary>
+        /// An array of commands that convert from <see cref="ColorLCH99d"/> to <see cref="ColorXYZ"/>
+        /// </summary>
         public override IConversionCommand[] Commands
         {
             get
@@ -50,11 +73,21 @@ namespace ColorManager.Conversion
             }
         }
 
+        /// <summary>
+        /// The adaption method
+        /// </summary>
+        /// <param name="outColor">The pointer to the output color values</param>
         public static void Adapt(double* outColor)
         {
             outColor[0] = (outColor[0] + 0.12 * outColor[2]) / 1.12;
         }
 
+        /// <summary>
+        /// The conversion method
+        /// </summary>
+        /// <param name="inColor">The pointer to the input color values</param>
+        /// <param name="outColor">The pointer to the output color values</param>
+        /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
             data.Vars[0] = (Math.Exp(inColor[1] / Const.LCH99d_Cd) - 1) / Const.LCH99d_CG;  //G

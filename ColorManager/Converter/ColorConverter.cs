@@ -9,28 +9,51 @@ using ColorManager.ICC.Conversion;
 
 namespace ColorManager
 {
+    /// <summary>
+    /// Provides methods to convert from one color to another
+    /// </summary>
     public unsafe partial class ColorConverter : IDisposable
     {
         #region Static Content
 
+        /// <summary>
+        /// States if the <see cref="ColorConverter"/> is initiated
+        /// </summary>
         public static bool IsInitiated
         {
             get { return _IsInitiated; }
         }
         private static bool _IsInitiated = false;
         
+        /// <summary>
+        /// All available conversion paths that are used to convert from one color to another
+        /// </summary>
         public static ConversionPath[] ConversionPaths
         {
             get { return _ConversionPaths.ToArray(); }
         }
+        /// <summary>
+        /// Field for the <see cref="ConversionPaths"/> property
+        /// </summary>
         protected static List<ConversionPath> _ConversionPaths = new List<ConversionPath>();
 
+        /// <summary>
+        /// All available chromatic adaption methods
+        /// </summary>
         public static ChromaticAdaption[] ChromaticAdaptions
         {
             get { return _ChromaticAdaptions.ToArray(); }
         }
+        /// <summary>
+        /// Field for the <see cref="ChromaticAdaptions"/> property
+        /// </summary>
         protected static List<ChromaticAdaption> _ChromaticAdaptions = new List<ChromaticAdaption>();
 
+        /// <summary>
+        /// Initiates the <see cref="ColorConverter"/> class
+        /// <para>If not called before the first <see cref="ColorConverter"/> instance,
+        /// it will be called by the <see cref="ColorConverter"/> constructor</para>
+        /// </summary>
         public static void Init()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -57,24 +80,42 @@ namespace ColorManager
             _IsInitiated = true;
         }
 
+        /// <summary>
+        /// Adds a conversion path to the <see cref="ConversionPaths"/> list
+        /// </summary>
+        /// <param name="path">The conversion path to add</param>
         public static void AddConversionPath(ConversionPath path)
         {
             if (path == null) throw new ArgumentNullException("path");
             if (!_ConversionPaths.Contains(path)) _ConversionPaths.Add(path);
         }
 
+        /// <summary>
+        /// Removes a conversion path from the <see cref="ConversionPaths"/> list
+        /// </summary>
+        /// <param name="path">The conversion path to remove</param>
+        /// <returns>True if the conversion path was found and removed, false otherwise</returns>
         public static bool RemoveConversionPath(ConversionPath path)
         {
             if (path == null) throw new ArgumentNullException("path");
             return _ConversionPaths.Remove(path);
         }
 
+        /// <summary>
+        /// Adds a conversion path to the <see cref="ConversionPaths"/> list
+        /// </summary>
+        /// <param name="ca">The chromatic adaption method to add</param>
         public static void AddChromaticAdaption(ChromaticAdaption ca)
         {
             if (ca == null) throw new ArgumentNullException("ca");
             if (!_ChromaticAdaptions.Contains(ca)) _ChromaticAdaptions.Add(ca);
         }
 
+        /// <summary>
+        /// Removes a conversion path from the <see cref="ConversionPaths"/> list
+        /// </summary>
+        /// <param name="ca">The chromatic adaption method to remove</param>
+        /// <returns>True if the chromatic adaption method was found and removed, false otherwise</returns>
         public static bool RemoveChromaticAdaption(ChromaticAdaption ca)
         {
             if (ca == null) throw new ArgumentNullException("ca");
@@ -85,16 +126,43 @@ namespace ColorManager
 
         #region Variables
 
+        /// <summary>
+        /// The method used for the conversion
+        /// </summary>
         protected ConversionDelegate ConversionMethod;
+        /// <summary>
+        /// The data used for the conversion
+        /// </summary>
         protected ConversionData Data;
+        /// <summary>
+        /// States if this instance is disposed or not
+        /// </summary>
         protected bool IsDisposed;
 
+        /// <summary>
+        /// The input color
+        /// </summary>
         protected readonly Color InColor;
+        /// <summary>
+        /// The output color
+        /// </summary>
         protected readonly Color OutColor;
+        /// <summary>
+        /// The pointer to the input color values
+        /// </summary>
         protected readonly double* InValues;
+        /// <summary>
+        /// The pointer to the output color values
+        /// </summary>
         protected readonly double* OutValues;
 
+        /// <summary>
+        /// The <see cref="GCHandle"/> for the input values
+        /// </summary>
         protected readonly GCHandle InValuesHandle;
+        /// <summary>
+        /// The <see cref="GCHandle"/> for the output values
+        /// </summary>
         protected readonly GCHandle OutValuesHandle;
 
         private Color TempColor1;
@@ -102,7 +170,11 @@ namespace ColorManager
 
         #endregion
 
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorConverter"/> class
+        /// </summary>
+        /// <param name="inColor">The input color</param>
+        /// <param name="outColor">The output color</param>
         public ColorConverter(Color inColor, Color outColor)
         {
             if (inColor == null || outColor == null) throw new ArgumentNullException();
@@ -123,6 +195,9 @@ namespace ColorManager
             ConversionMethod = convMethod.CreateDelegate(typeof(ConversionDelegate), this) as ConversionDelegate;             
         }
 
+        /// <summary>
+        /// Sets the conversion method with the provided <see cref="ILGenerator"/>
+        /// </summary>
         protected virtual void GetConversionMethod(ILGenerator CMIL)
         {
             var iccIn = InColor.Space as ColorspaceICC;
@@ -291,17 +366,27 @@ namespace ColorManager
 
         #region Dispose
 
+        /// <summary>
+        /// Finalizer of the <see cref="ColorConverter"/> class
+        /// </summary>
         ~ColorConverter()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Releases all allocated resources
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Releases all allocated resources
+        /// </summary>
+        /// <param name="managed">True if called by user, false if called by finalizer</param>
         protected virtual void Dispose(bool managed)
         {
             if (!IsDisposed)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace ColorManager.ICC
 {
@@ -273,7 +272,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="CurveSegment"/>s are equal; otherwise, false</returns>
         public static bool operator ==(CurveSegment a, CurveSegment b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature;
         }
@@ -349,7 +348,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="FormulaCurveElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(FormulaCurveElement a, FormulaCurveElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.type == b.type && a.gamma == b.gamma && a.a == b.a
                 && a.b == b.b && a.c == b.c && a.d == b.d && a.e == b.e;
@@ -429,7 +428,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="SampledCurveElement"/>s are equal; otherwise, false</returns>
         public static bool operator ==(SampledCurveElement a, SampledCurveElement b)
         {
-            if (object.ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && CMP.Compare(a.CurveEntries, b.CurveEntries);
         }

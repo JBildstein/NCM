@@ -2,8 +2,16 @@
 
 namespace ColorManager.ColorDifference
 {
+    /// <summary>
+    /// Provides methods to calculate the difference between two colors by the CIE76 formula
+    /// </summary>
     public unsafe sealed class ColorDifference_CIE76 : ColorLabDifferenceCalculator
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorDifference_CIE76"/> class
+        /// </summary>
+        /// <param name="Color1">First color to compare</param>
+        /// <param name="Color2">Second color to compare</param>
         public ColorDifference_CIE76(ColorLab Color1, ColorLab Color2)
             : base(Color1, Color2)
         { }
