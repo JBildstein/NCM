@@ -260,13 +260,13 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class CLUTProcessElement : MultiProcessElement
     {
-        public CLUTf32 CLUTValue
+        public CLUT CLUTValue
         {
             get { return _CLUTValue; }
         }
-        private CLUTf32 _CLUTValue;
+        private CLUT _CLUTValue;
 
-        public CLUTProcessElement(int inChCount, int outChCount, CLUTf32 CLUTValue)
+        public CLUTProcessElement(int inChCount, int outChCount, CLUT CLUTValue)
             : base(MultiProcessElementSignature.CLUT, inChCount, outChCount)
         {
             if (CLUTValue == null) throw new ArgumentNullException("CLUTValue");

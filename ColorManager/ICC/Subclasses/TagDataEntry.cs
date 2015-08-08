@@ -704,25 +704,25 @@ namespace ColorManager.ICC
         {
             get { return _Matrix; }
         }
-        public LUT16[] InputValues
+        public LUT[] InputValues
         {
             get { return _InputValues; }
         }
-        public CLUT16 CLUTValues
+        public CLUT CLUTValues
         {
             get { return _CLUTValues; }
         }
-        public LUT16[] OutputValues
+        public LUT[] OutputValues
         {
             get { return _OutputValues; }
         }
 
         private double[,] _Matrix;
-        private LUT16[] _InputValues;
-        private CLUT16 _CLUTValues;
-        private LUT16[] _OutputValues;
+        private LUT[] _InputValues;
+        private CLUT _CLUTValues;
+        private LUT[] _OutputValues;
 
-        public Lut16TagDataEntry(double[,] Matrix, LUT16[] InputValues, CLUT16 CLUTValues, LUT16[] OutputValues)
+        public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : base(TypeSignature.Lut16)
         {
             if (Matrix == null) throw new ArgumentNullException("Matrix");
@@ -803,25 +803,25 @@ namespace ColorManager.ICC
         {
             get { return _Matrix; }
         }
-        public LUT8[] InputValues
+        public LUT[] InputValues
         {
             get { return _InputValues; }
         }
-        public CLUT8 CLUTValues
+        public CLUT CLUTValues
         {
             get { return _CLUTValues; }
         }
-        public LUT8[] OutputValues
+        public LUT[] OutputValues
         {
             get { return _OutputValues; }
         }
 
         private double[,] _Matrix;
-        private LUT8[] _InputValues;
-        private CLUT8 _CLUTValues;
-        private LUT8[] _OutputValues;
+        private LUT[] _InputValues;
+        private CLUT _CLUTValues;
+        private LUT[] _OutputValues;
 
-        public Lut8TagDataEntry(double[,] Matrix, LUT8[] InputValues, CLUT8 CLUTValues, LUT8[] OutputValues)
+        public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : base(TypeSignature.Lut8)
         {
             if (Matrix == null) throw new ArgumentNullException("Matrix");

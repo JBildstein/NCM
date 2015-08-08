@@ -513,7 +513,7 @@ namespace ColorManager.ICC
             var outTableCount = ReadUInt16();
 
             //Input LUT
-            var inValues = new LUT16[inChCount];
+            var inValues = new LUT[inChCount];
             for (int i = 0; i < inChCount; i++) { inValues[i] = ReadLUT16(inTableCount); }
 
             //CLUT
@@ -522,7 +522,7 @@ namespace ColorManager.ICC
             var clut = ReadCLUT16(inChCount, outChCount, gridPointCount);
 
             //Output LUT
-            var outValues = new LUT16[outChCount];
+            var outValues = new LUT[outChCount];
             for (int i = 0; i < outChCount; i++) { outValues[i] = ReadLUT16(outTableCount); }
 
             return new Lut16TagDataEntry(matrix, inValues, clut, outValues);
@@ -540,7 +540,7 @@ namespace ColorManager.ICC
             var matrix = ReadMatrix(3, 3, false);
 
             //Input LUT
-            var inValues = new LUT8[inChCount];
+            var inValues = new LUT[inChCount];
             for (int i = 0; i < inChCount; i++) { inValues[i] = ReadLUT8(); }
 
             //CLUT
@@ -549,7 +549,7 @@ namespace ColorManager.ICC
             var clut = ReadCLUT8(inChCount, outChCount, gridPointCount);
 
             //Output LUT
-            var outValues = new LUT8[outChCount];
+            var outValues = new LUT[outChCount];
             for (int i = 0; i < outChCount; i++) { outValues[i] = ReadLUT8(); }
 
             return new Lut8TagDataEntry(matrix, inValues, clut, outValues);
@@ -928,22 +928,22 @@ namespace ColorManager.ICC
         /// </summary>
         /// <param name="count">The number of entries</param>
         /// <returns>the LUT</returns>
-        private LUT16 ReadLUT16(int count)
+        private LUT ReadLUT16(int count)
         {
             var values = new ushort[count];
             for (int i = 0; i < count; i++) { values[i] = ReadUInt16(); }
-            return new LUT16(values);
+            return new LUT(values);
         }
 
         /// <summary>
         /// Reads an 8bit lookup table
         /// </summary>
         /// <returns>the LUT</returns>
-        private LUT8 ReadLUT8()
+        private LUT ReadLUT8()
         {
             var values = new byte[256];
             Buffer.BlockCopy(Data, AIndex(256), values, 0, 256);
-            return new LUT8(values);
+            return new LUT(values);
         }
 
         /// <summary>
@@ -976,21 +976,23 @@ namespace ColorManager.ICC
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
         /// <returns>A CLUT8</returns>
-        private CLUT8 ReadCLUT8(int inChCount, int outChCount, byte[] gridPointCount)
+        private CLUT ReadCLUT8(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
             int length = 0;
             for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount) / inChCount; }
 
-            var values = new byte[length][];
+            const double max = byte.MaxValue;
+
+            var values = new double[length][];
             for (int i = 0; i < length; i++)
             {
-                values[i] = new byte[outChCount];
-                Buffer.BlockCopy(Data, AIndex(outChCount), values[i], 0, outChCount);
+                values[i] = new double[outChCount];
+                for (int j = 0; j < outChCount; j++) { values[i][j] = Data[Index++] / max; }
             }
 
             Index = start + length * outChCount;
-            return new CLUT8(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount);
         }
 
         /// <summary>
@@ -1000,21 +1002,23 @@ namespace ColorManager.ICC
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
         /// <returns>A CLUT16</returns>
-        private CLUT16 ReadCLUT16(int inChCount, int outChCount, byte[] gridPointCount)
+        private CLUT ReadCLUT16(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
             int length = 0;
             for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount) / inChCount; }
 
-            var values = new ushort[length][];
+            const double max = ushort.MaxValue;
+
+            var values = new double[length][];
             for (int i = 0; i < length; i++)
             {
-                values[i] = new ushort[outChCount];
-                for (int j = 0; j < outChCount; j++) { values[i][j] = ReadUInt16(); }
+                values[i] = new double[outChCount];
+                for (int j = 0; j < outChCount; j++) { values[i][j] = ReadUInt16() / max; }
             }
 
             Index = start + length * outChCount * 2;
-            return new CLUT16(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount);
         }
 
         /// <summary>
@@ -1024,7 +1028,7 @@ namespace ColorManager.ICC
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
         /// <returns>A CLUTf32</returns>
-        private CLUTf32 ReadCLUTf32(int inChCount, int outChCount, byte[] gridPointCount)
+        private CLUT ReadCLUTf32(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
             int length = 0;
@@ -1036,8 +1040,9 @@ namespace ColorManager.ICC
                 values[i] = new double[outChCount];
                 for (int j = 0; j < outChCount; j++) { values[i][j] = ReadSingle(); }
             }
+
             Index = start + length * outChCount * 4;
-            return new CLUTf32(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount);
         }
 
         #endregion
@@ -1088,7 +1093,7 @@ namespace ColorManager.ICC
 
         private CLUTProcessElement ReadCLUTProcessElement(int inChCount, int outChCount)
         {
-            return new CLUTProcessElement(inChCount, outChCount, (CLUTf32)ReadCLUT(inChCount, outChCount, true));
+            return new CLUTProcessElement(inChCount, outChCount, ReadCLUT(inChCount, outChCount, true));
         }
 
         #endregion

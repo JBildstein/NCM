@@ -1229,53 +1229,8 @@ namespace ColorManager.ICC.Conversion
         /// <param name="inColor">The input color type</param>
         private void WriteLUT8(Lut8TagDataEntry lut, ColorSpaceType inColor)
         {
-            LUT8[] InCurve = lut.InputValues;
-            LUT8[] OutCurve = lut.OutputValues;
-            double[] Matrix = new double[9]
-                {
-                    lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
-                    lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
-                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],
-                };
-
-            //Matrix
-            if (inColor == ColorSpaceType.CIEXYZ)
-            {
-                WriteLdICCData(DataPos);
-                WriteLdArg();
-                WriteCallMultiplyMatrix_3x3_3x1();
-                ICCData.Add(Matrix);
-                IsFirst = false;
-            }
-
-            //Input LUT
-            for (int i = 0; i < InCurve.Length; i++) WriteLUT8(InCurve[i], i);
-            IsFirst = false;
-            SwitchTempVar();
-
-            //CLUT
-            WriteCLUT(lut.CLUTValues);
-
-            IsLast = true;
-            //Output LUT
-            for (int i = 0; i < OutCurve.Length; i++) WriteLUT8(OutCurve[i], i);
+            WriteLUT(lut.InputValues, lut.OutputValues, lut.CLUTValues, lut.Matrix, inColor);
         }
-
-        /// <summary>
-        /// Writes the IL code for an 8-bit LUT
-        /// </summary>
-        /// <param name="lut">The LUT for this channel</param>
-        /// <param name="index">The channel index</param>
-        private void WriteLUT8(LUT8 lut, int index)
-        {
-            if (lut.Values.Length == 2) WriteAssignSingle(index);
-            else
-            {
-                WriteLUT(lut.Values.Length, index);
-                ICCData.Add(lut.Values.Select(t => t / (double)byte.MaxValue).ToArray());
-            }
-        }
-
 
         /// <summary>
         /// Writes the IL code for an 16-bit LUT entry
@@ -1284,13 +1239,23 @@ namespace ColorManager.ICC.Conversion
         /// <param name="inColor">The input color type</param>
         private void WriteLUT16(Lut16TagDataEntry lut, ColorSpaceType inColor)
         {
-            LUT16[] InCurve = lut.InputValues;
-            LUT16[] OutCurve = lut.OutputValues;
+            WriteLUT(lut.InputValues, lut.OutputValues, lut.CLUTValues, lut.Matrix, inColor);
+        }
+
+        /// <summary>
+        /// Writes the IL code for a LUT entry
+        /// <param name="InCurve">Input LUT values</param>
+        /// <param name="OutCurve">Output LUT values</param>
+        /// <param name="clut">CLUT</param>
+        /// <param name="matrix">Matrix</param>
+        /// <param name="inColor">The input color type</param>
+        private void WriteLUT(LUT[] InCurve, LUT[] OutCurve, CLUT clut, double[,] matrix, ColorSpaceType inColor)
+        {
             double[] Matrix = new double[9]
                 {
-                    lut.Matrix[0, 0], lut.Matrix[0, 1], lut.Matrix[0, 2],
-                    lut.Matrix[1, 0], lut.Matrix[1, 1], lut.Matrix[1, 2],
-                    lut.Matrix[2, 0], lut.Matrix[2, 1], lut.Matrix[2, 2],
+                    matrix[0, 0], matrix[0, 1], matrix[0, 2],
+                    matrix[1, 0], matrix[1, 1], matrix[1, 2],
+                    matrix[2, 0], matrix[2, 1], matrix[2, 2],
                 };
 
             //Matrix
@@ -1304,30 +1269,30 @@ namespace ColorManager.ICC.Conversion
             }
 
             //Input LUT
-            for (int i = 0; i < InCurve.Length; i++) WriteLUT16(InCurve[i], i);
+            for (int i = 0; i < InCurve.Length; i++) WriteLUT(InCurve[i], i);
             IsFirst = false;
             SwitchTempVar();
 
             //CLUT
-            WriteCLUT(lut.CLUTValues);
+            WriteCLUT(clut);
 
             IsLast = true;
             //Output LUT
-            for (int i = 0; i < OutCurve.Length; i++) WriteLUT16(OutCurve[i], i);
+            for (int i = 0; i < OutCurve.Length; i++) WriteLUT(OutCurve[i], i);
         }
 
         /// <summary>
-        /// Writes the IL code for an 16-bit LUT
+        /// Writes the IL code for an 8-bit LUT
         /// </summary>
         /// <param name="lut">The LUT for this channel</param>
         /// <param name="index">The channel index</param>
-        private void WriteLUT16(LUT16 lut, int index)
+        private void WriteLUT(LUT lut, int index)
         {
             if (lut.Values.Length == 2) WriteAssignSingle(index);
             else
             {
                 WriteLUT(lut.Values.Length, index);
-                ICCData.Add(lut.Values.Select(t => t / (double)ushort.MaxValue).ToArray());
+                ICCData.Add(lut.Values);
             }
         }
 
@@ -1514,55 +1479,16 @@ namespace ColorManager.ICC.Conversion
 
             #region Reordering Array
 
-            var lut8 = lut as CLUT8;
-            if (lut8 != null)
+            double[][] vals = new double[lut.OutputChannelCount][];
+            for (int i = 0; i < vals.Length; i++)
             {
-                double[][] vals = new double[lut.OutputChannelCount][];
-                for (int i = 0; i < vals.Length; i++)
+                vals[i] = new double[lut.Values.Length];
+                for (int j = 0; j < vals[i].Length; j++)
                 {
-                    vals[i] = new double[lut8.Values.Length];
-                    for (int j = 0; j < vals[i].Length; j++)
-                    {
-                        vals[i][j] = lut8.Values[j][i] / (double)byte.MaxValue;
-                    }
+                    vals[i][j] = lut.Values[j][i];
                 }
-                ICCData.AddRange(vals);
-                return;
             }
-
-            var lut16 = lut as CLUT16;
-            if (lut16 != null)
-            {
-                double[][] vals = new double[lut.OutputChannelCount][];
-                for (int i = 0; i < vals.Length; i++)
-                {
-                    vals[i] = new double[lut16.Values.Length];
-                    for (int j = 0; j < vals[i].Length; j++)
-                    {
-                        vals[i][j] = lut16.Values[j][i] / (double)ushort.MaxValue;
-                    }
-                }
-                ICCData.AddRange(vals);
-                return;
-            }
-
-            var lutf32 = lut as CLUTf32;
-            if (lutf32 != null)
-            {
-                double[][] vals = new double[lut.OutputChannelCount][];
-                for (int i = 0; i < vals.Length; i++)
-                {
-                    vals[i] = new double[lutf32.Values.Length];
-                    for (int j = 0; j < vals[i].Length; j++)
-                    {
-                        vals[i][j] = lutf32.Values[j][i];
-                    }
-                }
-                ICCData.AddRange(vals);
-                return;
-            }
-
-            throw new InvalidProfileException();
+            ICCData.AddRange(vals);
 
             #endregion
         }
