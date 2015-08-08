@@ -93,6 +93,8 @@ namespace ICCViewer
 
         #endregion
 
+        //TODO: implement specific controls for each ICC tag type
+
         #region Show Data
 
         private Control GetControl(TagDataEntry entry)
@@ -208,13 +210,18 @@ namespace ICCViewer
         {
             var ctrl = entry as ColorantTableTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
+            StringBuilder txt = new StringBuilder();
 
-            lb.Text = entry.Signature.ToString();
+            for (int i = 0; i < ctrl.ColorantData.Length; i++)
+            {
+                var d = ctrl.ColorantData[i];
+                txt.Append($"{nameof(d.Name)}: {d.Name}{Environment.NewLine}");
+                txt.Append($"{nameof(d.PCS1)}: {d.PCS1}{Environment.NewLine}");
+                txt.Append($"{nameof(d.PCS2)}: {d.PCS2}{Environment.NewLine}");
+                txt.Append($"{nameof(d.PCS3)}: {d.PCS3}{Environment.NewLine}");
+            }
 
-            return lb;
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlCurve(TagDataEntry entry)
@@ -234,26 +241,24 @@ namespace ICCViewer
         {
             var ctrl = entry as DataTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
+            StringBuilder txt = new StringBuilder();
+            txt.Append(FromBytes(ctrl.Data, false));
+            if (ctrl.IsASCII)
+            {
+                txt.Append(Environment.NewLine);
+                txt.Append("ASCII");
+                txt.Append(Environment.NewLine);
+                txt.Append(ctrl.ASCIIString);
+            }
 
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlDateTime(TagDataEntry entry)
         {
             var ctrl = entry as DateTimeTagDataEntry;
-
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            
+            return CreateTextBox(ctrl.Value.ToString());
         }
 
         private Control GetControlLut16(TagDataEntry entry)
@@ -312,26 +317,36 @@ namespace ICCViewer
         {
             var ctrl = entry as MeasurementTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
+            StringBuilder txt = new StringBuilder();
+            txt.Append($"{nameof(ctrl.Observer)}: {ctrl.Observer.ToString()}");
+            txt.Append(Environment.NewLine);
 
-            lb.Text = entry.Signature.ToString();
+            txt.Append($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
+            txt.Append(Environment.NewLine);
 
-            return lb;
+            txt.Append($"{nameof(ctrl.Geometry)}: {ctrl.Geometry.ToString()}");
+            txt.Append(Environment.NewLine);
+
+            txt.Append($"{nameof(ctrl.Flare)}: {ctrl.Flare.ToString("F3")}");
+            txt.Append(Environment.NewLine);
+
+            txt.Append($"{nameof(ctrl.XYZBacking)}: {ctrl.XYZBacking.ToString("F3")}");
+            txt.Append(Environment.NewLine);
+
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlMultiLocalizedUnicode(TagDataEntry entry)
         {
             var ctrl = entry as MultiLocalizedUnicodeTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Text.Length; i++)
+            {
+                txt.Append(FromLocalized(ctrl.Text[i]));
+                txt.Append(Environment.NewLine);
+            }
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlMultiProcessElements(TagDataEntry entry)
@@ -351,13 +366,33 @@ namespace ICCViewer
         {
             var ctrl = entry as NamedColor2TagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
+            StringBuilder txt = new StringBuilder();
 
-            lb.Text = entry.Signature.ToString();
+            txt.Append($"{nameof(ctrl.VendorFlag)}: {FromBytes(ctrl.VendorFlag, true)}");
+            txt.Append(Environment.NewLine);
 
-            return lb;
+            txt.Append($"{nameof(ctrl.Prefix)}: {ctrl.Prefix}");
+            txt.Append(Environment.NewLine);
+
+            txt.Append($"{nameof(ctrl.Suffix)}: {ctrl.Suffix}");
+            txt.Append(Environment.NewLine);
+
+            txt.Append($"{nameof(ctrl.Colors)}:{Environment.NewLine}");
+            for (int i = 0; i < ctrl.Colors.Length; i++)
+            {
+                var col = ctrl.Colors[i];
+                txt.Append($"{nameof(col.Name)}: {col.Name}");
+                txt.Append(Environment.NewLine);
+
+                txt.Append($"{nameof(col.PCScoordinates)}:");
+                for (int j = 0; j < col.PCScoordinates.Length; j++) txt.Append($"{col.PCScoordinates[j]};");
+                txt.Append(Environment.NewLine);
+
+                txt.Append($"{nameof(col.DeviceCoordinates)}:");
+                for (int j = 0; j < col.DeviceCoordinates.Length; j++) txt.Append($"{col.DeviceCoordinates[j]};");
+                txt.Append(Environment.NewLine);
+            }
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlParametricCurve(TagDataEntry entry)
@@ -416,126 +451,91 @@ namespace ICCViewer
         {
             var ctrl = entry as Fix16ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i].ToString("F3")}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlSignature(TagDataEntry entry)
         {
             var ctrl = entry as SignatureTagDataEntry;
-
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return CreateTextBox(ctrl.SignatureData);
         }
 
         private Control GetControlText(TagDataEntry entry)
         {
             var ctrl = entry as TextTagDataEntry;
-
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return CreateTextBox(ctrl.Text);
         }
 
         private Control GetControlU16Fixed16Array(TagDataEntry entry)
         {
             var ctrl = entry as UFix16ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i].ToString("F3")}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlUInt16Array(TagDataEntry entry)
         {
             var ctrl = entry as UInt16ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlUInt32Array(TagDataEntry entry)
         {
             var ctrl = entry as UInt32ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlUInt64Array(TagDataEntry entry)
         {
             var ctrl = entry as UInt64ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlUInt8Array(TagDataEntry entry)
         {
             var ctrl = entry as UInt8ArrayTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlViewingConditions(TagDataEntry entry)
         {
             var ctrl = entry as ViewingConditionsTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
+            StringBuilder txt = new StringBuilder();
+            txt.Append($"{nameof(ctrl.IlluminantXYZ)}: {ctrl.IlluminantXYZ.ToString("F3")}");
+            txt.Append(Environment.NewLine);
 
-            lb.Text = entry.Signature.ToString();
+            txt.Append($"{nameof(ctrl.SurroundXYZ)}: {ctrl.SurroundXYZ.ToString("F3")}");
+            txt.Append(Environment.NewLine);
 
-            return lb;
+            txt.Append($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
+
+            return CreateTextBox(txt.ToString());
         }
 
         private Control GetControlXYZ(TagDataEntry entry)
         {
             var ctrl = entry as XYZTagDataEntry;
 
-            string txt = string.Empty;
-            for (int i = 0; i < ctrl.Data.Length; i++) txt += ctrl.Data[i].ToString("F3") + Environment.NewLine;
-            return CreateTextBox(txt);
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append(ctrl.Data[i].ToString("F3") + Environment.NewLine);
+            return CreateTextBox(txt.ToString());
         }
 
 
@@ -578,6 +578,10 @@ namespace ICCViewer
             return txt;
         }
         
+        private string FromLocalized(LocalizedString lstring)
+        {
+            return $"{nameof(lstring.Locale)}: {lstring.Locale.ToString()}{Environment.NewLine}{lstring.Text}";            
+        }
 
         #endregion
 
