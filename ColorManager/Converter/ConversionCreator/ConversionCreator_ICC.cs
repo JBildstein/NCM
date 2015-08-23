@@ -1399,7 +1399,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
-        //TODO: LUT and CLUT lookup doesn't seem to be completely correct
+        //TODO: LUT and CLUT lookup doesn't seem to be completely accurate (when compared to other converters)
 
         /// <summary>
         /// Writes the IL code for a LUT

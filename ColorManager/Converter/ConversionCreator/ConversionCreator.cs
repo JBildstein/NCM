@@ -163,7 +163,7 @@ namespace ColorManager.Conversion
 
             for (int i = 0; i < c.ChannelCount; i++)
             {
-                bool last = i == c.ChannelCount - 1;
+                IsLast = i == c.ChannelCount - 1;
 
                 if (i == c.CylinderChannel)
                 {
@@ -192,10 +192,11 @@ namespace ColorManager.Conversion
                 }
                 else
                 {
-                    //LTODO: make separate functions for when either max or min should not be checked
-                    if (max[i] != double.MaxValue && min[i] != double.MinValue)
-                    {
+                    bool doMax = !double.IsNaN(max[i]);
+                    bool doMin = !double.IsNaN(min[i]);
 
+                    if (doMax && doMin)
+                    {
                         var ifLabel = CMIL.DefineLabel();
                         var endLabel = CMIL.DefineLabel();
 
@@ -203,7 +204,7 @@ namespace ColorManager.Conversion
                         WriteRangeCheckIf(i, max[i]);
                         CMIL.Emit(OpCodes.Ble_Un, ifLabel);
                         WriteRangeCheckAssign(i, max[i]);
-                        if (last) CMIL.Emit(OpCodes.Ret);
+                        if (IsLast) CMIL.Emit(OpCodes.Ret);
                         CMIL.Emit(OpCodes.Br, endLabel);
                         CMIL.MarkLabel(ifLabel);
 
@@ -214,9 +215,28 @@ namespace ColorManager.Conversion
 
                         CMIL.MarkLabel(endLabel);
                     }
-                }
+                    else if (doMax)
+                    {
+                        var ifLabel = CMIL.DefineLabel();
 
-                IsLast = last;
+                        //if (value > max) value = max;
+                        WriteRangeCheckIf(i, max[i]);
+                        CMIL.Emit(OpCodes.Ble_Un, ifLabel);
+                        WriteRangeCheckAssign(i, max[i]);
+                        CMIL.MarkLabel(ifLabel);
+                    }
+                    else if (doMin)
+                    {
+                        var ifLabel = CMIL.DefineLabel();
+
+                        //if (value < min) value = min;
+                        WriteRangeCheckIf(i, min[i]);
+                        CMIL.Emit(OpCodes.Bge_Un, ifLabel);
+                        WriteRangeCheckAssign(i, min[i]);
+                        CMIL.MarkLabel(ifLabel);
+                    }
+                }
+                
                 if (IsLast) CMIL.Emit(OpCodes.Ret);
             }
         }

@@ -22,10 +22,12 @@ namespace ColorManager
         public abstract int ChannelCount { get; }
         /// <summary>
         /// Minimum value for each channel
+        /// <para>Set <see cref="double.NaN"/> if no minimum value</para>
         /// </summary>
         public abstract double[] MinValues { get; }
         /// <summary>
         /// Maximum value for each channel
+        /// <para>Set <see cref="double.NaN"/> if no maximum value</para>
         /// </summary>
         public abstract double[] MaxValues { get; }
         /// <summary>

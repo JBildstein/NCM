@@ -51,14 +51,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, double.MinValue, double.MinValue }; }
+            get { return new double[] { 0.0, double.NaN, double.NaN }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0, double.MaxValue, double.MaxValue }; }
+            get { return new double[] { 1.0, double.NaN, double.NaN }; }
         }
         /// <summary>
         /// Names of channels short
