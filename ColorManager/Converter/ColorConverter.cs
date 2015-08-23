@@ -408,7 +408,7 @@ namespace ColorManager
         /// <summary>
         /// Converts the colors given in the constructor
         /// </summary>
-        public virtual void Convert()
+        public void Convert()
         {
             ConversionMethod(InValues, OutValues, Data);
         }

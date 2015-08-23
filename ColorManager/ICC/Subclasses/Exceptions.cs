@@ -1,11 +1,73 @@
 ﻿using System;
+using System.Security.Permissions;
+using System.Runtime.Serialization;
 
 namespace ColorManager.ICC
 {
     /// <summary>
+    /// A generic ICC exception. It is used for ICC related exceptions.
+    /// </summary>
+    [Serializable]
+    public class ICCException : Exception
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCException"/> class
+        /// </summary>
+        public ICCException()
+        { }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCException"/> class
+        /// </summary>
+        /// <param name="message">An additional message</param>
+        public ICCException(string message)
+            : base(message)
+        { }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCException"/> class
+        /// </summary>
+        /// <param name="message">An additional message</param>
+        /// <param name="innerException">The inner exception</param>
+        public ICCException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ICCException"/> class with serialized data.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized 
+        /// object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/>  that contains contextual
+        /// information about the source or destination.</param>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        private ICCException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
+
+        /// <summary>
+        /// When overridden in a derived class, sets the <see cref="SerializationInfo"/>
+        /// with information about the exception.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/>
+        /// that holds the serialized object data about the exception being thrown</param>
+        /// <param name="context">The <see cref="StreamingContext"/>
+        /// that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The info parameter is a null reference</exception>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null) throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+        }
+    }
+
+    /// <summary>
     /// An ICC profile reading error (e.g. data is not aligned correctly on a byte level)
     /// </summary>
-    public sealed class CorruptProfileException : Exception
+    [Serializable]
+    public sealed class CorruptProfileException : ICCException
     {
         /// <summary>
         /// Creates a new instance of the <see cref="CorruptProfileException"/> class
@@ -29,12 +91,42 @@ namespace ColorManager.ICC
         public CorruptProfileException(string message, Exception innerException)
             : base(message, innerException)
         { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CorruptProfileException"/> class with serialized data.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized 
+        /// object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/>  that contains contextual
+        /// information about the source or destination.</param>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        private CorruptProfileException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
+
+        /// <summary>
+        /// When overridden in a derived class, sets the <see cref="SerializationInfo"/>
+        /// with information about the exception.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/>
+        /// that holds the serialized object data about the exception being thrown</param>
+        /// <param name="context">The <see cref="StreamingContext"/>
+        /// that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The info parameter is a null reference</exception>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null) throw new ArgumentNullException("info");
+
+            base.GetObjectData(info, context);
+        }
     }
 
     /// <summary>
     /// An ICC profile setup error (e.g. does not contain necessary tags)
     /// </summary>
-    public sealed class InvalidProfileException : Exception
+    [Serializable]
+    public sealed class InvalidProfileException : ICCException
     {
         /// <summary>
         /// Creates a new instance of the <see cref="InvalidProfileException"/> class
@@ -58,41 +150,42 @@ namespace ColorManager.ICC
         public InvalidProfileException(string message, Exception innerException)
             : base(message, innerException)
         { }
-    }
 
-    /// <summary>
-    /// The type of a color does not match a certain condition
-    /// </summary>
-    public sealed class ColorTypeException : Exception
-    {
         /// <summary>
-        /// Creates a new instance of the <see cref="ColorTypeException"/> class
+        /// Initializes a new instance of the <see cref="InvalidProfileException"/> class with serialized data.
         /// </summary>
-        public ColorTypeException()
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized 
+        /// object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/>  that contains contextual
+        /// information about the source or destination.</param>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        private InvalidProfileException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ColorTypeException"/> class
+        /// When overridden in a derived class, sets the <see cref="SerializationInfo"/>
+        /// with information about the exception.
         /// </summary>
-        /// <param name="message">An additional message</param>
-        public ColorTypeException(string message)
-            : base(message)
-        { }
+        /// <param name="info">The <see cref="SerializationInfo"/>
+        /// that holds the serialized object data about the exception being thrown</param>
+        /// <param name="context">The <see cref="StreamingContext"/>
+        /// that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The info parameter is a null reference</exception>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null) throw new ArgumentNullException("info");
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="ColorTypeException"/> class
-        /// </summary>
-        /// <param name="message">An additional message</param>
-        /// <param name="innerException">The inner exception</param>
-        public ColorTypeException(string message, Exception innerException)
-            : base(message, innerException)
-        { }
+            base.GetObjectData(info, context);
+        }
     }
 
     /// <summary>
     /// An attempt to use an invalid ICC profile class was made
     /// </summary>
-    public sealed class InvalidProfileClassException : Exception
+    [Serializable]
+    public sealed class InvalidProfileClassException : ICCException
     {
         /// <summary>
         /// Creates a new instance of the <see cref="InvalidProfileClassException"/> class
@@ -116,34 +209,34 @@ namespace ColorManager.ICC
         public InvalidProfileClassException(string message, Exception innerException)
             : base(message, innerException)
         { }
-    }
 
-    /// <summary>
-    /// The necessary conditions for a conversion were not met
-    /// </summary>
-    public sealed class ConversionSetupException : Exception
-    {
         /// <summary>
-        /// Creates a new instance of the <see cref="ConversionSetupException"/> class
+        /// Initializes a new instance of the <see cref="InvalidProfileClassException"/> class with serialized data.
         /// </summary>
-        public ConversionSetupException()
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized 
+        /// object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/>  that contains contextual
+        /// information about the source or destination.</param>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        private InvalidProfileClassException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ConversionSetupException"/> class
+        /// When overridden in a derived class, sets the <see cref="SerializationInfo"/>
+        /// with information about the exception.
         /// </summary>
-        /// <param name="message">An additional message</param>
-        public ConversionSetupException(string message)
-            : base(message)
-        { }
+        /// <param name="info">The <see cref="SerializationInfo"/>
+        /// that holds the serialized object data about the exception being thrown</param>
+        /// <param name="context">The <see cref="StreamingContext"/>
+        /// that contains contextual information about the source or destination.</param>
+        /// <exception cref="ArgumentNullException">The info parameter is a null reference</exception>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null) throw new ArgumentNullException("info");
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="ConversionSetupException"/> class
-        /// </summary>
-        /// <param name="message">An additional message</param>
-        /// <param name="innerException">The inner exception</param>
-        public ConversionSetupException(string message, Exception innerException)
-            : base(message, innerException)
-        { }
+            base.GetObjectData(info, context);
+        }
     }
 }

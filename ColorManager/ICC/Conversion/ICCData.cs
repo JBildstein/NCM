@@ -16,6 +16,8 @@ namespace ColorManager.ICC.Conversion
         
         public ICCData(double[][] data)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
             DataPtr = Marshal.AllocHGlobal(data.Length * IntPtr.Size);
             ArrHandle = new GCHandle[data.Length];
 

@@ -1438,8 +1438,8 @@ namespace ColorManager.ICC.Conversion
             #region IL Code
 
             /* int idx = (int)(inColor[2] * lut.GridPointCount[2])
-                   + (int)(inColor[1] * lut.GridPointCount[1]) * lut.GridPointCount[2]
-                   + (int)(inColor[0] * lut.GridPointCount[0]) * lut.GridPointCount[1] * lut.GridPointCount[2];
+                       + (int)(inColor[1] * lut.GridPointCount[1]) * lut.GridPointCount[2]
+                       + (int)(inColor[0] * lut.GridPointCount[0]) * lut.GridPointCount[1] * lut.GridPointCount[2];
 
                 outColor[0] = data.InICCData[position + 0][idx];
                 outColor[1] = data.InICCData[position + 1][idx];
