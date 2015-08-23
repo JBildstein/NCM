@@ -41,7 +41,7 @@ namespace ColorManager.ICC
         /// <param name="context">The <see cref="StreamingContext"/>  that contains contextual
         /// information about the source or destination.</param>
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        private ICCException(SerializationInfo info, StreamingContext context)
+        protected ICCException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
 
