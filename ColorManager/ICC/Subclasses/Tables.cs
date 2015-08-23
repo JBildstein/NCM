@@ -165,7 +165,7 @@ namespace ColorManager.ICC
         /// <param name="values">The LUT values</param>
         public LUT(double[] values)
         {
-            if (Values == null) throw new ArgumentNullException(nameof(values));
+            if (values == null) throw new ArgumentNullException(nameof(values));
 
             _Values = values;
         }
@@ -176,7 +176,7 @@ namespace ColorManager.ICC
         /// <param name="values">The LUT values</param>
         public LUT(ushort[] values)
         {
-            if (Values == null) throw new ArgumentNullException(nameof(values));
+            if (values == null) throw new ArgumentNullException(nameof(values));
 
             const double max = ushort.MaxValue;
 
@@ -190,7 +190,7 @@ namespace ColorManager.ICC
         /// <param name="values">The LUT values</param>
         public LUT(byte[] values)
         {
-            if (Values == null) throw new ArgumentNullException(nameof(values));
+            if (values == null) throw new ArgumentNullException(nameof(values));
 
             const double max = byte.MaxValue;
 
