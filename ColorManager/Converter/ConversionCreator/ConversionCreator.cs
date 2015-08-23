@@ -127,7 +127,7 @@ namespace ColorManager.Conversion
             this.OutColor = outColor;
             this._IsFirstG = false;
             this._IsLastG = isLast;
-            this.IsTempVar1 = parent.IsTempVar1;
+            this.IsTempVar1 = !parent.IsTempVar1;
         }
 
         /// <summary>
@@ -189,7 +189,6 @@ namespace ColorManager.Conversion
                     else WriteRangeCheckCircularFull(i, min[i], max[i]);
 
                     CMIL.MarkLabel(endLabel);
-                    if (last) CMIL.Emit(OpCodes.Ret);
                 }
                 else
                 {
@@ -215,8 +214,10 @@ namespace ColorManager.Conversion
 
                         CMIL.MarkLabel(endLabel);
                     }
-                    if (last) CMIL.Emit(OpCodes.Ret);
                 }
+
+                IsLast = last;
+                if (IsLast) CMIL.Emit(OpCodes.Ret);
             }
         }
 

@@ -1282,7 +1282,7 @@ namespace ColorManager.ICC.Conversion
             for (int i = 0; i < InCurve.Length; i++) WriteLUT(InCurve[i], i);
             IsFirst = false;
             SwitchTempVar();
-
+            
             //CLUT
             WriteCLUT(clut);
 

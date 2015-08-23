@@ -345,7 +345,6 @@ namespace ColorManager
             }
             else
             {
-                //HTODO: using two ConversionCreator classes doesn't seem to work. (output is 0;0;0) 
                 if (outType == profile.DataColorspace)
                 {
                     TempColor1 = profile.GetPCSColor(true);
