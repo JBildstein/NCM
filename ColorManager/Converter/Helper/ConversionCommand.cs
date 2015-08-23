@@ -24,7 +24,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(ConversionDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            this.methodC = method;
+            methodC = method;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(TransformToDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            this.methodTTo = method;
+            methodTTo = method;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(TransformDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            this.methodT = method;
+            methodT = method;
         }
     }
 
@@ -90,7 +90,7 @@ namespace ColorManager.Conversion
             if (condition == null || ifCommands == null) throw new ArgumentNullException();
 
             this.condition = condition;
-            this.IfCommands = ifCommands;
+            IfCommands = ifCommands;
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace ColorManager.Conversion
             if (condition == null || ifCommands == null || elseCommands == null) throw new ArgumentNullException();
 
             this.condition = condition;
-            this.IfCommands = ifCommands;
-            this.ElseCommands = elseCommands;
+            IfCommands = ifCommands;
+            ElseCommands = elseCommands;
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace ColorManager.Conversion
             if (condition == null || ifCommand == null || elseCommand == null) throw new ArgumentNullException();
 
             this.condition = condition;
-            this.IfCommands = new IConversionCommand[] { ifCommand };
-            this.ElseCommands = new IConversionCommand[] { elseCommand };
+            IfCommands = new IConversionCommand[] { ifCommand };
+            ElseCommands = new IConversionCommand[] { elseCommand };
         }
     }
 

@@ -75,8 +75,8 @@ namespace ColorManager
         public ColorspaceGray(Whitepoint wp, double gamma)
             : base(wp)
         {
-            this._Gamma = gamma;
-            this._Gamma1 = 1d / gamma;
+            _Gamma = gamma;
+            _Gamma1 = 1d / gamma;
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace ColorManager
         {
             ColorspaceGray c = obj as ColorspaceGray;
             if ((object)c == null) return base.Equals(obj);
-            return c.RefWhite == this.RefWhite && c.Gamma == this.Gamma;
+            return c.RefWhite == RefWhite && c.Gamma == Gamma;
         }
         /// <summary>
         /// Calculates a hash code of this colorspace

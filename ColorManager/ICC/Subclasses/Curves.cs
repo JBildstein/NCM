@@ -18,9 +18,9 @@ namespace ColorManager.ICC
 
         public OneDimensionalCurve(double[] BreakPoints, CurveSegment[] Segments)
         {
-            if (BreakPoints == null) throw new ArgumentNullException("BreakPoints");
-            if (Segments == null) throw new ArgumentNullException("Segments");
-
+            if (BreakPoints == null) throw new ArgumentNullException(nameof(BreakPoints));
+            if (Segments == null) throw new ArgumentNullException(nameof(Segments));
+            
             this.BreakPoints = BreakPoints;
             this.Segments = Segments;
         }
@@ -85,8 +85,8 @@ namespace ColorManager.ICC
 
         public ResponseCurve(CurveMeasurementEncodings CurveType, XYZNumber[] XYZvalues, ResponseNumber[] ResponseArrays)
         {
-            if (XYZvalues == null) throw new ArgumentNullException("XYZValues");
-            if (ResponseArrays == null) throw new ArgumentNullException("ResponseArrays");
+            if (XYZvalues == null) throw new ArgumentNullException(nameof(XYZvalues));
+            if (ResponseArrays == null) throw new ArgumentNullException(nameof(ResponseArrays));
 
             this.CurveType = CurveType;
             this.XYZvalues = XYZvalues;
@@ -261,7 +261,7 @@ namespace ColorManager.ICC
 
         protected CurveSegment(CurveSegmentSignature Signature)
         {
-            this._Signature = Signature;
+            _Signature = Signature;
         }
         
         /// <summary>
@@ -416,8 +416,8 @@ namespace ColorManager.ICC
         public SampledCurveElement(double[] CurveEntries)
             : base(CurveSegmentSignature.SampledCurve)
         {
-            if (CurveEntries == null) throw new ArgumentNullException("CurveEntries");
-            this._CurveEntries = CurveEntries;
+            if (CurveEntries == null) throw new ArgumentNullException(nameof(CurveEntries));
+            _CurveEntries = CurveEntries;
         }
         
         /// <summary>

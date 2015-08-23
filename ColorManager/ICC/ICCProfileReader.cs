@@ -22,14 +22,14 @@ namespace ColorManager.ICC
 
         public ICCProfile Read(string path)
         {
-            this.Data = File.ReadAllBytes(path);
+            Data = File.ReadAllBytes(path);
             return ReadAll();
         }
 
         public ICCProfile Read(byte[] data)
         {
-            this.Data = new byte[data.Length];
-            Buffer.BlockCopy(data, 0, this.Data, 0, data.Length);
+            Data = new byte[data.Length];
+            Buffer.BlockCopy(data, 0, Data, 0, data.Length);
             return ReadAll();
         }
 
@@ -41,8 +41,8 @@ namespace ColorManager.ICC
 
             uint profileLength = ReadUInt32(size, 0);
 
-            this.Data = new byte[profileLength];
-            dataStream.Read(this.Data, 0, (int)dataStream.Length);
+            Data = new byte[profileLength];
+            dataStream.Read(Data, 0, (int)dataStream.Length);
             return ReadAll();
         }
 
@@ -57,7 +57,7 @@ namespace ColorManager.ICC
             if (!Profile.ID.IsSet) Profile.ID = calcHash;
             else if (Profile.ID != calcHash) throw new CorruptProfileException("Hash stored in profile does not match");
 
-            this.Data = null;
+            Data = null;
             return Profile;
         }
 

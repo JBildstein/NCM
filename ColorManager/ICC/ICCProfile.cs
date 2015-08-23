@@ -91,7 +91,6 @@ namespace ColorManager.ICC
 
         #endregion
         
-
         #region Tags
 
         /// <summary>
@@ -115,21 +114,7 @@ namespace ColorManager.ICC
         }
 
         #endregion
-
-        #region Validation
-
-        /// <summary>
-        /// Checks if this profile is valid
-        /// </summary>
-        /// <returns>True if valid, false otherwise</returns>
-        public bool Validate()
-        {
-            //LTODO: write ICC profile validation (partially see Annex G)
-            return true;
-        }
-
-        #endregion
-
+        
         #region Get Color
 
         /// <summary>
@@ -303,7 +288,7 @@ namespace ColorManager.ICC
 
         public ProfileConversionMethod GetConversionMethod()
         {
-            switch (this.Class)
+            switch (Class)
             {
                 case ProfileClassName.InputDevice:
                 case ProfileClassName.DisplayDevice:
@@ -322,7 +307,7 @@ namespace ColorManager.ICC
 
         private ProfileConversionMethod CheckIntent1()
         {
-            var ri = this.RenderingIntent;
+            var ri = RenderingIntent;
             var ci = ProfileConversionMethod.Invalid;
 
             ci = CheckIntent_D();
@@ -342,59 +327,59 @@ namespace ColorManager.ICC
 
         private ProfileConversionMethod CheckIntent_D()
         {
-            if ((this.HasTag(TagSignature.DToB0) || this.HasTag(TagSignature.BToD0))
-                && this.RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.D0;
+            if ((HasTag(TagSignature.DToB0) || HasTag(TagSignature.BToD0))
+                && RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.D0;
 
-            if ((this.HasTag(TagSignature.DToB1) || this.HasTag(TagSignature.BToD1))
-                && this.RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.D1;
+            if ((HasTag(TagSignature.DToB1) || HasTag(TagSignature.BToD1))
+                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.D1;
 
-            if ((this.HasTag(TagSignature.DToB2) || this.HasTag(TagSignature.BToD2))
-                && this.RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.D2;
+            if ((HasTag(TagSignature.DToB2) || HasTag(TagSignature.BToD2))
+                && RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.D2;
 
-            if ((this.HasTag(TagSignature.DToB3) || this.HasTag(TagSignature.BToD3))
-                && this.RenderingIntent == RenderingIntent.AbsoluteColorimetric) return  ProfileConversionMethod.D3;
+            if ((HasTag(TagSignature.DToB3) || HasTag(TagSignature.BToD3))
+                && RenderingIntent == RenderingIntent.AbsoluteColorimetric) return  ProfileConversionMethod.D3;
 
             return ProfileConversionMethod.Invalid;
         }
 
         private ProfileConversionMethod CheckIntent_A()
         {
-            if ((this.HasTag(TagSignature.AToB0) || this.HasTag(TagSignature.BToA0))
-                && this.RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.A0;
+            if ((HasTag(TagSignature.AToB0) || HasTag(TagSignature.BToA0))
+                && RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.A0;
 
-            if ((this.HasTag(TagSignature.AToB1) || this.HasTag(TagSignature.BToA1))
-                && this.RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.A1;
+            if ((HasTag(TagSignature.AToB1) || HasTag(TagSignature.BToA1))
+                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.A1;
 
-            if ((this.HasTag(TagSignature.AToB2) || this.HasTag(TagSignature.BToA2))
-                && this.RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.A2;
+            if ((HasTag(TagSignature.AToB2) || HasTag(TagSignature.BToA2))
+                && RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.A2;
 
             return ProfileConversionMethod.Invalid;
         }
 
         private ProfileConversionMethod CheckIntent_A0()
         {
-            if (this.HasTag(TagSignature.AToB0) || this.HasTag(TagSignature.BToA0)) return ProfileConversionMethod.A0;
+            if (HasTag(TagSignature.AToB0) || HasTag(TagSignature.BToA0)) return ProfileConversionMethod.A0;
             else return ProfileConversionMethod.Invalid;
         }
 
         private ProfileConversionMethod CheckIntent_TRC()
         {
-            if (this.HasTag(TagSignature.RedMatrixColumn)
-                && this.HasTag(TagSignature.GreenMatrixColumn)
-                && this.HasTag(TagSignature.BlueMatrixColumn)
-                && this.HasTag(TagSignature.RedTRC)
-                && this.HasTag(TagSignature.GreenTRC)
-                && this.HasTag(TagSignature.BlueTRC)) return ProfileConversionMethod.ColorTRC;
+            if (HasTag(TagSignature.RedMatrixColumn)
+                && HasTag(TagSignature.GreenMatrixColumn)
+                && HasTag(TagSignature.BlueMatrixColumn)
+                && HasTag(TagSignature.RedTRC)
+                && HasTag(TagSignature.GreenTRC)
+                && HasTag(TagSignature.BlueTRC)) return ProfileConversionMethod.ColorTRC;
 
-            if (this.HasTag(TagSignature.GrayTRC)) return ProfileConversionMethod.GrayTRC;
+            if (HasTag(TagSignature.GrayTRC)) return ProfileConversionMethod.GrayTRC;
 
             return ProfileConversionMethod.Invalid;
         }
 
         private ProfileConversionMethod CheckIntent2()
         {
-            if (this.HasTag(TagSignature.DToB0) || this.HasTag(TagSignature.BToD0)) return ProfileConversionMethod.D0;
-            if (this.HasTag(TagSignature.AToB0) || this.HasTag(TagSignature.AToB0)) return ProfileConversionMethod.A0;
+            if (HasTag(TagSignature.DToB0) || HasTag(TagSignature.BToD0)) return ProfileConversionMethod.D0;
+            if (HasTag(TagSignature.AToB0) || HasTag(TagSignature.AToB0)) return ProfileConversionMethod.A0;
 
             return ProfileConversionMethod.Invalid;
         }

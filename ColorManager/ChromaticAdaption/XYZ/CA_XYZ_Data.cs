@@ -23,7 +23,7 @@ namespace ColorManager.Conversion
         /// <param name="matrix">The matrix for the chromatic adaption</param>
         public CA_XYZ_Data(double[] matrix)
         {
-            if (matrix == null) throw new ArgumentNullException("matrix");
+            if (matrix == null) throw new ArgumentNullException(nameof(matrix));
             if (matrix.Length != 9) throw new ArgumentException("Matrix has to have a length of nine");
 
             DataHandle = GCHandle.Alloc(matrix, GCHandleType.Pinned);

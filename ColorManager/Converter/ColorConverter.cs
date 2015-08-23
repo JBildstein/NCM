@@ -86,7 +86,7 @@ namespace ColorManager
         /// <param name="path">The conversion path to add</param>
         public static void AddConversionPath(ConversionPath path)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
             if (!_ConversionPaths.Contains(path)) _ConversionPaths.Add(path);
         }
 
@@ -97,7 +97,7 @@ namespace ColorManager
         /// <returns>True if the conversion path was found and removed, false otherwise</returns>
         public static bool RemoveConversionPath(ConversionPath path)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
             return _ConversionPaths.Remove(path);
         }
 
@@ -107,7 +107,7 @@ namespace ColorManager
         /// <param name="ca">The chromatic adaption method to add</param>
         public static void AddChromaticAdaption(ChromaticAdaption ca)
         {
-            if (ca == null) throw new ArgumentNullException("ca");
+            if (ca == null) throw new ArgumentNullException(nameof(ca));
             if (!_ChromaticAdaptions.Contains(ca)) _ChromaticAdaptions.Add(ca);
         }
 
@@ -118,7 +118,7 @@ namespace ColorManager
         /// <returns>True if the chromatic adaption method was found and removed, false otherwise</returns>
         public static bool RemoveChromaticAdaption(ChromaticAdaption ca)
         {
-            if (ca == null) throw new ArgumentNullException("ca");
+            if (ca == null) throw new ArgumentNullException(nameof(ca));
             return _ChromaticAdaptions.Remove(ca);
         }
         
@@ -181,8 +181,8 @@ namespace ColorManager
 
             if (!IsInitiated) Init();
 
-            this.InColor = inColor;
-            this.OutColor = outColor;
+            InColor = inColor;
+            OutColor = outColor;
             InValuesHandle = GCHandle.Alloc(InColor.Values, GCHandleType.Pinned);
             OutValuesHandle = GCHandle.Alloc(OutColor.Values, GCHandleType.Pinned);
             InValues = (double*)InValuesHandle.AddrOfPinnedObject();

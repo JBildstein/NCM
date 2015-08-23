@@ -12,13 +12,13 @@ namespace ColorManager.ICC
 
         public ProfileFlag(bool[] Flags, byte[] Data)
         {
-            if (Flags == null) throw new ArgumentNullException("Flags");
-            if (Data == null) throw new ArgumentNullException("Data");
+            if (Flags == null) throw new ArgumentNullException(nameof(Flags));
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
             if (Flags.Length != 16) throw new ArgumentException("Flags must have a length of 16");
             if (Data.Length != 2) throw new ArgumentException("Data must have a length of 2");
 
-            this.IsEmbedded = Flags[0];
-            this.IsIndependent = Flags[1];
+            IsEmbedded = Flags[0];
+            IsIndependent = Flags[1];
             this.Flags = Flags;
             this.Data = Data;
         }
@@ -90,7 +90,7 @@ namespace ColorManager.ICC
 
         public DeviceAttribute(bool Opacity, bool Reflectivity, bool Polarity, bool Chroma, byte[] VendorData)
         {
-            if (VendorData == null) throw new ArgumentNullException("VendorData");
+            if (VendorData == null) throw new ArgumentNullException(nameof(VendorData));
 
             if (Opacity) this.Opacity = DeviceAttributeType.Transparency;
             else this.Opacity = DeviceAttributeType.Reflective;
@@ -321,7 +321,7 @@ namespace ColorManager.ICC
 
         public LocalizedString(CultureInfo Locale, string Text)
         {
-            if (Locale == null) throw new ArgumentNullException("Locale");
+            if (Locale == null) throw new ArgumentNullException(nameof(Locale));
             this.Locale = Locale;
             this.Text = Text;
         }
@@ -391,8 +391,8 @@ namespace ColorManager.ICC
 
         public NamedColor(string Name, ushort[] PCScoordinates, ushort[] DeviceCoordinates)
         {
-            if (PCScoordinates == null) throw new ArgumentNullException("PCScoordinates");
-            if (DeviceCoordinates == null) throw new ArgumentNullException("DeviceCoordinates");
+            if (PCScoordinates == null) throw new ArgumentNullException(nameof(PCScoordinates));
+            if (DeviceCoordinates == null) throw new ArgumentNullException(nameof(DeviceCoordinates));
             this.Name = Name;
             this.PCScoordinates = PCScoordinates;
             this.DeviceCoordinates = DeviceCoordinates;
@@ -470,8 +470,8 @@ namespace ColorManager.ICC
             TagSignature TechnologyInformation, MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo,
             MultiLocalizedUnicodeTagDataEntry DeviceModelInfo)
         {
-            if (DeviceManufacturerInfo == null) throw new ArgumentNullException("DeviceManufacturerInfo");
-            if (DeviceModelInfo == null) throw new ArgumentNullException("DeviceModelInfo");
+            if (DeviceManufacturerInfo == null) throw new ArgumentNullException(nameof(DeviceManufacturerInfo));
+            if (DeviceModelInfo == null) throw new ArgumentNullException(nameof(DeviceModelInfo));
 
             this.DeviceManufacturer = DeviceManufacturer;
             this.DeviceModel = DeviceModel;

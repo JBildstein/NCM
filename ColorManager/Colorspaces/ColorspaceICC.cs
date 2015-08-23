@@ -23,8 +23,8 @@ namespace ColorManager.ICC
         public ColorspaceICC(ICCProfile profile)
             : base(new WhitepointD50())
         {
-            if (profile == null) throw new ArgumentNullException("profile");
-            this._Profile = profile;
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            _Profile = profile;
         }
 
         /// <summary>

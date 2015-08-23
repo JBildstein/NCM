@@ -181,7 +181,7 @@ namespace ColorManager
             if (values.Length != ChannelCount) throw new ArgumentOutOfRangeException(nameof(values));
 
             for (int i = 0; i < ValueArray.Length; i++) { this[i] = values[i]; }
-            this.Space = space;
+            Space = space;
 
             var iccSpace = space as ColorspaceICC;
             if (iccSpace != null) CheckColorTypeICC(iccSpace.Profile);
@@ -190,8 +190,8 @@ namespace ColorManager
         private void CheckColorTypeICC(ICCProfile profile)
         {
             _ICCProfile = profile;
-            _IsICCPCS = profile.PCS == this.GetType();
-            _IsICCDataSpace = profile.DataColorspace == this.GetType();
+            _IsICCPCS = profile.PCS == GetType();
+            _IsICCDataSpace = profile.DataColorspace == GetType();
 
             if (profile.Class == ProfileClassName.DeviceLink && !IsICCDataSpace) throw new ColorTypeException("Color with Device Link profile has to be the ICC profiles DataColorspace type.");
             else if (profile.Class == ProfileClassName.Abstract && !IsICCPCS) throw new ColorTypeException("Color with Abstract profile has to be the ICC profiles PCS type.");

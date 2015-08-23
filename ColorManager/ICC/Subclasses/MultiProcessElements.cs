@@ -35,9 +35,9 @@ namespace ColorManager.ICC
 
         protected MultiProcessElement(MultiProcessElementSignature Signature, int inChCount, int outChCount)
         {
-            this._Signature = Signature;
-            this._InputChannelCount = inChCount;
-            this._OutputChannelCount = outChCount;
+            _Signature = Signature;
+            _InputChannelCount = inChCount;
+            _OutputChannelCount = outChCount;
         }
         
         /// <summary>
@@ -111,8 +111,8 @@ namespace ColorManager.ICC
         public CurveSetProcessElement(int inChCount, int outChCount, OneDimensionalCurve[] curves)
             : base(MultiProcessElementSignature.CurveSet, inChCount, outChCount)
         {
-            if (curves == null) throw new ArgumentNullException("curves");
-            this._Curves = curves;
+            if (curves == null) throw new ArgumentNullException(nameof(curves));
+            _Curves = curves;
         }
         
         /// <summary>
@@ -190,11 +190,11 @@ namespace ColorManager.ICC
         public MatrixProcessElement(int inChCount, int outChCount, double[,] MatrixIxO, double[] MatrixOx1)
             : base(MultiProcessElementSignature.Matrix, inChCount, outChCount)
         {
-            if (MatrixIxO == null) throw new ArgumentNullException("MatrixIxO");
-            if (MatrixOx1 == null) throw new ArgumentNullException("MatrixOx1");
+            if (MatrixIxO == null) throw new ArgumentNullException(nameof(MatrixIxO));
+            if (MatrixOx1 == null) throw new ArgumentNullException(nameof(MatrixOx1));
 
-            this._MatrixIxO = MatrixIxO;
-            this._MatrixOx1 = MatrixOx1;
+            _MatrixIxO = MatrixIxO;
+            _MatrixOx1 = MatrixOx1;
         }
         
         /// <summary>
@@ -268,8 +268,8 @@ namespace ColorManager.ICC
         public CLUTProcessElement(int inChCount, int outChCount, CLUT CLUTValue)
             : base(MultiProcessElementSignature.CLUT, inChCount, outChCount)
         {
-            if (CLUTValue == null) throw new ArgumentNullException("CLUTValue");
-            this._CLUTValue = CLUTValue;
+            if (CLUTValue == null) throw new ArgumentNullException(nameof(CLUTValue));
+            _CLUTValue = CLUTValue;
         }
         
         /// <summary>

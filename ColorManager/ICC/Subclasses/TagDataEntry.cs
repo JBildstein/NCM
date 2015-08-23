@@ -85,8 +85,8 @@ namespace ColorManager.ICC
         public UnknownTagDataEntry(byte[] Data)
             : base(TypeSignature.Unknown)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -167,26 +167,26 @@ namespace ColorManager.ICC
         public ChromaticityTagDataEntry(int ChannelCount, ColorantEncoding ColorantType)
             : base(TypeSignature.Chromaticity)
         {
-            if (ChannelValues == null) throw new ArgumentNullException("ChannelValues");
+            if (ChannelValues == null) throw new ArgumentNullException(nameof(ChannelValues));
 
-            this._ChannelCount = ChannelCount;
-            this._ColorantType = ColorantType;
-            this._ChannelValues = GetColorantArray();
+            _ChannelCount = ChannelCount;
+            _ColorantType = ColorantType;
+            _ChannelValues = GetColorantArray();
         }
 
         public ChromaticityTagDataEntry(int ChannelCount, ColorantEncoding ColorantType, double[][] ChannelValues)
             : base(TypeSignature.Chromaticity)
         {
-            if (ChannelValues == null) throw new ArgumentNullException("ChannelValues");
+            if (ChannelValues == null) throw new ArgumentNullException(nameof(ChannelValues));
 
-            this._ChannelCount = ChannelCount;
-            this._ColorantType = ColorantType;
-            this._ChannelValues = ChannelValues;
+            _ChannelCount = ChannelCount;
+            _ColorantType = ColorantType;
+            _ChannelValues = ChannelValues;
         }
 
         private double[][] GetColorantArray()
         {
-            switch (this.ColorantType)
+            switch (ColorantType)
             {
                 case ColorantEncoding.EBU_Tech_3213_E:
                     return new double[][]
@@ -297,9 +297,9 @@ namespace ColorManager.ICC
         public ColorantOrderTagDataEntry(uint ColorantCount, byte[] ColorantNumber)
             : base(TypeSignature.ColorantOrder)
         {
-            if (ColorantNumber == null) throw new ArgumentNullException("ColorantNumber");
-            this._ColorantCount = ColorantCount;
-            this._ColorantNumber = ColorantNumber;
+            if (ColorantNumber == null) throw new ArgumentNullException(nameof(ColorantNumber));
+            _ColorantCount = ColorantCount;
+            _ColorantNumber = ColorantNumber;
         }
 
         /// <summary>
@@ -378,9 +378,9 @@ namespace ColorManager.ICC
         public ColorantTableTagDataEntry(uint ColorantCount, ColorantTableEntry[] ColorantData)
             : base(TypeSignature.ColorantTable)
         {
-            if (ColorantData == null) throw new ArgumentNullException("ColorantData");
-            this._ColorantCount = ColorantCount;
-            this._ColorantData = ColorantData;
+            if (ColorantData == null) throw new ArgumentNullException(nameof(ColorantData));
+            _ColorantCount = ColorantCount;
+            _ColorantData = ColorantData;
         }
 
         /// <summary>
@@ -467,22 +467,22 @@ namespace ColorManager.ICC
         public CurveTagDataEntry()
             : base(TypeSignature.Curve)
         {
-            this._IsIdentityResponse = true;
+            _IsIdentityResponse = true;
         }
 
         public CurveTagDataEntry(double[] CurveData)
             : base(TypeSignature.Curve)
         {
-            if (CurveData == null) throw new ArgumentNullException("CurveData");
-            this._CurveData = CurveData;
+            if (CurveData == null) throw new ArgumentNullException(nameof(CurveData));
+            _CurveData = CurveData;
         }
 
         public CurveTagDataEntry(double Gamma)
             : base(TypeSignature.Curve)
         {
-            this._IsGamma = true;
-            this._Gamma = Gamma;
-            this._CurveData = new double[] { Gamma };
+            _IsGamma = true;
+            _Gamma = Gamma;
+            _CurveData = new double[] { Gamma };
         }
         
         /// <summary>
@@ -566,9 +566,9 @@ namespace ColorManager.ICC
         public DataTagDataEntry(byte[] Data, bool IsASCII)
             : base(TypeSignature.Data)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
-            this._IsASCII = IsASCII;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
+            _IsASCII = IsASCII;
         }
 
         /// <summary>
@@ -639,7 +639,7 @@ namespace ColorManager.ICC
         public DateTimeTagDataEntry(DateTime value)
             : base(TypeSignature.DateTime)
         {
-            this._Value = value;
+            _Value = value;
         }
 
         /// <summary>
@@ -725,15 +725,15 @@ namespace ColorManager.ICC
         public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : base(TypeSignature.Lut16)
         {
-            if (Matrix == null) throw new ArgumentNullException("Matrix");
-            if (InputValues == null) throw new ArgumentNullException("BreakPoints");
-            if (CLUTValues == null) throw new ArgumentNullException("CLUTValues");
-            if (OutputValues == null) throw new ArgumentNullException("OutputValues");
+            if (Matrix == null) throw new ArgumentNullException(nameof(Matrix));
+            if (InputValues == null) throw new ArgumentNullException(nameof(InputValues));
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (OutputValues == null) throw new ArgumentNullException(nameof(OutputValues));
 
-            this._Matrix = Matrix;
-            this._InputValues = InputValues;
-            this._CLUTValues = CLUTValues;
-            this._OutputValues = OutputValues;
+            _Matrix = Matrix;
+            _InputValues = InputValues;
+            _CLUTValues = CLUTValues;
+            _OutputValues = OutputValues;
         }
         
         /// <summary>
@@ -824,15 +824,15 @@ namespace ColorManager.ICC
         public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : base(TypeSignature.Lut8)
         {
-            if (Matrix == null) throw new ArgumentNullException("Matrix");
-            if (InputValues == null) throw new ArgumentNullException("BreakPoints");
-            if (CLUTValues == null) throw new ArgumentNullException("CLUTValues");
-            if (OutputValues == null) throw new ArgumentNullException("OutputValues");
+            if (Matrix == null) throw new ArgumentNullException(nameof(Matrix));
+            if (InputValues == null) throw new ArgumentNullException(nameof(InputValues));
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (OutputValues == null) throw new ArgumentNullException(nameof(OutputValues));
 
-            this._Matrix = Matrix;
-            this._InputValues = InputValues;
-            this._CLUTValues = CLUTValues;
-            this._OutputValues = OutputValues;
+            _Matrix = Matrix;
+            _InputValues = InputValues;
+            _CLUTValues = CLUTValues;
+            _OutputValues = OutputValues;
         }
         
         /// <summary>
@@ -943,14 +943,14 @@ namespace ColorManager.ICC
             CLUT CLUTValues, TagDataEntry[] CurveB, TagDataEntry[] CurveM, TagDataEntry[] CurveA)
             : base(TypeSignature.LutAToB)
         {
-            this._InputChannelCount = inChCount;
-            this._OutputChannelCount = outChCount;
-            this._Matrix3x3 = Matrix3x3;
-            this._Matrix3x1 = Matrix3x1;
-            this._CLUTValues = CLUTValues;
-            this._CurveB = CurveB;
-            this._CurveM = CurveM;
-            this._CurveA = CurveA;
+            _InputChannelCount = inChCount;
+            _OutputChannelCount = outChCount;
+            _Matrix3x3 = Matrix3x3;
+            _Matrix3x1 = Matrix3x1;
+            _CLUTValues = CLUTValues;
+            _CurveB = CurveB;
+            _CurveM = CurveM;
+            _CurveA = CurveA;
         }
         
         /// <summary>
@@ -1067,14 +1067,14 @@ namespace ColorManager.ICC
             CLUT CLUTValues, TagDataEntry[] CurveB, TagDataEntry[] CurveM, TagDataEntry[] CurveA)
             : base(TypeSignature.LutBToA)
         {
-            this._InputChannelCount = inChCount;
-            this._OutputChannelCount = outChCount;
-            this._Matrix3x3 = Matrix3x3;
-            this._Matrix3x1 = Matrix3x1;
-            this._CLUTValues = CLUTValues;
-            this._CurveB = CurveB;
-            this._CurveM = CurveM;
-            this._CurveA = CurveA;
+            _InputChannelCount = inChCount;
+            _OutputChannelCount = outChCount;
+            _Matrix3x3 = Matrix3x3;
+            _Matrix3x1 = Matrix3x1;
+            _CLUTValues = CLUTValues;
+            _CurveB = CurveB;
+            _CurveM = CurveM;
+            _CurveA = CurveA;
         }
         
         /// <summary>
@@ -1178,11 +1178,11 @@ namespace ColorManager.ICC
             MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant)
             : base(TypeSignature.Data)
         {
-            this._Observer = Observer;
-            this._XYZBacking = XYZBacking;
-            this._Geometry = Geometry;
-            this._Flare = Flare;
-            this._Illuminant = Illuminant;
+            _Observer = Observer;
+            _XYZBacking = XYZBacking;
+            _Geometry = Geometry;
+            _Flare = Flare;
+            _Illuminant = Illuminant;
         }
 
         /// <summary>
@@ -1258,8 +1258,8 @@ namespace ColorManager.ICC
         public MultiLocalizedUnicodeTagDataEntry(LocalizedString[] Text)
             : base(TypeSignature.MultiLocalizedUnicode)
         {
-            if (Text == null) throw new ArgumentNullException("Text");
-            this._Text = Text;
+            if (Text == null) throw new ArgumentNullException(nameof(Text));
+            _Text = Text;
         }
 
         /// <summary>
@@ -1345,11 +1345,11 @@ namespace ColorManager.ICC
         public MultiProcessElementsTagDataEntry(int inChCount, int outChCount, int elementCount, MultiProcessElement[] Data)
             : base(TypeSignature.MultiProcessElements)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._InputChannelCount = inChCount;
-            this._OutputChannelCount = outChCount;
-            this._ProcessingElementCount = elementCount;
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _InputChannelCount = inChCount;
+            _OutputChannelCount = outChCount;
+            _ProcessingElementCount = elementCount;
+            _Data = Data;
         }
         
         /// <summary>
@@ -1445,14 +1445,14 @@ namespace ColorManager.ICC
         public NamedColor2TagDataEntry(byte[] VendorFlag, int NamedColorCount, string Prefix, string Suffix, NamedColor[] Colors)
             : base(TypeSignature.NamedColor2)
         {
-            if (VendorFlag == null) throw new ArgumentNullException("VendorFlag");
-            if (Colors == null) throw new ArgumentNullException("Colors");
+            if (VendorFlag == null) throw new ArgumentNullException(nameof(VendorFlag));
+            if (Colors == null) throw new ArgumentNullException(nameof(Colors));
 
-            this._VendorFlag = VendorFlag;
-            this._NamedColorCount = NamedColorCount;
-            this._Prefix = Prefix;
-            this._Suffix = Suffix;
-            this._Colors = Colors;
+            _VendorFlag = VendorFlag;
+            _NamedColorCount = NamedColorCount;
+            _Prefix = Prefix;
+            _Suffix = Suffix;
+            _Colors = Colors;
         }
 
         /// <summary>
@@ -1528,7 +1528,7 @@ namespace ColorManager.ICC
         public ParametricCurveTagDataEntry(ParametricCurve Curve)
             : base(TypeSignature.ParametricCurve)
         {
-            this._Curve = Curve;
+            _Curve = Curve;
         }
 
         /// <summary>
@@ -1599,8 +1599,8 @@ namespace ColorManager.ICC
         public ProfileSequenceDescTagDataEntry(ProfileDescription[] Descriptions)
             : base(TypeSignature.ProfileSequenceDesc)
         {
-            if (Descriptions == null) throw new ArgumentNullException("BreakPoints");
-            this._Descriptions = Descriptions;
+            if (Descriptions == null) throw new ArgumentNullException(nameof(Descriptions));
+            _Descriptions = Descriptions;
         }
 
         /// <summary>
@@ -1682,12 +1682,12 @@ namespace ColorManager.ICC
             MultiLocalizedUnicodeTagDataEntry ProfileDescription)
             : base(TypeSignature.ProfileSequenceIdentifier)
         {
-            if (PositionTable == null) throw new ArgumentNullException("PositionTable");
-            if (ProfileDescription == null) throw new ArgumentNullException("ProfileDescription");
+            if (PositionTable == null) throw new ArgumentNullException(nameof(PositionTable));
+            if (ProfileDescription == null) throw new ArgumentNullException(nameof(ProfileDescription));
 
-            this._PositionTable = PositionTable;
-            this._ProfileID = ProfileID;
-            this._ProfileDescription = ProfileDescription;
+            _PositionTable = PositionTable;
+            _ProfileID = ProfileID;
+            _ProfileDescription = ProfileDescription;
         }
 
         /// <summary>
@@ -1768,9 +1768,9 @@ namespace ColorManager.ICC
         public ResponseCurveSet16TagDataEntry(int MeasurmentTypesCount, ResponseCurve[] Curves)
             : base(TypeSignature.ResponseCurveSet16)
         {
-            if (Curves == null) throw new ArgumentNullException("Curves");
-            this._MeasurmentTypesCount = MeasurmentTypesCount;
-            this._Curves = Curves;
+            if (Curves == null) throw new ArgumentNullException(nameof(Curves));
+            _MeasurmentTypesCount = MeasurmentTypesCount;
+            _Curves = Curves;
         }
 
         /// <summary>
@@ -1841,8 +1841,8 @@ namespace ColorManager.ICC
         public Fix16ArrayTagDataEntry(double[] Data)
             : base(TypeSignature.S15Fixed16Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -1912,7 +1912,7 @@ namespace ColorManager.ICC
         public SignatureTagDataEntry(string SignatureData)
             : base(TypeSignature.Signature)
         {
-            this._SignatureData = SignatureData;
+            _SignatureData = SignatureData;
         }
 
         /// <summary>
@@ -1981,7 +1981,7 @@ namespace ColorManager.ICC
         public TextTagDataEntry(string Text)
             : base(TypeSignature.Text)
         {
-            this._Text = Text;
+            _Text = Text;
         }
 
         /// <summary>
@@ -2050,8 +2050,8 @@ namespace ColorManager.ICC
         public UFix16ArrayTagDataEntry(double[] Data)
             : base(TypeSignature.U16Fixed16Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -2120,8 +2120,8 @@ namespace ColorManager.ICC
         public UInt16ArrayTagDataEntry(ushort[] Data)
             : base(TypeSignature.UInt16Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -2190,8 +2190,8 @@ namespace ColorManager.ICC
         public UInt32ArrayTagDataEntry(uint[] Data)
             : base(TypeSignature.UInt32Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -2260,8 +2260,8 @@ namespace ColorManager.ICC
         public UInt64ArrayTagDataEntry(ulong[] Data)
             : base(TypeSignature.UInt64Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -2330,8 +2330,8 @@ namespace ColorManager.ICC
         public UInt8ArrayTagDataEntry(byte[] Data)
             : base(TypeSignature.UInt8Array)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>
@@ -2411,9 +2411,9 @@ namespace ColorManager.ICC
         public ViewingConditionsTagDataEntry(XYZNumber IlluminantXYZ, XYZNumber SurroundXYZ, StandardIlluminant Illuminant)
             : base(TypeSignature.ViewingConditions)
         {
-            this._IlluminantXYZ = IlluminantXYZ;
-            this._SurroundXYZ = SurroundXYZ;
-            this._Illuminant = Illuminant;
+            _IlluminantXYZ = IlluminantXYZ;
+            _SurroundXYZ = SurroundXYZ;
+            _Illuminant = Illuminant;
         }
 
         /// <summary>
@@ -2485,8 +2485,8 @@ namespace ColorManager.ICC
         public XYZTagDataEntry(XYZNumber[] Data)
             : base(TypeSignature.XYZ)
         {
-            if (Data == null) throw new ArgumentNullException("Data");
-            this._Data = Data;
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
+            _Data = Data;
         }
 
         /// <summary>

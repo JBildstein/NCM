@@ -10,7 +10,7 @@
         {
             this.Major = Major;
             this.Minor = Minor;
-            this.BugFix = Bugfix;
+            BugFix = Bugfix;
         }
 
         /// <summary>
@@ -178,8 +178,8 @@
 
         public ProfileID(uint p1, uint p2, uint p3, uint p4)
         {
-            this.NumericValue = new uint[] { p1, p2, p3, p4 };
-            this.StringValue = string.Concat(p1.ToString("X").PadRight(8, '0'), "-",
+            NumericValue = new uint[] { p1, p2, p3, p4 };
+            StringValue = string.Concat(p1.ToString("X").PadRight(8, '0'), "-",
                 p2.ToString("X").PadRight(8, '0'), "-",
                 p3.ToString("X").PadRight(8, '0'), "-",
                 p4.ToString("X").PadRight(8, '0'));

@@ -22,7 +22,7 @@ namespace ColorManager
         {
             get
             {
-                if (this.Values != null) return this.Values.Length;
+                if (Values != null) return Values.Length;
                 else return -1;
             }
         }
@@ -138,18 +138,18 @@ namespace ColorManager
         {
             if (Values.Length > MaxChannels) throw new ArgumentOutOfRangeException(nameof(Values));
 
-            int c = this.Values.Length;
+            int c = Values.Length;
 
-            min = new double[this.Values.Length];
+            min = new double[Values.Length];
             for (int i = 0; i < c; i++) min[i] = 0d;
 
-            max = new double[this.Values.Length];
+            max = new double[Values.Length];
             for (int i = 0; i < c; i++) max[i] = 1d;
 
-            sNames = new string[this.Values.Length];
+            sNames = new string[Values.Length];
             for (int i = 0; i < c; i++) sNames[i] = "C" + (i + 1);
 
-            fNames = new string[this.Values.Length];
+            fNames = new string[Values.Length];
             for (int i = 0; i < c; i++) fNames[i] = "Channel " + (i + 1);
         }
     }

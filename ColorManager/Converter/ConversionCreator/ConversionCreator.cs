@@ -83,15 +83,15 @@ namespace ColorManager.Conversion
         /// <param name="outColor">The output color</param>
         protected ConversionCreator(ILGenerator CMIL, ConversionData data, Color inColor, Color outColor)
         {
-            if (CMIL == null) throw new ArgumentNullException("CMIL");
-            if (data == null) throw new ArgumentNullException("data");
-            if (inColor == null) throw new ArgumentNullException("inColor");
-            if (outColor == null) throw new ArgumentNullException("outColor");
+            if (CMIL == null) throw new ArgumentNullException(nameof(CMIL));
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (inColor == null) throw new ArgumentNullException(nameof(inColor));
+            if (outColor == null) throw new ArgumentNullException(nameof(outColor));
 
             this.CMIL = CMIL;
-            this.Data = data;
-            this.InColor = inColor;
-            this.OutColor = outColor;
+            Data = data;
+            InColor = inColor;
+            OutColor = outColor;
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace ColorManager.Conversion
         protected ConversionCreator(ILGenerator CMIL, ConversionData data, Color inColor, Color outColor, bool isLast)
             : this(CMIL, data, inColor, outColor)
         {
-            this._IsLastG = isLast;
+            _IsLastG = isLast;
         }
 
         /// <summary>
@@ -117,17 +117,17 @@ namespace ColorManager.Conversion
         /// <param name="outColor">The output color</param>
         protected ConversionCreator(ConversionCreator parent, Color inColor, Color outColor, bool isLast)
         {
-            if (parent == null) throw new ArgumentNullException("parent");
-            if (inColor == null) throw new ArgumentNullException("inColor");
-            if (outColor == null) throw new ArgumentNullException("outColor");
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (inColor == null) throw new ArgumentNullException(nameof(inColor));
+            if (outColor == null) throw new ArgumentNullException(nameof(outColor));
 
-            this.CMIL = parent.CMIL;
-            this.Data = parent.Data;
-            this.InColor = inColor;
-            this.OutColor = outColor;
-            this._IsFirstG = false;
-            this._IsLastG = isLast;
-            this.IsTempVar1 = !parent.IsTempVar1;
+            CMIL = parent.CMIL;
+            Data = parent.Data;
+            InColor = inColor;
+            OutColor = outColor;
+            _IsFirstG = false;
+            _IsLastG = isLast;
+            IsTempVar1 = !parent.IsTempVar1;
         }
 
         /// <summary>
