@@ -6,6 +6,8 @@ namespace ColorManager
     /// </summary>
     public sealed class ColorDEF : Color
     {
+        #region Variables
+
         /// <summary>
         /// D-Channel
         /// </summary>
@@ -50,14 +52,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, 0.0, 0.0 }; }
+            get { return new double[] { Min_D, Min_E, Min_F }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0, 1.0, 1.0 }; }
+            get { return new double[] { Max_D, Max_E, Max_F }; }
         }
         /// <summary>
         /// Names of channels short
@@ -73,6 +75,49 @@ namespace ColorManager
         {
             get { return new string[] { "D", "E", "F" }; }
         }
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_D, Min_E, Min_F }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_D, Max_E, Max_F }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="D"/> channel
+        /// </summary>
+        public static readonly double Min_D = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="E"/> channel
+        /// </summary>
+        public static readonly double Min_E = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="F"/> channel
+        /// </summary>
+        public static readonly double Min_F = 0.0;
+
+        /// <summary>
+        /// Maximum value for the <see cref="D"/> channel
+        /// </summary>
+        public static readonly double Max_D = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="E"/> channel
+        /// </summary>
+        public static readonly double Max_E = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="F"/> channel
+        /// </summary>
+        public static readonly double Max_F = 1.0;
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ColorDEF"/> class

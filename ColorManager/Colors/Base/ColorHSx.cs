@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public abstract class ColorHSx : Color
     {
+        #region Variables
+
         /// <summary>
         /// L-Channel
         /// </summary>
@@ -49,20 +51,6 @@ namespace ColorManager
             get { return 3; }
         }
         /// <summary>
-        /// Minimum value for each channel
-        /// </summary>
-        public override double[] MinValues
-        {
-            get { return new double[] { 0.0, 0.0, 0.0 }; }
-        }
-        /// <summary>
-        /// Maximum value for each channel
-        /// </summary>
-        public override double[] MaxValues
-        {
-            get { return new double[] { 360.0, 1.0, 1.0 }; }
-        }
-        /// <summary>
         /// Names of channels short
         /// </summary>
         public override string[] ChannelShortNames
@@ -76,7 +64,6 @@ namespace ColorManager
         {
             get { return new string[] { "Hue", "Saturation", ChannelXNameFull }; }
         }
-
         /// <summary>
         /// Short name for the X-Channel
         /// </summary>
@@ -85,6 +72,8 @@ namespace ColorManager
         /// Full name for the X-Channel
         /// </summary>
         protected abstract string ChannelXNameFull { get; }
+
+        #endregion
 
         #region Constructor
 

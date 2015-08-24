@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public class ColorCMYK : Color
     {
+        #region Variables
+
         /// <summary>
         /// Cyan-Channel
         /// </summary>
@@ -59,14 +61,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, 0.0, 0.0, 0.0 }; }
+            get { return new double[] { Min_C, Min_M, Min_Y, Min_K }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0, 1.0, 1.0, 1.0 }; }
+            get { return new double[] { Max_C, Max_M, Max_Y, Max_K }; }
         }
         /// <summary>
         /// Names of channels short
@@ -82,6 +84,57 @@ namespace ColorManager
         {
             get { return new string[] { "Cyan", "Magenta", "Yellow", "Key" }; }
         }
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_C, Min_M, Min_Y, Min_K }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_C, Max_M, Max_Y, Max_K }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="C"/> channel
+        /// </summary>
+        public static readonly double Min_C = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="M"/> channel
+        /// </summary>
+        public static readonly double Min_M = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Min_Y = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="K"/> channel
+        /// </summary>
+        public static readonly double Min_K = 0.0;
+
+        /// <summary>
+        /// Maximum value for the <see cref="C"/> channel
+        /// </summary>
+        public static readonly double Max_C = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="M"/> channel
+        /// </summary>
+        public static readonly double Max_M = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Max_Y = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="K"/> channel
+        /// </summary>
+        public static readonly double Max_K = 1.0;
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ColorCMYK"/> class

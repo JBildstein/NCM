@@ -8,6 +8,8 @@ namespace ColorManager
     /// </summary>
     public sealed class ColorX : Color
     {
+        #region Variables
+
         /// <summary>
         /// The name of this model
         /// </summary>
@@ -83,6 +85,22 @@ namespace ColorManager
         /// Minimum number of channels for <see cref="ColorX"/>
         /// </summary>
         public const int MinChannels = 2;
+        
+        /// <summary>
+        /// Minimum value for all channels
+        /// </summary>
+        public static readonly double Min = 0.0;
+        /// <summary>
+        /// Maximum value for all channels
+        /// </summary>
+        public static readonly double Max = 1.0;
+
+        private double[] min;
+        private double[] max;
+        private string[] sNames;
+        private string[] fNames;
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ColorX"/> class
@@ -128,12 +146,6 @@ namespace ColorManager
             InitArrays();
         }
 
-
-        private double[] min;
-        private double[] max;
-        private string[] sNames;
-        private string[] fNames;
-
         private void InitArrays()
         {
             if (Values.Length > MaxChannels) throw new ArgumentOutOfRangeException(nameof(Values));
@@ -141,10 +153,10 @@ namespace ColorManager
             int c = Values.Length;
 
             min = new double[Values.Length];
-            for (int i = 0; i < c; i++) min[i] = 0d;
+            for (int i = 0; i < c; i++) min[i] = Min;
 
             max = new double[Values.Length];
-            for (int i = 0; i < c; i++) max[i] = 1d;
+            for (int i = 0; i < c; i++) max[i] = Max;
 
             sNames = new string[Values.Length];
             for (int i = 0; i < c; i++) sNames[i] = "C" + (i + 1);

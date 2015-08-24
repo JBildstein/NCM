@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public sealed class ColorYxy : Color
     {
+        #region Variables
+
         /// <summary>
         /// Y-Channel
         /// </summary>
@@ -51,14 +53,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, double.NaN, double.NaN }; }
+            get { return new double[] { Min_Y, Min_x, Min_y }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0, double.NaN, double.NaN }; }
+            get { return new double[] { Max_Y, Max_x, Max_y }; }
         }
         /// <summary>
         /// Names of channels short
@@ -74,6 +76,50 @@ namespace ColorManager
         {
             get { return new string[] { "Y", "x", "y" }; }
         }
+
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_Y, Min_x, Min_y }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_Y, Max_x, Max_y }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Min_Y = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="x"/> channel
+        /// </summary>
+        public static readonly double Min_x = double.NaN;
+        /// <summary>
+        /// Minimum value for the <see cref="y"/> channel
+        /// </summary>
+        public static readonly double Min_y = double.NaN;
+
+        /// <summary>
+        /// Maximum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Max_Y = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="x"/> channel
+        /// </summary>
+        public static readonly double Max_x = double.NaN;
+        /// <summary>
+        /// Maximum value for the <see cref="y"/> channel
+        /// </summary>
+        public static readonly double Max_y = double.NaN;
+
+        #endregion
 
         #region Constructor
 

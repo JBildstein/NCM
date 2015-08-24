@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public class ColorGray : Color
     {
+        #region Variables
+
         /// <summary>
         /// G-Channel
         /// </summary>
@@ -35,14 +37,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0 }; }
+            get { return new double[] { Min }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0 }; }
+            get { return new double[] { Max }; }
         }
         /// <summary>
         /// Names of channels short
@@ -58,6 +60,17 @@ namespace ColorManager
         {
             get { return new string[] { "Gray" }; }
         }
+
+        /// <summary>
+        /// Minimum value for the <see cref="G"/> channel
+        /// </summary>
+        public static readonly double Min = 0.0;
+        /// <summary>
+        /// Maximum value for the <see cref="G"/> channel
+        /// </summary>
+        public static readonly double Max = 1.0;
+
+        #endregion
 
         #region Constructor
 

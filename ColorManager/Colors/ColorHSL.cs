@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public sealed class ColorHSL : ColorHSx
     {
+        #region Variables
+
         /// <summary>
         /// L-Channel
         /// </summary>
@@ -24,6 +26,20 @@ namespace ColorManager
             get { return "HSL"; }
         }
         /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public override double[] MinValues
+        {
+            get { return new double[] { Min_H, Min_S, Min_L }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public override double[] MaxValues
+        {
+            get { return new double[] { Max_H, Max_S, Max_L }; }
+        }
+        /// <summary>
         /// Short name for the X-Channel
         /// </summary>
         protected override string ChannelXNameShort
@@ -37,6 +53,49 @@ namespace ColorManager
         {
             get { return "Lightness"; }
         }
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_H, Min_S, Min_L }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_H, Max_S, Max_L }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="ColorHSx.H"/> channel
+        /// </summary>
+        public static readonly double Min_H = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="ColorHSx.S"/> channel
+        /// </summary>
+        public static readonly double Min_S = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="L"/> channel
+        /// </summary>
+        public static readonly double Min_L = 0.0;
+
+        /// <summary>
+        /// Maximum value for the <see cref="ColorHSx.H"/> channel
+        /// </summary>
+        public static readonly double Max_H = 360.0;
+        /// <summary>
+        /// Maximum value for the <see cref="ColorHSx.S"/> channel
+        /// </summary>
+        public static readonly double Max_S = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="L"/> channel
+        /// </summary>
+        public static readonly double Max_L = 1.0;
+
+        #endregion
 
         #region Constructor
 

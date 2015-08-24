@@ -7,6 +7,8 @@ namespace ColorManager
     /// </summary>
     public class ColorXYZ : Color
     {
+        #region Variables
+
         /// <summary>
         /// X-Channel
         /// </summary>
@@ -51,14 +53,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, 0.0, 0.0 }; }
+            get { return new double[] { Min_X, Min_Y, Min_Z }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 1.0, 1.0, 1.0 }; }
+            get { return new double[] { Max_X, Max_Y, Max_Z }; }
         }
         /// <summary>
         /// Names of channels short
@@ -74,6 +76,49 @@ namespace ColorManager
         {
             get { return new string[] { "X", "Y", "Z" }; }
         }
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_X, Min_Y, Min_Z }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_X, Max_Y, Max_Z }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="X"/> channel
+        /// </summary>
+        public static readonly double Min_X = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Min_Y = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="Z"/> channel
+        /// </summary>
+        public static readonly double Min_Z = 0.0;
+
+        /// <summary>
+        /// Maximum value for the <see cref="X"/> channel
+        /// </summary>
+        public static readonly double Max_X = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="Y"/> channel
+        /// </summary>
+        public static readonly double Max_Y = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="Z"/> channel
+        /// </summary>
+        public static readonly double Max_Z = 1.0;
+
+        #endregion
 
         #region Constructor
 

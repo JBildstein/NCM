@@ -6,6 +6,8 @@ namespace ColorManager
     /// </summary>
     public sealed class ColorBef : Color
     {
+        #region Variables
+
         /// <summary>
         /// B-Channel
         /// </summary>
@@ -50,14 +52,14 @@ namespace ColorManager
         /// </summary>
         public override double[] MinValues
         {
-            get { return new double[] { 0.0, -1.0, -1.0 }; }
+            get { return new double[] { Min_B, Min_e, Min_f }; }
         }
         /// <summary>
         /// Maximum value for each channel
         /// </summary>
         public override double[] MaxValues
         {
-            get { return new double[] { 2.0, 1.0, 1.0 }; }
+            get { return new double[] { Max_B, Max_e, Max_f }; }
         }
         /// <summary>
         /// Names of channels short
@@ -73,6 +75,49 @@ namespace ColorManager
         {
             get { return new string[] { "B", "e", "f" }; }
         }
+
+        /// <summary>
+        /// Minimum value for each channel
+        /// </summary>
+        public static double[] Min
+        {
+            get { return new double[] { Min_B, Min_e, Min_f }; }
+        }
+        /// <summary>
+        /// Maximum value for each channel
+        /// </summary>
+        public static double[] Max
+        {
+            get { return new double[] { Max_B, Max_e, Max_f }; }
+        }
+
+        /// <summary>
+        /// Minimum value for the <see cref="B"/> channel
+        /// </summary>
+        public static readonly double Min_B = 0.0;
+        /// <summary>
+        /// Minimum value for the <see cref="e"/> channel
+        /// </summary>
+        public static readonly double Min_e = -1.0;
+        /// <summary>
+        /// Minimum value for the <see cref="f"/> channel
+        /// </summary>
+        public static readonly double Min_f = -1.0;
+
+        /// <summary>
+        /// Maximum value for the <see cref="B"/> channel
+        /// </summary>
+        public static readonly double Max_B = 2.0;
+        /// <summary>
+        /// Maximum value for the <see cref="e"/> channel
+        /// </summary>
+        public static readonly double Max_e = 1.0;
+        /// <summary>
+        /// Maximum value for the <see cref="f"/> channel
+        /// </summary>
+        public static readonly double Max_f = 1.0;
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ColorBef"/> class
