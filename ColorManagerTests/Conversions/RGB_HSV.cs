@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class LCH99d : PathTestClass<ColorLCH99d, ColorXYZ>
+    public unsafe class RGB_HSV : PathTestClass<ColorRGB, ColorHSV>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 71.613126982289, 3.424351069343, 268.332598495452  }; }
+            get { return new double[] { 0.454626246521, 0.046609673694, 0.43789408225  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 68.423308919296, 1.219724990111, -2.108905718231  }; }
+            get { return new double[] { 302.460512447522, 0.897476940562, 0.454626246521  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -20,61 +20,61 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 99.999440645771, 287.05675082776, 207.651107668896  }; }
+            get { return new double[] { 0.0, 0.0, 1.0  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 0.716131269823, 0.048919300991, 0.745368329154  }; }
+            get { return new double[] { 163.66544874742, 0.046609673694, 0.43789408225  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.837364409818, 1.035695672524, 55.886507226588  }; }
+            get { return new double[] { 0.417483981964, 0.43789408225, 0.432337585097  }; }
         }
         protected override double[] Min_Out_T
         {
-            get { return new double[] { 0.0, 0.0, 16.0  }; }
+            get { return new double[] { 0.0, 0.0, 0.0  }; }
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 1.16869321214, 1.834498566302, 10.304322509353  }; }
+            get { return new double[] { 1.0, 0.0, 0.0  }; }
         }
 
-        public LCH99d() : base(new ColorLCH99d(),
-                            new ColorXYZ(Whitepoint.D65))
+        public RGB_HSV() : base(new ColorRGB(ColorspaceRGB.AdobeRGB),
+                            new ColorHSV(ColorspaceRGB.AdobeRGB))
         { }
 
         [TestMethod]
-        public void LCH99d_XYZ_Random()
+        public void RGB_HSV_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void LCH99d_XYZ_Min()
+        public void RGB_HSV_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void LCH99d_XYZ_Max()
+        public void RGB_HSV_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void XYZ_LCH99d_Random()
+        public void HSV_RGB_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void XYZ_LCH99d_Min()
+        public void HSV_RGB_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void XYZ_LCH99d_Max()
+        public void HSV_RGB_Max()
         {
             U_T_Max();
         }

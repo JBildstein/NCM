@@ -4,31 +4,31 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class Bef : PathTestClass<ColorBef, ColorDEF>
+    public unsafe class Lab_LCH99 : PathTestClass<ColorLab, ColorLCH99>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 0.010417027823, 0.115663853435, -0.33345709887  }; }
+            get { return new double[] { 31.554900243205, -57.274505536665, 178.495390027992  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 0.009746621461, 0.001204873579, -0.003473631877  }; }
+            get { return new double[] { 42.67980799993, 42.948333661026, 92.556389010936  }; }
         }
         protected override double[] Min_Out_U
         {
-            get { return new double[] { 0.0, 0.0, 0.0  }; }
+            get { return new double[] { 0.0, 61.922621178807, -158.792933361646  }; }
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 0.0, 2.0, 2.0  }; }
+            get { return new double[] { 100.001259481476, 61.922621178807, 21.207066638354  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 0.005208513911, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 31.554900243205, 27.138793357713, 305.996745902112  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.649825704973, 0.858433149763, 0.512862830778  }; }
+            get { return new double[] { 22.063565579494, 46.953957203426, -50.432714395585  }; }
         }
         protected override double[] Min_Out_T
         {
@@ -36,45 +36,45 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 1.732050807569, 0.57735026919, 0.57735026919  }; }
+            get { return new double[] { 99.998050791985, 477.128962659218, 136.814528454417  }; }
         }
 
-        public Bef() : base(new ColorBef(Whitepoint.D65),
-                            new ColorDEF(Whitepoint.D65))
+        public Lab_LCH99() : base(new ColorLab(Whitepoint.D65),
+                            new ColorLCH99())
         { }
 
         [TestMethod]
-        public void Bef_DEF_Random()
+        public void Lab_LCH99_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void Bef_DEF_Min()
+        public void Lab_LCH99_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void Bef_DEF_Max()
+        public void Lab_LCH99_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void DEF_Bef_Random()
+        public void LCH99_Lab_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void DEF_Bef_Min()
+        public void LCH99_Lab_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void DEF_Bef_Max()
+        public void LCH99_Lab_Max()
         {
             U_T_Max();
         }

@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class LCH99b : PathTestClass<ColorLCH99b, ColorLab>
+    public unsafe class DEF_Bef : PathTestClass<ColorDEF, ColorBef>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 71.613126982289, 3.424351069343, 268.332598495452  }; }
+            get { return new double[] { 0.149641973548, 0.306116474469, 0.28165740938  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 68.192920015264, 0.107931461887, -2.488611325703  }; }
+            get { return new double[] { 0.442075686334, 0.692452636352, 0.637124859129  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -20,61 +20,61 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 100.000002114323, 276.85893992631, -21.496390511705  }; }
+            get { return new double[] { 1.732050807569, 0.57735026919, 0.57735026919  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 71.613126982289, -230.05115649479, 125.137847868557  }; }
+            get { return new double[] { 0.299283947097, -0.387767051062, -0.43668518124  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 74.796041201348, 67.105071611755, 156.629111198813  }; }
+            get { return new double[] { 0.24294461123, -0.116052453596, -0.13069286468  }; }
         }
         protected override double[] Min_Out_T
         {
-            get { return new double[] { 0.0, 76.307398180223, -138.050491824795  }; }
+            get { return new double[] { 0.0, 0.0, 0.0  }; }
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 99.999998198541, 76.307398180223, 41.949508175205  }; }
+            get { return new double[] { 0.0, 2.0, 2.0  }; }
         }
 
-        public LCH99b() : base(new ColorLCH99b(),
-                            new ColorLab(Whitepoint.D65))
+        public DEF_Bef() : base(new ColorDEF(Whitepoint.D65),
+                            new ColorBef(Whitepoint.D65))
         { }
 
         [TestMethod]
-        public void LCH99b_Lab_Random()
+        public void DEF_Bef_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void LCH99b_Lab_Min()
+        public void DEF_Bef_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void LCH99b_Lab_Max()
+        public void DEF_Bef_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void Lab_LCH99b_Random()
+        public void Bef_DEF_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void Lab_LCH99b_Min()
+        public void Bef_DEF_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void Lab_LCH99b_Max()
+        public void Bef_DEF_Max()
         {
             U_T_Max();
         }

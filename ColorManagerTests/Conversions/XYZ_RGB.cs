@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class XYZ : PathTestClass<ColorXYZ, ColorDEF>
+    public unsafe class XYZ_RGB : PathTestClass<ColorXYZ, ColorRGB>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 0.716131269823, 0.048919300991, 0.745368329154  }; }
+            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 0.529963761365, 0.934766872411, -0.667212474633  }; }
+            get { return new double[] { 0.398403724731, 0.70028206455, 0.914440290514  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -20,15 +20,15 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 1.3848, 0.1311, 0.0361  }; }
+            get { return new double[] { 1.057881256182, 0.97615153079, 0.958246449718  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 0.716131269823, 0.048919300991, 0.745368329154  }; }
+            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.619692918812, 0.896218641152, -0.106311399914  }; }
+            get { return new double[] { 0.200358302997, 0.154258363041, 0.704183153813  }; }
         }
         protected override double[] Min_Out_T
         {
@@ -36,45 +36,45 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 1.320689, 1.2532302, -0.351315  }; }
+            get { return new double[] { 0.9504701, 1.0000001, 1.08883  }; }
         }
 
-        public XYZ() : base(new ColorXYZ(Whitepoint.D65),
-                            new ColorDEF(Whitepoint.D65))
+        public XYZ_RGB() : base(new ColorXYZ(Whitepoint.D65),
+                            new ColorRGB(ColorspaceRGB.AdobeRGB))
         { }
 
         [TestMethod]
-        public void XYZ_DEF_Random()
+        public void XYZ_RGB_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void XYZ_DEF_Min()
+        public void XYZ_RGB_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void XYZ_DEF_Max()
+        public void XYZ_RGB_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void DEF_XYZ_Random()
+        public void RGB_XYZ_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void DEF_XYZ_Min()
+        public void RGB_XYZ_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void DEF_XYZ_Max()
+        public void RGB_XYZ_Max()
         {
             U_T_Max();
         }

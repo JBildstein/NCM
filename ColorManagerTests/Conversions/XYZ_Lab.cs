@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class RGB : PathTestClass<ColorRGB, ColorHSL>
+    public unsafe class XYZ_Lab : PathTestClass<ColorXYZ, ColorLab>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 0.005208513911, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 155.618788026483, 0.981498615248, 0.281520220314  }; }
+            get { return new double[] { 68.584117134126, -18.371506969358, -38.319420763539  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -20,61 +20,61 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 0.0, 0.0, 1.0  }; }
+            get { return new double[] { 100.0, 8.538533672582, 5.593863452017  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 1.87506500812, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 31.554900243205, -57.274505536665, 178.495390027992  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.519180905953, 0.158981738992, 0.147361995176  }; }
+            get { return new double[] { 0.024501962605, 0.068898831624, -0.086755294905  }; }
         }
         protected override double[] Min_Out_T
         {
-            get { return new double[] { 0.0, 0.0, 0.0  }; }
+            get { return new double[] { -0.062249569084, 0.0, 3.07130517342  }; }
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 1.0, 1.0, 1.0  }; }
+            get { return new double[] { 3.27242163697, 1.0, -0.057738482062  }; }
         }
 
-        public RGB() : base(new ColorRGB(ColorspaceRGB.AdobeRGB),
-                            new ColorHSL(ColorspaceRGB.AdobeRGB))
+        public XYZ_Lab() : base(new ColorXYZ(Whitepoint.D65),
+                            new ColorLab(Whitepoint.D65))
         { }
 
         [TestMethod]
-        public void RGB_HSL_Random()
+        public void XYZ_Lab_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void RGB_HSL_Min()
+        public void XYZ_Lab_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void RGB_HSL_Max()
+        public void XYZ_Lab_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void HSL_RGB_Random()
+        public void Lab_XYZ_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void HSL_RGB_Min()
+        public void Lab_XYZ_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void HSL_RGB_Max()
+        public void Lab_XYZ_Max()
         {
             U_T_Max();
         }

@@ -4,31 +4,31 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class Luv : PathTestClass<ColorLuv, ColorLCHuv>
+    public unsafe class XYZ_Yxy : PathTestClass<ColorXYZ, ColorYxy>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 55.022424093924, 161.842751021191, -164.712262164435  }; }
+            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 55.022424093924, 230.918178941011, -45.503457731945  }; }
+            get { return new double[] { 0.387697047967, 0.203155732286, 0.24960585227  }; }
         }
         protected override double[] Min_Out_U
         {
-            get { return new double[] { 0.0, 360.624458405139, -135.0  }; }
+            get { return new double[] { 0.0, 0.31271, 0.32902  }; }
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 100.0, 360.624458405139, 45.0  }; }
+            get { return new double[] { 1.0, 0.333333333333, 0.333333333333  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 55.022424093924, 208.421375510595, 63.732520825105  }; }
+            get { return new double[] { 0.315549002432, -57.274505536665, 178.495390027992  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 55.022424093924, 92.239438696638, 186.89931973835  }; }
+            get { return new double[] { -0.101251427749, 0.315549002432, -0.212529747501  }; }
         }
         protected override double[] Min_Out_T
         {
@@ -36,45 +36,45 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 100.0, 255.0, 0.0  }; }
+            get { return new double[] { 1.0, 1.0, -1.996078431373  }; }
         }
 
-        public Luv() : base(new ColorLuv(Whitepoint.D65),
-                            new ColorLCHuv(Whitepoint.D65))
+        public XYZ_Yxy() : base(new ColorXYZ(Whitepoint.D65),
+                            new ColorYxy(Whitepoint.D65))
         { }
 
         [TestMethod]
-        public void Luv_LCHuv_Random()
+        public void XYZ_Yxy_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void Luv_LCHuv_Min()
+        public void XYZ_Yxy_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void Luv_LCHuv_Max()
+        public void XYZ_Yxy_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void LCHuv_Luv_Random()
+        public void Yxy_XYZ_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void LCHuv_Luv_Min()
+        public void Yxy_XYZ_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void LCHuv_Luv_Max()
+        public void Yxy_XYZ_Max()
         {
             U_T_Max();
         }

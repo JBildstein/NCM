@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class DEF : PathTestClass<ColorDEF, ColorBCH>
+    public unsafe class DEF_BCH : PathTestClass<ColorDEF, ColorBCH>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 0.005208513911, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 0.149641973548, 0.306116474469, 0.28165740938  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 0.649825704973, 1.562780993387, 30.855809893887  }; }
+            get { return new double[] { 0.442075686334, 1.225475546729, 42.617122556746  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -24,11 +24,11 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 0.007812770867, 0.836747890076, 119.977722203349  }; }
+            get { return new double[] { 0.224462960323, 0.459174711704, 101.396667376811  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.005233626396, -0.002898414731, 0.005024712471  }; }
+            get { return new double[] { 0.201212767596, -0.019658047086, 0.097522325126  }; }
         }
         protected override double[] Min_Out_T
         {
@@ -39,7 +39,7 @@ namespace ColorManagerTests.Conversions
             get { return new double[] { 0.106105802502, 1.496242479906, 0.0  }; }
         }
 
-        public DEF() : base(new ColorDEF(Whitepoint.D65),
+        public DEF_BCH() : base(new ColorDEF(Whitepoint.D65),
                             new ColorBCH(Whitepoint.D65))
         { }
 

@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class HSV : PathTestClass<ColorHSV, ColorRGB>
+    public unsafe class XYZ_LCH99c : PathTestClass<ColorXYZ, ColorLCH99c>
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 1.87506500812, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 0.333271450565, 0.153171867084, 0.147361995176  }; }
+            get { return new double[] { 0.370651156499, 1.310084325554, 64.115807856018  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -20,15 +20,15 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 1.0, 0.0, 0.0  }; }
+            get { return new double[] { 1.173139727391, 1.994348507092, 43.228530259966  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 0.005208513911, 0.557831926717, 0.333271450565  }; }
+            get { return new double[] { 31.554900243205, 27.138793357713, 305.996745902112  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 155.618788026483, 0.990662933292, 0.557831926717  }; }
+            get { return new double[] { 28.22698197065, 20.073999692279, -29.39658556854  }; }
         }
         protected override double[] Min_Out_T
         {
@@ -36,45 +36,45 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 0.0, 0.0, 1.0  }; }
+            get { return new double[] { 100.000062571082, 302.698238337743, 0.0  }; }
         }
 
-        public HSV() : base(new ColorHSV(ColorspaceRGB.AdobeRGB),
-                            new ColorRGB(ColorspaceRGB.AdobeRGB))
+        public XYZ_LCH99c() : base(new ColorXYZ(Whitepoint.D65),
+                            new ColorLCH99c())
         { }
 
         [TestMethod]
-        public void HSV_RGB_Random()
+        public void XYZ_LCH99c_Random()
         {
             T_U_Random();
         }
 
         [TestMethod]
-        public void HSV_RGB_Min()
+        public void XYZ_LCH99c_Min()
         {
             T_U_Min();
         }
 
         [TestMethod]
-        public void HSV_RGB_Max()
+        public void XYZ_LCH99c_Max()
         {
             T_U_Max();
         }
 
         [TestMethod]
-        public void RGB_HSV_Random()
+        public void LCH99c_XYZ_Random()
         {
             U_T_Random();
         }
 
         [TestMethod]
-        public void RGB_HSV_Min()
+        public void LCH99c_XYZ_Min()
         {
             U_T_Min();
         }
 
         [TestMethod]
-        public void RGB_HSV_Max()
+        public void LCH99c_XYZ_Max()
         {
             U_T_Max();
         }
