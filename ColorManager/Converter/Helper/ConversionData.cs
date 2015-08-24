@@ -121,7 +121,7 @@ namespace ColorManager.Conversion
 
         #endregion
 
-        #region Methods
+        #region Constructor/Methods
 
         /// <summary>
         /// Creates a new instance of the <see cref="ConversionData"/> class
@@ -164,6 +164,8 @@ namespace ColorManager.Conversion
             Vars = (double*)VarsHandle.AddrOfPinnedObject();
             InWP = (double*)InWPHandle.AddrOfPinnedObject();
             OutWP = (double*)OutWPHandle.AddrOfPinnedObject();
+            InWPCr = (double*)InWPCrHandle.AddrOfPinnedObject();
+            OutWPCr = (double*)OutWPCrHandle.AddrOfPinnedObject();
         }
 
         /// <summary>
