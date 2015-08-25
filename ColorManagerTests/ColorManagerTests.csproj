@@ -56,22 +56,23 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Conversions\DEF_BCH.cs" />
-    <Compile Include="Conversions\DEF_Bef.cs" />
-    <Compile Include="Conversions\Lab_Gray.cs" />
-    <Compile Include="Conversions\Lab_LCH99.cs" />
-    <Compile Include="Conversions\Lab_LCH99b.cs" />
-    <Compile Include="Conversions\Lab_LCHab.cs" />
-    <Compile Include="Conversions\Luv_LCHuv.cs" />
-    <Compile Include="Conversions\RGB_HSL.cs" />
-    <Compile Include="Conversions\RGB_HSV.cs" />
-    <Compile Include="Conversions\XYZ_DEF.cs" />
-    <Compile Include="Conversions\XYZ_Lab.cs" />
-    <Compile Include="Conversions\XYZ_LCH99c.cs" />
-    <Compile Include="Conversions\XYZ_LCH99d.cs" />
-    <Compile Include="Conversions\XYZ_Luv.cs" />
-    <Compile Include="Conversions\XYZ_RGB.cs" />
-    <Compile Include="Conversions\XYZ_Yxy.cs" />
+    <Compile Include="Color\Conversions\DEF_BCH.cs" />
+    <Compile Include="Color\Conversions\DEF_Bef.cs" />
+    <Compile Include="Color\Conversions\Lab_Gray.cs" />
+    <Compile Include="Color\Conversions\Lab_LCH99.cs" />
+    <Compile Include="Color\Conversions\Lab_LCH99b.cs" />
+    <Compile Include="Color\Conversions\Lab_LCHab.cs" />
+    <Compile Include="Color\Conversions\Luv_LCHuv.cs" />
+    <Compile Include="Color\Conversions\RGB_HSL.cs" />
+    <Compile Include="Color\Conversions\RGB_HSV.cs" />
+    <Compile Include="Color\Conversions\XYZ_DEF.cs" />
+    <Compile Include="Color\Conversions\XYZ_Lab.cs" />
+    <Compile Include="Color\Conversions\XYZ_LCH99c.cs" />
+    <Compile Include="Color\Conversions\XYZ_LCH99d.cs" />
+    <Compile Include="Color\Conversions\XYZ_Luv.cs" />
+    <Compile Include="Color\Conversions\XYZ_RGB.cs" />
+    <Compile Include="Color\Conversions\XYZ_Yxy.cs" />
+    <Compile Include="Helper\ReflectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\Conversion.cs" />
   </ItemGroup>
@@ -81,7 +82,9 @@
       <Name>ColorManager</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ICC\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
