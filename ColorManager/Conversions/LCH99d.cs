@@ -79,7 +79,8 @@ namespace ColorManager.Conversion
         /// <param name="outColor">The pointer to the output color values</param>
         public static void Adapt(double* outColor)
         {
-            outColor[0] = (outColor[0] + 0.12 * outColor[2]) / 1.12;
+            const double div1_112 = 1 / 1.12;
+            outColor[0] = (outColor[0] + 0.12 * outColor[2]) * div1_112;
         }
 
         /// <summary>
@@ -90,13 +91,19 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            data.Vars[0] = (Math.Exp(inColor[1] / Const.LCH99d_Cd) - 1) / Const.LCH99d_CG;  //G
+            const double div1_Cd = 1 / Const.LCH99d_Cd;
+            const double div1_CG = 1 / Const.LCH99d_CG;
+            const double div1_f = 1 / Const.LCH99d_f;
+            const double div1_L1 = 1 / Const.LCH99d_L1;
+            const double div1_L2 = 1 / Const.LCH99d_L2;
+
+            data.Vars[0] = (Math.Exp(inColor[1] * div1_Cd) - 1) * div1_CG;  //G
             data.Vars[3] = (inColor[2] - Const.LCH99d_angle) * Const.Pi180;
             data.Vars[1] = data.Vars[0] * Math.Cos(data.Vars[3]);                           //e
             data.Vars[2] = data.Vars[0] * Math.Sin(data.Vars[3]);                           //f
-            outColor[1] = data.Vars[1] * Const.cos50 - (data.Vars[2] / Const.LCH99d_f) * Const.sin50;
-            outColor[2] = data.Vars[1] * Const.sin50 + (data.Vars[2] / Const.LCH99d_f) * Const.cos50;
-            outColor[0] = (Math.Exp(inColor[0] / Const.LCH99d_L1) - 1) / Const.LCH99d_L2;
+            outColor[1] = data.Vars[1] * Const.cos50 - (data.Vars[2] * div1_f) * Const.sin50;
+            outColor[2] = data.Vars[1] * Const.sin50 + (data.Vars[2] * div1_f) * Const.cos50;
+            outColor[0] = (Math.Exp(inColor[0] * div1_L1) - 1) * div1_L2;
         }
     }
 }

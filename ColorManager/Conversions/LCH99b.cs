@@ -52,13 +52,19 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            data.Vars[0] = (Math.Exp(inColor[1] / Const.LCH99b_Cd) - 1) / Const.LCH99b_CG;  //G
+            const double div1_Cd = 1 / Const.LCH99b_Cd;
+            const double div1_CG = 1 / Const.LCH99b_CG;
+            const double div1_f = 1 / Const.LCH99b_f;
+            const double div1_L1 = 1 / Const.LCH99b_L1;
+            const double div1_L2 = 1 / Const.LCH99b_L2;
+
+            data.Vars[0] = (Math.Exp(inColor[1] * div1_Cd) - 1) * div1_CG;          //G
             data.Vars[3] = (inColor[2] - Const.LCH99b_angle) * Const.Pi180;
-            data.Vars[1] = data.Vars[0] * Math.Cos(data.Vars[3]);                           //e
-            data.Vars[2] = (data.Vars[0] * Math.Sin(data.Vars[3])) / Const.LCH99b_f;        //f
+            data.Vars[1] = data.Vars[0] * Math.Cos(data.Vars[3]);                   //e
+            data.Vars[2] = (data.Vars[0] * Math.Sin(data.Vars[3])) * div1_f;        //f
             outColor[1] = data.Vars[1] * Const.cos26 - data.Vars[2] * Const.sin26;
             outColor[2] = data.Vars[1] * Const.sin26 + data.Vars[2] * Const.cos26;
-            outColor[0] = (Math.Exp(inColor[0] / Const.LCH99b_L1) - 1) / Const.LCH99b_L2;
+            outColor[0] = (Math.Exp(inColor[0] * div1_L1) - 1) * div1_L2;
         }
     }
 }

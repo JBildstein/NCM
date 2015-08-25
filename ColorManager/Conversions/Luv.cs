@@ -74,10 +74,12 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
+            const double div1_116 = 1 / 116d;
+
             //Y
             if (inColor[0] > Const.KapEps)
             {
-                outColor[1] = (inColor[0] + 16) / 116d;
+                outColor[1] = (inColor[0] + 16) * div1_116;
                 outColor[1] *= outColor[1] * outColor[1];    // == outColor[1]^3
             }
             else outColor[1] = inColor[0] / Const.Kappa;

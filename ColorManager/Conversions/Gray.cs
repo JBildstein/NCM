@@ -22,7 +22,7 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            outColor[0] = inColor[0] / 100d;
+            outColor[0] = inColor[0] * 0.01;
             data.OutTransform(outColor, outColor);//Apply gamma
         }
     }

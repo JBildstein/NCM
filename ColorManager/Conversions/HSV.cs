@@ -82,7 +82,9 @@ namespace ColorManager.Conversion
             }
             else
             {
-                data.Vars[0] = (inColor[0] / 360d) * 6d;
+                const double div1_360 = 1 / 360d;
+
+                data.Vars[0] = (inColor[0] * div1_360) * 6d;
                 data.Vars[1] = Math.Floor(data.Vars[0]);
                 
                 data.Vars[2] = inColor[2] * inColor[1];
