@@ -19,6 +19,19 @@ namespace ColorManager
         }
 
         /// <summary>
+        /// The colorspace of this color
+        /// </summary>
+        public new ColorspaceGray Space
+        {
+            get { return base.Space as ColorspaceGray; }
+            protected set
+            {
+                ColorspaceGray sp = value as ColorspaceGray;
+                if (sp != null) base.Space = sp;
+            }
+        }
+
+        /// <summary>
         /// The name of this model
         /// </summary>
         public override string Name
