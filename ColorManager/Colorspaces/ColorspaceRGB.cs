@@ -127,10 +127,7 @@ namespace ColorManager
         {
             ColorspaceRGB c = obj as ColorspaceRGB;
             if ((object)c == null) return base.Equals(obj);
-            return c.RefWhite == RefWhite && c.Gamma == Gamma
-                && c.Cr[0] == Cr[0] && c.Cr[1] == Cr[1]
-                && c.Cg[0] == Cg[0] && c.Cg[1] == Cg[1]
-                && c.Cb[0] == Cb[0] && c.Cb[1] == Cb[1];
+            return this == c;
         }
         /// <summary>
         /// Calculates a hash code of this colorspace

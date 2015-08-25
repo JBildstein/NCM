@@ -52,7 +52,7 @@ namespace ColorManager.Conversion
         {
             ConversionPath c = obj as ConversionPath;
             if ((object)c == null) return false;
-            return c.From == From && c.To == To;
+            return this == c;
         }
         /// <summary>
         /// Calculates a hash code of this conversion path

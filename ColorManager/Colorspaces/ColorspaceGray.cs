@@ -142,7 +142,7 @@ namespace ColorManager
         {
             ColorspaceGray c = obj as ColorspaceGray;
             if ((object)c == null) return base.Equals(obj);
-            return c.RefWhite == RefWhite && c.Gamma == Gamma;
+            return this == c;
         }
         /// <summary>
         /// Calculates a hash code of this colorspace
