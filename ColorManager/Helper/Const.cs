@@ -67,7 +67,7 @@ namespace ColorManager
         public const double LCH99_L2 = 0.0158;
         public const double LCH99_f = 0.7;
         public const double LCH99_CG = 0.045;
-        public const double LCH99_Cd = 22.222222222222222222222222222222;
+        public const double LCH99_Cd = 1 / 0.045;
 
         public const double LCH99b_L1 = 303.671;
         public const double LCH99b_L2 = 0.0039;
