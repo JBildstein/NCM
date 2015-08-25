@@ -246,9 +246,7 @@ namespace ColorManager.ICC.Conversion
         #endregion
 
         #region Profile Conversion Type
-
-        //TODO: recheck profile conversion types (#8 page 25+)
-
+        
         private bool IsNComponentLUT()
         {
             switch (Profile.Class)
