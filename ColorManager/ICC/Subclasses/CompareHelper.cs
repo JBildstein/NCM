@@ -15,7 +15,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[] a, bool[] b)
         {
-            if (!CompareBase<bool>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (bool* ap = a)
             fixed (bool* bp = b)
             {
@@ -26,7 +26,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[] a, byte[] b)
         {
-            if (!CompareBase<byte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (byte* ap = a)
             fixed (byte* bp = b)
             {
@@ -37,7 +37,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[] a, sbyte[] b)
         {
-            if (!CompareBase<sbyte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (sbyte* ap = a)
             fixed (sbyte* bp = b)
             {
@@ -48,7 +48,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[] a, short[] b)
         {
-            if (!CompareBase<short>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (short* ap = a)
             fixed (short* bp = b)
             {
@@ -59,7 +59,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[] a, ushort[] b)
         {
-            if (!CompareBase<ushort>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (ushort* ap = a)
             fixed (ushort* bp = b)
             {
@@ -70,7 +70,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[] a, int[] b)
         {
-            if (!CompareBase<int>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (int* ap = a)
             fixed (int* bp = b)
             {
@@ -81,7 +81,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[] a, uint[] b)
         {
-            if (!CompareBase<uint>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (uint* ap = a)
             fixed (uint* bp = b)
             {
@@ -92,7 +92,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[] a, long[] b)
         {
-            if (!CompareBase<long>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (long* ap = a)
             fixed (long* bp = b)
             {
@@ -103,7 +103,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[] a, ulong[] b)
         {
-            if (!CompareBase<ulong>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (ulong* ap = a)
             fixed (ulong* bp = b)
             {
@@ -114,7 +114,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[] a, float[] b)
         {
-            if (!CompareBase<float>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (float* ap = a)
             fixed (float* bp = b)
             {
@@ -125,7 +125,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[] a, double[] b)
         {
-            if (!CompareBase<double>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (double* ap = a)
             fixed (double* bp = b)
             {
@@ -136,7 +136,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[] a, decimal[] b)
         {
-            if (!CompareBase<decimal>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (decimal* ap = a)
             fixed (decimal* bp = b)
             {
@@ -165,7 +165,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[][] a, bool[][] b)
         {
-            if (!CompareBase<bool>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -184,7 +184,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[][] a, byte[][] b)
         {
-            if (!CompareBase<byte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -203,7 +203,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[][] a, sbyte[][] b)
         {
-            if (!CompareBase<sbyte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -222,7 +222,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[][] a, short[][] b)
         {
-            if (!CompareBase<short>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -241,7 +241,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[][] a, ushort[][] b)
         {
-            if (!CompareBase<ushort>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -260,7 +260,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[][] a, int[][] b)
         {
-            if (!CompareBase<int>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -279,7 +279,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[][] a, uint[][] b)
         {
-            if (!CompareBase<uint>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -298,7 +298,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[][] a, long[][] b)
         {
-            if (!CompareBase<long>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -317,7 +317,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[][] a, ulong[][] b)
         {
-            if (!CompareBase<ulong>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -336,7 +336,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[][] a, float[][] b)
         {
-            if (!CompareBase<float>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -355,7 +355,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[][] a, double[][] b)
         {
-            if (!CompareBase<double>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -374,7 +374,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[][] a, decimal[][] b)
         {
-            if (!CompareBase<decimal>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
@@ -407,7 +407,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[,] a, bool[,] b)
         {
-            if (!CompareBase<bool>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (bool* ap = a)
             fixed (bool* bp = b)
             {
@@ -418,7 +418,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[,] a, byte[,] b)
         {
-            if (!CompareBase<byte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (byte* ap = a)
             fixed (byte* bp = b)
             {
@@ -429,7 +429,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[,] a, sbyte[,] b)
         {
-            if (!CompareBase<sbyte>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (sbyte* ap = a)
             fixed (sbyte* bp = b)
             {
@@ -440,7 +440,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[,] a, short[,] b)
         {
-            if (!CompareBase<short>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (short* ap = a)
             fixed (short* bp = b)
             {
@@ -451,7 +451,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[,] a, ushort[,] b)
         {
-            if (!CompareBase<ushort>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (ushort* ap = a)
             fixed (ushort* bp = b)
             {
@@ -462,7 +462,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[,] a, int[,] b)
         {
-            if (!CompareBase<int>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (int* ap = a)
             fixed (int* bp = b)
             {
@@ -473,7 +473,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[,] a, uint[,] b)
         {
-            if (!CompareBase<uint>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (uint* ap = a)
             fixed (uint* bp = b)
             {
@@ -484,7 +484,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[,] a, long[,] b)
         {
-            if (!CompareBase<long>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (long* ap = a)
             fixed (long* bp = b)
             {
@@ -495,7 +495,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[,] a, ulong[,] b)
         {
-            if (!CompareBase<ulong>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (ulong* ap = a)
             fixed (ulong* bp = b)
             {
@@ -506,7 +506,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[,] a, float[,] b)
         {
-            if (!CompareBase<float>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (float* ap = a)
             fixed (float* bp = b)
             {
@@ -517,7 +517,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[,] a, double[,] b)
         {
-            if (!CompareBase<double>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (double* ap = a)
             fixed (double* bp = b)
             {
@@ -528,7 +528,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[,] a, decimal[,] b)
         {
-            if (!CompareBase<decimal>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             fixed (decimal* ap = a)
             fixed (decimal* bp = b)
             {
