@@ -103,11 +103,7 @@ namespace ColorManager
         {
             Whitepoint c = obj as Whitepoint;
             if ((object)c == null) return false;
-            return Math.Round(c.X, CA) == Math.Round(X, CA)
-                && Math.Round(c.Y, CA) == Math.Round(Y, CA)
-                && Math.Round(c.Z, CA) == Math.Round(Z, CA)
-                && Math.Round(c.Cx, CA) == Math.Round(Cx, CA)
-                && Math.Round(c.Cy, CA) == Math.Round(Cy, CA);
+            return this == c;
         }
         /// <summary>
         /// Calculates a hash code of this whitepoint

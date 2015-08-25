@@ -108,7 +108,7 @@ namespace ColorManager
         {
             Colorspace c = obj as Colorspace;
             if ((object)c == null) return false;
-            return c.RefWhite == RefWhite;
+            return this == c;
         }
         /// <summary>
         /// Calculates a hash code of this colorspace
