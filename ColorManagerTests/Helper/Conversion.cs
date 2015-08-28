@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ColorManagerTests.Conversions
 {
-    public unsafe abstract class PathTestClass<T, U>
+    public unsafe abstract class Conversion<T, U>
         where T : Color
         where U : Color
     {
@@ -29,7 +29,7 @@ namespace ColorManagerTests.Conversions
         protected abstract double[] Min_Out_T { get; }
         protected abstract double[] Max_Out_T { get; }
 
-        protected PathTestClass(T Color1, U Color2)
+        protected Conversion(T Color1, U Color2)
         {
             this.Color1 = Color1;
             this.Color2 = Color2;
@@ -120,7 +120,7 @@ namespace ColorManagerTests.Conversions
         {
             double* inColor = stackalloc double[pathData.inCount];
             double* outColor = stackalloc double[pathData.outCount];
-            var data = new Test_ConversionData(pathData.inColor, pathData.outColor);
+            var data = new TestConversionData(pathData.inColor, pathData.outColor);
 
             for (int i = 0; i < pathData.inCount; i++) { inColor[i] = pathData.inValues[i]; }
 
@@ -185,12 +185,5 @@ namespace ColorManagerTests.Conversions
             inCount = inValues.Length;
             outCount = outValues.Length;
         }
-    }
-
-    public class Test_ConversionData : ConversionData
-    {
-        public Test_ConversionData(Color inColor, Color outColor)
-            : base(inColor, outColor)
-        { }
     }
 }
