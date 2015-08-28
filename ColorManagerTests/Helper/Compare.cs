@@ -1,5 +1,5 @@
 ﻿
-namespace ColorManagerTests
+namespace ColorManagerTests.Comparison
 {
     public abstract class Compare
     {
