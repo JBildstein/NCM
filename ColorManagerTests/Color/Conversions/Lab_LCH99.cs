@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ColorManagerTests.Conversions
 {
     [TestClass]
-    public unsafe class Lab_LCH99 : PathTestClass<ColorLab, ColorLCH99>
+    public unsafe class Lab_LCH99 : Conversion<ColorLab, ColorLCH99>
     {
         protected override double[] Rand_In_T
         {
