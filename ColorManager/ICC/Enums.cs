@@ -2,6 +2,9 @@
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Profile Class Name
+    /// </summary>
     public enum ProfileClassName : uint
     {
         InputDevice = 0x73636E72,       //scnr
@@ -13,6 +16,9 @@ namespace ColorManager.ICC
         NamedColor = 0x6E6D636C,        //nmcl
     }
 
+    /// <summary>
+    /// Color Space Type
+    /// </summary>
     public enum ColorSpaceType : uint
     {
         CIEXYZ = 0x58595A20,        //XYZ
@@ -42,6 +48,9 @@ namespace ColorManager.ICC
         Color15 = 0x46434C52,       //FCLR
     }
 
+    /// <summary>
+    /// Primary Platform Type
+    /// </summary>
     public enum PrimaryPlatformType : uint
     {
         NotIdentified = 0x00000000,
@@ -51,6 +60,9 @@ namespace ColorManager.ICC
         SunMicrosystemsInc = 0x53554E57,        //SUNW
     }
 
+    /// <summary>
+    /// Device Attribute Type
+    /// </summary>
     public enum DeviceAttributeType
     {
         Reflective,
@@ -63,6 +75,9 @@ namespace ColorManager.ICC
         BlackWhite,
     }
 
+    /// <summary>
+    /// Rendering Intent
+    /// </summary>
     public enum RenderingIntent : uint
     {
         Perceptual = 0,
@@ -71,8 +86,13 @@ namespace ColorManager.ICC
         AbsoluteColorimetric = 3,
     }
 
+    /// <summary>
+    /// Tag Signature
+    /// </summary>
     public enum TagSignature : uint
     {
+        Unknown,
+
         AToB0 = 0x41324230,                             //A2B0
         AToB1 = 0x41324231,                             //A2B1
         AToB2 = 0x41324232,                             //A2B2
@@ -124,6 +144,9 @@ namespace ColorManager.ICC
         ViewingConditions = 0x76696577,                 //view
     }
 
+    /// <summary>
+    /// Type Signature
+    /// </summary>
     public enum TypeSignature : uint
     {
         Unknown,
@@ -158,6 +181,9 @@ namespace ColorManager.ICC
         XYZ = 0x58595A20,
     }
 
+    /// <summary>
+    /// Signature Name
+    /// </summary>
     public enum SignatureName : uint
     {
         Unknown = 0,
@@ -201,6 +227,9 @@ namespace ColorManager.ICC
         DigitalCinemaProjector = 0x64636A70,                //dcpj
     }
 
+    /// <summary>
+    /// Multi Process ElementSignature
+    /// </summary>
     public enum MultiProcessElementSignature : uint
     {
         Unknown = 0,
@@ -211,12 +240,18 @@ namespace ColorManager.ICC
         eACS = 0x65414353,      //eACS
     }
 
+    /// <summary>
+    /// Curve Segment Signature
+    /// </summary>
     public enum CurveSegmentSignature : uint
     {
         FormulaCurve = 0x70617266,      //parf
         SampledCurve = 0x73616D66,      //samf
     }
 
+    /// <summary>
+    /// Colorant Encoding
+    /// </summary>
     public enum ColorantEncoding : uint
     {
         Unknown = 0x0000,
@@ -226,6 +261,9 @@ namespace ColorManager.ICC
         P22 = 0x0004,
     }
 
+    /// <summary>
+    /// Standard Observer
+    /// </summary>
     public enum StandardObserver : uint
     {
         Unkown = 0,
@@ -233,6 +271,9 @@ namespace ColorManager.ICC
         CIE1964_Observer = 2,
     }
 
+    /// <summary>
+    /// Measurement Geometry
+    /// </summary>
     public enum MeasurementGeometry : uint
     {
         Unknown = 0,
@@ -240,6 +281,9 @@ namespace ColorManager.ICC
         MG_0d_d0 = 2,
     }
 
+    /// <summary>
+    /// Standard Illuminant
+    /// </summary>
     public enum StandardIlluminant : uint
     {
         Unknown = 0,
@@ -253,6 +297,9 @@ namespace ColorManager.ICC
         F8 = 8,
     }
 
+    /// <summary>
+    /// Curve Measurement Encodings
+    /// </summary>
     public enum CurveMeasurementEncodings : uint
     {
         StatusA = 0x53746141,   //StaA
@@ -266,6 +313,9 @@ namespace ColorManager.ICC
         DinI_pol = 0x434E4E50,  //DNNP
     }
 
+    /// <summary>
+    /// Profile Conversion Method
+    /// </summary>
     public enum ProfileConversionMethod
     {
         Invalid,
