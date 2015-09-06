@@ -283,6 +283,7 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
+        //LTODO: add multiprocess element conversion
         //LTODO: include chromatic adaption if CATag is existing
         //LTODO: check for media white/black point tag and use it if existing and appropriate
 
@@ -428,6 +429,8 @@ namespace ColorManager.ICC.Conversion
 
         private void ConvertICC_PCSPCS()
         {
+            //TODO: Add PCS-PCS ICC conversion
+
             //AtoB0
             throw new NotImplementedException();
         }
@@ -438,6 +441,8 @@ namespace ColorManager.ICC.Conversion
 
         private void ConvertICC_DataData()
         {
+            //TODO: Add Data-Data ICC conversion
+
             //AtoB0
             throw new NotImplementedException();
         }
@@ -511,7 +516,7 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException();
         }
 
-        #region Curve
+        #region Normal Curve
 
         /// <summary>
         /// Writes the IL code for a curve
@@ -1065,24 +1070,31 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a one dimensional curve
         /// </summary>
         /// <param name="curve">The curve data</param>
-        private void WriteOneDimensionalCurve(OneDimensionalCurve curve)
+        private void WriteOneDimensionalCurve(OneDimensionalCurve curve, int index)
         {
-            //TODO: IL for one-dimensional curve
+            int length = curve.BreakPoints.Length;
 
-            /*
-            int idx = -1;
-            if (curve.Segments.Length != 1)
+            if (length == 0) throw new InvalidProfileException();
+            else if (length > 1)
             {
-                for (int i = 0; i < curve.BreakPoints.Length; i++)
+                var iflabel = CMIL.DefineLabel();
+                for (int i = 0; i < length; i++)
                 {
-                    if (input <= curve.BreakPoints[i]) { idx = i; break; }
+                    //if (inColor[index] <= curve.BreakPoints[i]) *CurveSegmentCode*
+                    if (i < length)
+                    {
+                        WriteLdInput(index);
+                        CMIL.Emit(OpCodes.Ldind_R8);
+                        CMIL.Emit(OpCodes.Ldc_R8, curve.BreakPoints[i]);
+                        CMIL.Emit(OpCodes.Bgt_Un);
+                        WriteCurveSegment(curve.Segments[i], index);
+                        CMIL.Emit(OpCodes.Br, iflabel);
+                    }
+                    else WriteCurveSegment(curve.Segments[i], index);
                 }
-                if (idx == -1) { idx = curve.Segments.Length - 1; }
+                CMIL.MarkLabel(iflabel);
             }
-            else { idx = 0; }
-
-            //var result = curve.Segments[idx].GetValue(input);
-            WriteCurveSegment(curve.Segments[idx]);*/
+            else WriteCurveSegment(curve.Segments[0], index);
         }
 
         /// <summary>
@@ -1126,9 +1138,7 @@ namespace ColorManager.ICC.Conversion
         }
 
         #region Formula Curve Segment
-
-        //TODO: test formula curve segment implementation
-
+        
         private void WriteFormulaCurveSegment_Type0(FormulaCurveElement segment, int index)
         {
             //OutColor[index] = Math.Pow(InColor[index] * segment.a + segment.b, segment.gamma) + segment.c;
