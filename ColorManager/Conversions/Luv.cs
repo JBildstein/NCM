@@ -23,35 +23,31 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
+            double* vs = data.Vars;
+            double* wp = data.OutWP;
+
             if (inColor[1] < Const.Delta) outColor[0] = outColor[1] = outColor[2] = 0;
             else
             {
                 //yr
-                data.Vars[0] = inColor[1] / data.OutWP[1];
+                vs[0] = inColor[1] / wp[1];
 
                 //uv' tmp
-                data.Vars[1] = inColor[0] + 15d * inColor[1] + 3d * inColor[2];
+                vs[1] = 1 / (inColor[0] + 15d * inColor[1] + 3d * inColor[2]);
                 //uv'r tmp
-                data.Vars[2] = data.OutWP[0] + 15d * data.OutWP[1] + 3d * data.OutWP[2];
-
-                //u' = 4d * inColor[0] / data.Vars[1];
-                //v' = 9d * inColor[1] / data.Vars[1];
-
-                //u'r = 4d * data.OutWP[0] / data.Vars[2];
-                //v'r = 9d * data.OutWP[1] / data.Vars[2];
+                vs[2] = 1d / (wp[0] + 15d * wp[1] + 3d * wp[2]);
 
                 //L
-                if (data.Vars[0] > Const.Epsilon) outColor[0] = 116d * Math.Pow(data.Vars[0], Const.div1_3) - 16d;
-                else outColor[0] = Const.Kappa * data.Vars[0];
+                if (vs[0] > Const.Epsilon) outColor[0] = 116d * Math.Pow(vs[0], Const.div1_3) - 16d;
+                else outColor[0] = Const.Kappa * vs[0];
+
                 //uv tmp
-                data.Vars[3] = 13d * outColor[0];
-                outColor[2] = data.Vars[3] * ((9d * inColor[1] / data.Vars[1]) - (9d * data.OutWP[1] / data.Vars[2]));  //v
-                outColor[1] = data.Vars[3] * ((4d * inColor[0] / data.Vars[1]) - (4d * data.OutWP[0] / data.Vars[2]));  //u
+                vs[0] = 13d * outColor[0];
+                outColor[2] = vs[0] * ((9d * inColor[1] * vs[1]) - (9d * wp[1] * vs[2]));  //v
+                outColor[1] = vs[0] * ((4d * inColor[0] * vs[1]) - (4d * wp[0] * vs[2]));  //u
             }
         }
     }
-
-    //LTODO: Somewhere in here is a problem with negative u/v values (when L and v is low. The lower v, the less low L has to be)
 
     /// <summary>
     /// Stores data about a conversion from <see cref="ColorLuv"/> to <see cref="ColorXYZ"/>
@@ -74,38 +70,44 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            const double div1_116 = 1 / 116d;
+            double* vs = data.Vars;
+            double* wp = data.InWP;
 
-            //Y
-            if (inColor[0] > Const.KapEps)
-            {
-                outColor[1] = (inColor[0] + 16) * div1_116;
-                outColor[1] *= outColor[1] * outColor[1];    // == outColor[1]^3
-            }
-            else outColor[1] = inColor[0] / Const.Kappa;
+            vs[0] = 1d / (wp[0] + 15d * wp[1] + 3d * wp[2]);
+            vs[1] = 4d * wp[0] * vs[0];     //u'n
+            vs[2] = 9d * wp[1] * vs[0];     //v'n
 
-            if (outColor[1] < Const.Delta) outColor[0] = outColor[1] = outColor[2] = 0;
+            const double f = 3d / 29d;
+            const double g = f * f * f;
+
+            if (inColor[0] <= Const.KapEps) outColor[1] = wp[1] * inColor[0] * g;
             else
             {
-                //uv0 tmp
-                data.Vars[5] = data.InWP[0] + 15d * data.InWP[1] + 3d * data.InWP[2];
-
-                //u0
-                data.Vars[1] = 4d * data.InWP[0] / data.Vars[5];
-                //v0
-                data.Vars[2] = 9d * data.InWP[1] / data.Vars[5];
-
-                //a
-                data.Vars[3] = Const.div1_3 * ((52d * inColor[0] / (inColor[1] + 13d * inColor[0] * data.Vars[1])) - 1d);
-                //b
-                data.Vars[4] = -5d * outColor[1];
-                //c = -1/3;
-                //d
-                data.Vars[6] = outColor[1] * ((39d * inColor[0] / (inColor[2] + 13d * inColor[0] * data.Vars[2])) - 5d);//I think the problem lies in this line here
-                
-                outColor[0] = (data.Vars[6] - data.Vars[4]) / (data.Vars[3] + Const.div1_3);    //X
-                outColor[2] = outColor[0] * data.Vars[3] + data.Vars[4];                        //Z
+                vs[0] = (inColor[0] + 16d) * (1d / 116d);
+                outColor[1] = wp[1] * vs[0] * vs[0] * vs[0];
             }
+
+            //TODO: if v(<0) and L(~0) are small, there is a problem because of a division with a very small number
+
+            vs[5] = 13d * inColor[0];
+
+            if (vs[5] > Const.Delta)
+            {
+                vs[0] = 1 / vs[5];
+                vs[3] = (inColor[1] * vs[0]) + vs[1];   //u'
+                vs[4] = (inColor[2] * vs[0]) + vs[2];   //v'
+
+                vs[0] = 1d / (4d * vs[4]);
+                outColor[0] = outColor[1] * ((9d * vs[3]) * vs[0]);
+                outColor[2] = outColor[1] * ((12d - 3d * vs[3] - 20d * vs[4]) * vs[0]);
+            }
+            else outColor[0] = outColor[2] = 0;
+
+            if (outColor[0] < 0) outColor[0] = 0;
+            else if (outColor[0] > 1) outColor[0] = 1;
+
+            if (outColor[2] < 0) outColor[2] = 0;
+            else if (outColor[2] > 1) outColor[2] = 1;
         }
     }
 }
