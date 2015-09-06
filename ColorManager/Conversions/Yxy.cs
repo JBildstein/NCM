@@ -23,17 +23,20 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
+            double* vs = data.Vars;
+
             outColor[0] = inColor[1];
-            data.Vars[0] = inColor[0] + inColor[1] + inColor[2];
-            if (Math.Abs(data.Vars[0]) < Const.Delta)
+            vs[0] = inColor[0] + inColor[1] + inColor[2];
+            if (Math.Abs(vs[0]) < Const.Delta)
             {
                 outColor[1] = data.OutWPCr[0];
                 outColor[2] = data.OutWPCr[1];
             }
             else
             {
-                outColor[2] = inColor[1] / data.Vars[0];
-                outColor[1] = inColor[0] / data.Vars[0];
+                vs[0] = 1d / vs[0];
+                outColor[2] = inColor[1] * vs[0];
+                outColor[1] = inColor[0] * vs[0];
             }
         }
     }
@@ -59,12 +62,14 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            if (Math.Abs(inColor[2]) < Const.Delta) outColor[0] = outColor[1] = outColor[2] = 0;
+            if (inColor[2] < Const.Delta) outColor[0] = outColor[1] = outColor[2] = 0;
             else
             {
+                double* vs = data.Vars;
+                vs[0] = 1d / inColor[2];
                 outColor[1] = inColor[0];
-                outColor[0] = (inColor[1] * inColor[0]) / inColor[2];
-                outColor[2] = ((1 - inColor[1] - inColor[2]) * inColor[0]) / inColor[2];
+                outColor[0] = (inColor[1] * inColor[0]) * vs[0];
+                outColor[2] = ((1 - inColor[1] - inColor[2]) * inColor[0]) * vs[0];
             }
         }
     }

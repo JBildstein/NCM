@@ -54,10 +54,12 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
+            double* vs = data.Vars;
+
             outColor[1] = inColor[1] * inColor[0];
             outColor[2] = inColor[2] * inColor[0];
-            data.Vars[0] = inColor[0] * inColor[0] - outColor[1] * outColor[1] - outColor[2] * outColor[2];
-            if (data.Vars[0] > 0) outColor[0] = Math.Sqrt(data.Vars[0]);
+            vs[0] = inColor[0] * inColor[0] - outColor[1] * outColor[1] - outColor[2] * outColor[2];
+            if (vs[0] > 0) outColor[0] = Math.Sqrt(vs[0]);
             else outColor[0] = 0;
         }
     }

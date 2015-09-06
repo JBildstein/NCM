@@ -23,21 +23,26 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            //Max = data.Vars[0] and Min = data.Vars[1]
-            UMath.MinMax_3(inColor, data.Vars);
+            double* vs = data.Vars;
 
-            if (Math.Round(data.Vars[0], 6) == Math.Round(data.Vars[1], 6)) { outColor[1] = outColor[0] = 0; }
+            //Max = vs[0] and Min = vs[1]
+            UMath.MinMax_3(inColor, vs);
+
+            vs[2] = vs[0] - vs[1];
+            vs[3] = vs[0] + vs[1];
+            outColor[2] = vs[3] * 0.5;
+
+            if (Math.Round(vs[0], 6) == Math.Round(vs[1], 6)) { outColor[1] = outColor[0] = 0; }
             else
             {
-                if ((data.Vars[0] + data.Vars[1]) * 0.5 <= 0.5d) { outColor[1] = (data.Vars[0] - data.Vars[1]) / (data.Vars[0] + data.Vars[1]); }
-                else { outColor[1] = (data.Vars[0] - data.Vars[1]) / (2 - data.Vars[0] - data.Vars[1]); }
+                if (outColor[2] <= 0.5d) { outColor[1] = vs[2] / vs[3]; }
+                else { outColor[1] = vs[2] / (2 - vs[2]); }
 
-                if (inColor[0] == data.Vars[0]) { outColor[0] = (inColor[1] - inColor[2]) / (data.Vars[0] - data.Vars[1]); }
-                else if (inColor[1] == data.Vars[0]) { outColor[0] = 2d + (inColor[2] - inColor[0]) / (data.Vars[0] - data.Vars[1]); }
-                else { outColor[0] = 4d + (inColor[0] - inColor[1]) / (data.Vars[0] - data.Vars[1]); }    //inColor[2] == max
+                if (inColor[0] == vs[0]) { outColor[0] = (inColor[1] - inColor[2]) / vs[2]; }
+                else if (inColor[1] == vs[0]) { outColor[0] = 2d + (inColor[2] - inColor[0]) / vs[2]; }
+                else { outColor[0] = 4d + (inColor[0] - inColor[1]) / vs[2]; }    //inColor[2] == max
                 outColor[0] *= 60d;
             }
-            outColor[2] = (data.Vars[0] + data.Vars[1]) * 0.5;
         }
     }
 
@@ -71,34 +76,35 @@ namespace ColorManager.Conversion
             else
             {
                 const double div1_60 = 1 / 60d;
+                double* vs = data.Vars;
 
-                if (inColor[2] < 0.5d) { data.Vars[0] = inColor[2] * (1d + inColor[1]); }
-                else { data.Vars[0] = (inColor[2] + inColor[1]) - (inColor[1] * inColor[2]); }
+                if (inColor[2] < 0.5d) { vs[0] = inColor[2] * (1d + inColor[1]); }
+                else { vs[0] = (inColor[2] + inColor[1]) - (inColor[1] * inColor[2]); }
 
-                data.Vars[1] = 2d * inColor[2] - data.Vars[0];
+                vs[1] = 2d * inColor[2] - vs[0];
                 
                 if (inColor[0] > 360d) { inColor[0] -= 360d; }
                 else if (inColor[0] < 0) { inColor[0] += 360d; }
-                if (inColor[0] < 60d) { outColor[1] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * inColor[0] * div1_60; }
-                else if (inColor[0] < 180d) { outColor[1] = data.Vars[0]; }
-                else if (inColor[0] < 240d) { outColor[1] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * (240d - inColor[0]) * div1_60; }
-                else outColor[1] = data.Vars[1];
+                if (inColor[0] < 60d) { outColor[1] = vs[1] + (vs[0] - vs[1]) * inColor[0] * div1_60; }
+                else if (inColor[0] < 180d) { outColor[1] = vs[0]; }
+                else if (inColor[0] < 240d) { outColor[1] = vs[1] + (vs[0] - vs[1]) * (240d - inColor[0]) * div1_60; }
+                else outColor[1] = vs[1];
 
-                data.Vars[2] = inColor[0] - 120d;
-                if (data.Vars[2] > 360d) { data.Vars[2] -= 360d; }
-                else if (data.Vars[2] < 0) { data.Vars[2] += 360d; }
-                if (data.Vars[2] < 60d) { outColor[2] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * data.Vars[2] * div1_60; }
-                else if (data.Vars[2] < 180d) { outColor[2] = data.Vars[0]; }
-                else if (data.Vars[2] < 240d) { outColor[2] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * (240d - data.Vars[2]) * div1_60; }
-                else outColor[2] = data.Vars[1];
+                vs[2] = inColor[0] - 120d;
+                if (vs[2] > 360d) { vs[2] -= 360d; }
+                else if (vs[2] < 0) { vs[2] += 360d; }
+                if (vs[2] < 60d) { outColor[2] = vs[1] + (vs[0] - vs[1]) * vs[2] * div1_60; }
+                else if (vs[2] < 180d) { outColor[2] = vs[0]; }
+                else if (vs[2] < 240d) { outColor[2] = vs[1] + (vs[0] - vs[1]) * (240d - vs[2]) * div1_60; }
+                else outColor[2] = vs[1];
 
-                data.Vars[2] = inColor[0] + 120d;
-                if (data.Vars[2] > 360d) { data.Vars[2] -= 360d; }
-                else if (data.Vars[2] < 0) { data.Vars[2] += 360d; }
-                if (data.Vars[2] < 60d) { outColor[0] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * data.Vars[2] * div1_60; }
-                else if (data.Vars[2] < 180d) { outColor[0] = data.Vars[0]; }
-                else if (data.Vars[2] < 240d) { outColor[0] = data.Vars[1] + (data.Vars[0] - data.Vars[1]) * (240d - data.Vars[2]) * div1_60; }
-                else outColor[0] = data.Vars[1];
+                vs[2] = inColor[0] + 120d;
+                if (vs[2] > 360d) { vs[2] -= 360d; }
+                else if (vs[2] < 0) { vs[2] += 360d; }
+                if (vs[2] < 60d) { outColor[0] = vs[1] + (vs[0] - vs[1]) * vs[2] * div1_60; }
+                else if (vs[2] < 180d) { outColor[0] = vs[0]; }
+                else if (vs[2] < 240d) { outColor[0] = vs[1] + (vs[0] - vs[1]) * (240d - vs[2]) * div1_60; }
+                else outColor[0] = vs[1];
             }
         }
     }

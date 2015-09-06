@@ -44,10 +44,12 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            outColor[0] = Const.LCH99c_L1 * Math.Log(1 + Const.LCH99c_L2 * inColor[0]);                                                         //L
-            data.Vars[0] = Const.LCH99c_f * inColor[2];                                                                                         //f
-            outColor[1] = Math.Log(1 + Const.LCH99c_CG * Math.Sqrt(inColor[1] * inColor[1] + data.Vars[0] * data.Vars[0])) * Const.LCH99c_Cd;   //C
-            outColor[2] = Math.Atan2(data.Vars[0], inColor[1]) * Const.Pi180_1;                                                                 //H
+            double* vs = data.Vars;
+
+            outColor[0] = Const.LCH99c_L1 * Math.Log(1 + Const.LCH99c_L2 * inColor[0]);                                         //L
+            vs[0] = Const.LCH99c_f * inColor[2];                                                                                //f
+            outColor[1] = Math.Log(1 + Const.LCH99c_CG * Math.Sqrt(inColor[1] * inColor[1] + vs[0] * vs[0])) * Const.LCH99c_Cd; //C
+            outColor[2] = Math.Atan2(vs[0], inColor[1]) * Const.Pi180_1;                                                        //H
         }
     }
 
@@ -96,11 +98,13 @@ namespace ColorManager.Conversion
             const double div1_L1 = 1 / Const.LCH99c_L1;
             const double div1_L2 = 1 / Const.LCH99c_L2;
 
-            data.Vars[0] = (Math.Exp(inColor[1] * div1_Cd) - 1) * div1_CG;  //G
-            data.Vars[2] = inColor[2] * Const.Pi180;
-            outColor[1] = data.Vars[0] * Math.Cos(data.Vars[2]);            //e
-            data.Vars[1] = data.Vars[0] * Math.Sin(data.Vars[2]);           //f
-            outColor[2] = data.Vars[1] * div1_f;
+            double* vs = data.Vars;
+
+            vs[0] = (Math.Exp(inColor[1] * div1_Cd) - 1) * div1_CG; //G
+            vs[2] = inColor[2] * Const.Pi180;
+            outColor[1] = vs[0] * Math.Cos(vs[2]);                  //e
+            vs[1] = vs[0] * Math.Sin(vs[2]);                        //f
+            outColor[2] = vs[1] * div1_f;
             outColor[0] = (Math.Exp(inColor[0] * div1_L1) - 1) * div1_L2;
         }
     }

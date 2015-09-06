@@ -23,33 +23,35 @@ namespace ColorManager.Conversion
         /// <param name="data">The data that is used to perform the conversion</param>
         public static void Convert(double* inColor, double* outColor, ConversionData data)
         {
-            //Max = data.Vars[0] and Min = data.Vars[1]
-            UMath.MinMax_3(inColor, data.Vars);
+            double* vs = data.Vars;
 
-            if (Math.Round(data.Vars[0], 6) == Math.Round(data.Vars[1], 6)) { outColor[2] = data.Vars[1]; outColor[0] = 0; }
+            //Max = vs[0] and Min = vs[1]
+            UMath.MinMax_3(inColor, vs);
+
+            if (Math.Round(vs[0], 6) == Math.Round(vs[1], 6)) { outColor[2] = vs[1]; outColor[0] = 0; }
             else
             {
-                if (inColor[0] == data.Vars[1])
+                if (inColor[0] == vs[1])
                 {
-                    data.Vars[2] = inColor[1] - inColor[2];
-                    data.Vars[3] = 3d;
+                    vs[2] = inColor[1] - inColor[2];
+                    vs[3] = 3d;
                 }
-                else if (inColor[2] == data.Vars[1])
+                else if (inColor[2] == vs[1])
                 {
-                    data.Vars[2] = inColor[0] - inColor[1];
-                    data.Vars[3] = 1d;
+                    vs[2] = inColor[0] - inColor[1];
+                    vs[3] = 1d;
                 }
-                else //inColor[0] == data.Vars[1] (== min)
+                else //inColor[0] == vs[1] (== min)
                 {
-                    data.Vars[2] = inColor[2] - inColor[0];
-                    data.Vars[3] = 5d;
+                    vs[2] = inColor[2] - inColor[0];
+                    vs[3] = 5d;
                 }
 
-                outColor[0] = 60d * (data.Vars[3] - data.Vars[2] / (data.Vars[0] - data.Vars[1]));
-                outColor[2] = data.Vars[0];
+                outColor[0] = 60d * (vs[3] - vs[2] / (vs[0] - vs[1]));
+                outColor[2] = vs[0];
             }
-            if (Math.Abs(data.Vars[0]) < Const.Delta) outColor[1] = 0;
-            else outColor[1] = (data.Vars[0] - data.Vars[1]) / data.Vars[0];
+            if (Math.Abs(vs[0]) < Const.Delta) outColor[1] = 0;
+            else outColor[1] = (vs[0] - vs[1]) / vs[0];
         }
     }
 
@@ -82,27 +84,28 @@ namespace ColorManager.Conversion
             }
             else
             {
-                const double div1_360 = 1 / 360d;
+                const double div1_360 = 1d / 360d;
+                double* vs = data.Vars;
 
-                data.Vars[0] = (inColor[0] * div1_360) * 6d;
-                data.Vars[1] = Math.Floor(data.Vars[0]);
+                vs[0] = (inColor[0] * div1_360) * 6d;
+                vs[1] = (int)vs[0]; //== Math.Floor
                 
-                data.Vars[2] = inColor[2] * inColor[1];
-                data.Vars[3] = data.Vars[2] * (data.Vars[0] - data.Vars[1]);
+                vs[2] = inColor[2] * inColor[1];
+                vs[3] = vs[2] * (vs[0] - vs[1]);
 
-                data.Vars[4] = inColor[2] - data.Vars[2];
-                data.Vars[5] = inColor[2] - data.Vars[3];
-                data.Vars[6] = data.Vars[4] + data.Vars[3];
+                vs[4] = inColor[2] - vs[2];
+                vs[5] = inColor[2] - vs[3];
+                vs[6] = vs[4] + vs[3];
 
-                switch ((int)(data.Vars[1] + 0.5))//Since the value is always positive, this is the fastest way to round to an even number
+                switch ((int)(vs[1] + 0.5)) //Since the value is always positive, this is the fastest way to round to an even number
                 {
                     case 6:
-                    case 0: outColor[0] = inColor[2]; outColor[1] = data.Vars[6]; outColor[2] = data.Vars[4]; break;
-                    case 1: outColor[0] = data.Vars[5]; outColor[1] = inColor[2]; outColor[2] = data.Vars[4]; break;
-                    case 2: outColor[0] = data.Vars[4]; outColor[1] = inColor[2]; outColor[2] = data.Vars[6]; break;
-                    case 3: outColor[0] = data.Vars[4]; outColor[1] = data.Vars[5]; outColor[2] = inColor[2]; break;
-                    case 4: outColor[0] = data.Vars[6]; outColor[1] = data.Vars[4]; outColor[2] = inColor[2]; break;
-                    default: outColor[0] = inColor[2]; outColor[1] = data.Vars[4]; outColor[2] = data.Vars[5]; break;
+                    case 0: outColor[0] = inColor[2]; outColor[1] = vs[6]; outColor[2] = vs[4]; break;
+                    case 1: outColor[0] = vs[5]; outColor[1] = inColor[2]; outColor[2] = vs[4]; break;
+                    case 2: outColor[0] = vs[4]; outColor[1] = inColor[2]; outColor[2] = vs[6]; break;
+                    case 3: outColor[0] = vs[4]; outColor[1] = vs[5]; outColor[2] = inColor[2]; break;
+                    case 4: outColor[0] = vs[6]; outColor[1] = vs[4]; outColor[2] = inColor[2]; break;
+                    default: outColor[0] = inColor[2]; outColor[1] = vs[4]; outColor[2] = vs[5]; break;
                 }
             }
         }
