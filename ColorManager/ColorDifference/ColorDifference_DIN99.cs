@@ -73,7 +73,7 @@ namespace ColorManager.ColorDifference
             Vars[3] = Col2Values[1] * Math.Sin(Col2Values[2] * Const.Pi180);
             Vars[4] = Math.Sqrt(0.5 * (Col2Values[1] * Col1Values[1] + Vars[2] * Vars[0] + Vars[3] * Vars[1]));
 
-            if (Vars[4] == 0) return 0;
+            if (Math.Abs(Vars[4]) < Const.Delta) return 0;
             else return (Vars[0] * Vars[3] - Vars[2] * Vars[1]) / Vars[4];
         }
 
