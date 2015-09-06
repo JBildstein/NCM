@@ -56,6 +56,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ClassImplementations\TestConversionData.cs" />
+    <Compile Include="Color\ColorDifferences\CD_CIE76.cs" />
+    <Compile Include="Color\ColorDifferences\CD_CIE94.cs" />
+    <Compile Include="Color\ColorDifferences\CD_CIEDE2000.cs" />
+    <Compile Include="Color\ColorDifferences\CD_CMC.cs" />
+    <Compile Include="Color\ColorDifferences\CD_DIN99.cs" />
     <Compile Include="Color\Comparison\CMP_ChromaticAdaption.cs" />
     <Compile Include="Color\Comparison\CMP_Whitepoint.cs" />
     <Compile Include="Color\Comparison\CMP_Colorspace.cs" />
@@ -79,13 +85,14 @@
     <Compile Include="Color\Conversions\XYZ_Luv.cs" />
     <Compile Include="Color\Conversions\XYZ_RGB.cs" />
     <Compile Include="Color\Conversions\XYZ_Yxy.cs" />
+    <Compile Include="Helper\ColorDifference.cs" />
     <Compile Include="Helper\Compare.cs" />
-    <Compile Include="Helper\TestColorspaceRGB.cs" />
-    <Compile Include="Helper\TestColor.cs" />
+    <Compile Include="ClassImplementations\TestColorspaceRGB.cs" />
+    <Compile Include="ClassImplementations\TestColor.cs" />
     <Compile Include="Helper\ReflectionHelper.cs" />
-    <Compile Include="Helper\TestChromaticAdaption.cs" />
-    <Compile Include="Helper\TestConversionPath.cs" />
-    <Compile Include="Helper\TestWhitepoint.cs" />
+    <Compile Include="ClassImplementations\TestChromaticAdaption.cs" />
+    <Compile Include="ClassImplementations\TestConversionPath.cs" />
+    <Compile Include="ClassImplementations\TestWhitepoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\Conversion.cs" />
   </ItemGroup>
