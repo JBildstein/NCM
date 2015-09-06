@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Represents an ICC profile
+    /// </summary>
     public class ICCProfile
     {
         #region ICC Variables
@@ -10,87 +14,178 @@ namespace ColorManager.ICC
         /// <summary>
         /// Size of profile in bytes
         /// </summary>
-        public uint Size { get; set; }
+        public uint Size
+        {
+            get { return _Size; }
+        }
         /// <summary>
         /// Preferred CMM (Color Management Module) type
         /// </summary>
-        public string CMMType { get; set; }
+        public string CMMType
+        {
+            get { return _CMMType; }
+        }
         /// <summary>
         /// Version number of profile
         /// </summary>
-        public VersionNumber Version { get; set; }
+        public VersionNumber Version
+        {
+            get { return _Version; }
+        }
         /// <summary>
         /// Type of profile
         /// </summary>
-        public ProfileClassName Class { get; set; }
+        public ProfileClassName Class
+        {
+            get { return _Class; }
+        }
         /// <summary>
         /// Colorspace of data
         /// </summary>
-        public Type DataColorspace { get; set; }
+        public Type DataColorspace
+        {
+            get { return _DataColorspace; }
+        }
         /// <summary>
         /// Type name of colorspace of data
         /// </summary>
-        public ColorSpaceType DataColorspaceType { get; set; }
+        public ColorSpaceType DataColorspaceType
+        {
+            get { return _DataColorspaceType; }
+        }
         /// <summary>
         /// Profile Connection Space
         /// </summary>
-        public Type PCS { get; set; }
+        public Type PCS
+        {
+            get { return _PCS; }
+        }
         /// <summary>
         /// Type name of Profile Connection Space
         /// </summary>
-        public ColorSpaceType PCSType { get; set; }
+        public ColorSpaceType PCSType
+        {
+            get { return _PCSType; }
+        }
         /// <summary>
         /// Date and time this profile was first created
         /// </summary>
-        public DateTime CreationDate { get; set; }
+        public DateTime CreationDate
+        {
+            get { return _CreationDate; }
+        }
         /// <summary>
         /// Has to be "acsp"
         /// </summary>
-        public string FileSignature { get; set; }
+        public string FileSignature
+        {
+            get { return _FileSignature; }
+        }
         /// <summary>
         /// Primary platform this profile was created for
         /// </summary>
-        public PrimaryPlatformType PrimaryPlatformSignature { get; set; }
+        public PrimaryPlatformType PrimaryPlatformSignature
+        {
+            get { return _PrimaryPlatformSignature; }
+        }
         /// <summary>
         /// Profile flags to indicate various options for the CMM such as distributed processing and caching options
         /// </summary>
-        public ProfileFlag Flags { get; set; }
+        public ProfileFlag Flags
+        {
+            get { return _Flags; }
+        }
         /// <summary>
         /// Device manufacturer of the device for which this profile is created
         /// </summary>
-        public uint DeviceManufacturer { get; set; }
+        public uint DeviceManufacturer
+        {
+            get { return _DeviceManufacturer; }
+        }
         /// <summary>
         /// Device model of the device for which this profile is created
         /// </summary>
-        public uint DeviceModel { get; set; }
+        public uint DeviceModel
+        {
+            get { return _DeviceModel; }
+        }
         /// <summary>
         /// Device attributes unique to the particular device setup such as media type
         /// </summary>
-        public DeviceAttribute DeviceAttributes { get; set; }
+        public DeviceAttribute DeviceAttributes
+        {
+            get { return _DeviceAttributes; }
+        }
         /// <summary>
         /// Rendering Intent
         /// </summary>
-        public RenderingIntent RenderingIntent { get; set; }
+        public RenderingIntent RenderingIntent
+        {
+            get { return _RenderingIntent; }
+        }
         /// <summary>
         /// The normalized XYZ values of the illuminant of the PCS
         /// </summary>
-        public XYZNumber PCSIlluminant { get; set; }
+        public XYZNumber PCSIlluminant
+        {
+            get { return _PCSIlluminant; }
+        }
         /// <summary>
         /// Profile creator signature
         /// </summary>
-        public string CreatorSignature { get; set; }
+        public string CreatorSignature
+        {
+            get { return _CreatorSignature; }
+        }
         /// <summary>
         /// Profile ID
         /// </summary>
-        public ProfileID ID { get; set; }
+        public ProfileID ID
+        {
+            get { return _ID; }
+        }
 
         /// <summary>
         /// The actual profile data
         /// </summary>
-        public TagDataEntry[] Data { get; set; }
+        public TagDataEntry[] Data
+        {
+            get { return _Data; }
+        }
+        
+        #region Fields
+
+        internal protected uint _Size;
+        internal protected string _CMMType;
+        internal protected VersionNumber _Version;
+        internal protected ProfileClassName _Class;
+        internal protected Type _DataColorspace;
+        internal protected ColorSpaceType _DataColorspaceType;
+        internal protected Type _PCS;
+        internal protected ColorSpaceType _PCSType;
+        internal protected DateTime _CreationDate;
+        internal protected string _FileSignature;
+        internal protected PrimaryPlatformType _PrimaryPlatformSignature;
+        internal protected ProfileFlag _Flags;
+        internal protected uint _DeviceManufacturer;
+        internal protected uint _DeviceModel;
+        internal protected DeviceAttribute _DeviceAttributes;
+        internal protected RenderingIntent _RenderingIntent;
+        internal protected XYZNumber _PCSIlluminant;
+        internal protected string _CreatorSignature;
+        internal protected ProfileID _ID;
+        internal protected TagDataEntry[] _Data;
 
         #endregion
-        
+
+        #endregion
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCProfile"/> class
+        /// </summary>
+        internal protected ICCProfile()
+        { }
+
         #region Tags
 
         /// <summary>
@@ -114,7 +209,7 @@ namespace ColorManager.ICC
         }
 
         #endregion
-        
+
         #region Get Color
 
         /// <summary>
@@ -147,7 +242,7 @@ namespace ColorManager.ICC
             //LTODO: GetPCSColor should actually only return either Lab or XYZ
             return GetColor(useICC, PCSType);
         }
-        
+
         private Color GetColor(bool useICC, ColorSpaceType type)
         {
             //TODO: Whitepoint might be different for different kind of profiles (Abstract, DeviceLink)
@@ -328,16 +423,20 @@ namespace ColorManager.ICC
         private ProfileConversionMethod CheckIntent_D()
         {
             if ((HasTag(TagSignature.DToB0) || HasTag(TagSignature.BToD0))
-                && RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.D0;
+                && RenderingIntent == RenderingIntent.Perceptual)
+                return ProfileConversionMethod.D0;
 
             if ((HasTag(TagSignature.DToB1) || HasTag(TagSignature.BToD1))
-                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.D1;
+                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric)
+                return ProfileConversionMethod.D1;
 
             if ((HasTag(TagSignature.DToB2) || HasTag(TagSignature.BToD2))
-                && RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.D2;
+                && RenderingIntent == RenderingIntent.Saturation)
+                return ProfileConversionMethod.D2;
 
             if ((HasTag(TagSignature.DToB3) || HasTag(TagSignature.BToD3))
-                && RenderingIntent == RenderingIntent.AbsoluteColorimetric) return  ProfileConversionMethod.D3;
+                && RenderingIntent == RenderingIntent.AbsoluteColorimetric)
+                return ProfileConversionMethod.D3;
 
             return ProfileConversionMethod.Invalid;
         }
@@ -345,13 +444,16 @@ namespace ColorManager.ICC
         private ProfileConversionMethod CheckIntent_A()
         {
             if ((HasTag(TagSignature.AToB0) || HasTag(TagSignature.BToA0))
-                && RenderingIntent == RenderingIntent.Perceptual) return ProfileConversionMethod.A0;
+                && RenderingIntent == RenderingIntent.Perceptual)
+                return ProfileConversionMethod.A0;
 
             if ((HasTag(TagSignature.AToB1) || HasTag(TagSignature.BToA1))
-                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric) return ProfileConversionMethod.A1;
+                && RenderingIntent == RenderingIntent.MediaRelativeColorimetric)
+                return ProfileConversionMethod.A1;
 
             if ((HasTag(TagSignature.AToB2) || HasTag(TagSignature.BToA2))
-                && RenderingIntent == RenderingIntent.Saturation) return ProfileConversionMethod.A2;
+                && RenderingIntent == RenderingIntent.Saturation)
+                return ProfileConversionMethod.A2;
 
             return ProfileConversionMethod.Invalid;
         }
@@ -369,7 +471,8 @@ namespace ColorManager.ICC
                 && HasTag(TagSignature.BlueMatrixColumn)
                 && HasTag(TagSignature.RedTRC)
                 && HasTag(TagSignature.GreenTRC)
-                && HasTag(TagSignature.BlueTRC)) return ProfileConversionMethod.ColorTRC;
+                && HasTag(TagSignature.BlueTRC))
+                return ProfileConversionMethod.ColorTRC;
 
             if (HasTag(TagSignature.GrayTRC)) return ProfileConversionMethod.GrayTRC;
 
@@ -383,10 +486,8 @@ namespace ColorManager.ICC
 
             return ProfileConversionMethod.Invalid;
         }
-        
-        #endregion
 
-        //LTODO: comparison of ICC profiles currently just checks for the ID. When creating a profile instead of reading, this might be set to zero
+        #endregion
 
         #region Comparison
 
@@ -433,6 +534,63 @@ namespace ColorManager.ICC
         public override int GetHashCode()
         {
             return ID.GetHashCode();
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        /// <summary>
+        /// Calculates the MD5 hash value of the data array
+        /// </summary>
+        /// <returns>The calculated hash</returns>
+        public static ProfileID CalculateHash(byte[] data)
+        {
+            byte[] ndata = new byte[data.Length];
+            Buffer.BlockCopy(data, 0, ndata, 0, data.Length);
+
+            var md5 = new MD5CryptoServiceProvider();
+
+            //Profile flags
+            SetZero(ndata, 44, 4);
+            //Rendering Intent
+            SetZero(ndata, 64, 4);
+            //Profile ID
+            SetZero(ndata, 84, 16);
+
+            var hash = md5.ComputeHash(ndata);
+
+            uint p1 = ReadUInt32(hash, 0);
+            uint p2 = ReadUInt32(hash, 4);
+            uint p3 = ReadUInt32(hash, 8);
+            uint p4 = ReadUInt32(hash, 12);
+
+            return new ProfileID(p1, p2, p3, p4);
+        }
+
+        /// <summary>
+        /// Sets a range of values of a byte array to zero
+        /// </summary>
+        /// <param name="start">start index</param>
+        /// <param name="length">number of values to set zero</param>
+        private static void SetZero(byte[] data, int start, int length)
+        {
+            for (int i = 0; i < length; i++) data[start + i] = 0;
+        }
+
+        /// <summary>
+        /// Reads an uint from given data
+        /// </summary>
+        /// <param name="data">The byte array from which the value will be read</param>
+        /// <param name="start">The start index from the number to read</param>
+        /// <returns>the value</returns>
+        private static uint ReadUInt32(byte[] data, int start)
+        {
+            unchecked
+            {
+                if (BitConverter.IsLittleEndian) return (uint)((data[start++] << 24) | (data[start++] << 16) | (data[start++] << 8) | data[start++]);
+                else return (uint)(data[start++] | (data[start++] << 8) | (data[start++] << 16) | (data[start++] << 24));
+            }
         }
 
         #endregion

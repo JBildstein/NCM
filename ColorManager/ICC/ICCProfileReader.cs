@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using System.Security.Cryptography;
 
 namespace ColorManager.ICC
 {
@@ -20,12 +19,22 @@ namespace ColorManager.ICC
 
         #region Read Base
 
+        /// <summary>
+        /// Reads an <see cref="ICCProfile"/> from a file
+        /// </summary>
+        /// <param name="path">Path to the ICC file</param>
+        /// <returns>the read ICC profile</returns>
         public ICCProfile Read(string path)
         {
             Data = File.ReadAllBytes(path);
             return ReadAll();
         }
 
+        /// <summary>
+        /// Reads an <see cref="ICCProfile"/> from a given byte array
+        /// </summary>
+        /// <param name="data">the ICC data</param>
+        /// <returns>the read ICC profile</returns>
         public ICCProfile Read(byte[] data)
         {
             Data = new byte[data.Length];
@@ -33,6 +42,11 @@ namespace ColorManager.ICC
             return ReadAll();
         }
 
+        /// <summary>
+        /// Reads an <see cref="ICCProfile"/> from a stream
+        /// </summary>
+        /// <param name="path">stream of the ICC file</param>
+        /// <returns>the read ICC profile</returns>
         public ICCProfile Read(Stream dataStream)
         {
             byte[] size = new byte[4];
@@ -53,8 +67,8 @@ namespace ColorManager.ICC
             ReadHeader(Profile);
             ReadTagData(ReadTagTable(), Profile);
 
-            var calcHash = CalculateHash();
-            if (!Profile.ID.IsSet) Profile.ID = calcHash;
+            var calcHash = ICCProfile.CalculateHash(Data);
+            if (!Profile.ID.IsSet) Profile._ID = calcHash;
             else if (Profile.ID != calcHash) throw new CorruptProfileException("Hash stored in profile does not match");
 
             Data = null;
@@ -64,25 +78,25 @@ namespace ColorManager.ICC
         private void ReadHeader(ICCProfile profile)
         {
             Index = 0;
-            profile.Size = ReadUInt32();
-            profile.CMMType = ReadASCIIString(4);
-            profile.Version = ReadVersionNumber();
-            profile.Class = (ProfileClassName)ReadUInt32();
-            profile.DataColorspaceType = (ColorSpaceType)ReadUInt32();
-            profile.DataColorspace = GetColorType(profile.DataColorspaceType);
-            profile.PCSType = (ColorSpaceType)ReadUInt32();
-            profile.PCS = GetColorType(profile.PCSType);
-            profile.CreationDate = ReadDateTime();
-            profile.FileSignature = ReadASCIIString(4);
-            profile.PrimaryPlatformSignature = (PrimaryPlatformType)ReadUInt32();
-            profile.Flags = ReadProfileFlag();
-            profile.DeviceManufacturer = ReadUInt32();
-            profile.DeviceModel = ReadUInt32();
-            profile.DeviceAttributes = ReadDeviceAttribute();
-            profile.RenderingIntent = (RenderingIntent)ReadUInt32();
-            profile.PCSIlluminant = ReadXYZnumber();
-            profile.CreatorSignature = ReadASCIIString(4);
-            profile.ID = ReadProfileID();
+            profile._Size = ReadUInt32();
+            profile._CMMType = ReadASCIIString(4);
+            profile._Version = ReadVersionNumber();
+            profile._Class = (ProfileClassName)ReadUInt32();
+            profile._DataColorspaceType = (ColorSpaceType)ReadUInt32();
+            profile._DataColorspace = GetColorType(profile.DataColorspaceType);
+            profile._PCSType = (ColorSpaceType)ReadUInt32();
+            profile._PCS = GetColorType(profile.PCSType);
+            profile._CreationDate = ReadDateTime();
+            profile._FileSignature = ReadASCIIString(4);
+            profile._PrimaryPlatformSignature = (PrimaryPlatformType)ReadUInt32();
+            profile._Flags = ReadProfileFlag();
+            profile._DeviceManufacturer = ReadUInt32();
+            profile._DeviceModel = ReadUInt32();
+            profile._DeviceAttributes = ReadDeviceAttribute();
+            profile._RenderingIntent = (RenderingIntent)ReadUInt32();
+            profile._PCSIlluminant = ReadXYZnumber();
+            profile._CreatorSignature = ReadASCIIString(4);
+            profile._ID = ReadProfileID();
         }
 
         private TagTableEntry[] ReadTagTable()
@@ -103,11 +117,11 @@ namespace ColorManager.ICC
 
         private void ReadTagData(TagTableEntry[] table, ICCProfile profile)
         {
-            profile.Data = new TagDataEntry[table.Length];
+            profile._Data = new TagDataEntry[table.Length];
             for (int i = 0; i < table.Length; i++)
             {
                 profile.Data[i] = GetTagDataEntry(table[i]);
-                profile.Data[i].TagSignature = table[i].Signature;
+                profile.Data[i]._TagSignature = table[i].Signature;
             }
         }
 
@@ -271,7 +285,7 @@ namespace ColorManager.ICC
         /// <returns>The number as double</returns>
         private double ReadUFix8()
         {
-            return Data[Index++] + Data[Index++] / 256d;
+            return ReadUInt16() / 256d;
         }
 
         #endregion
@@ -1384,42 +1398,6 @@ namespace ColorManager.ICC
             return ((value >> (15 - position)) & 1) == 1;
         }
         
-        /// <summary>
-        /// Calculates the MD5 hash value of the Data array
-        /// <para>Note that this sets some values of the Data array to zero</para>
-        /// </summary>
-        /// <returns>The calculated hash</returns>
-        private ProfileID CalculateHash()
-        {
-            var md5 = new MD5CryptoServiceProvider();
-            
-            //Profile flags
-            SetZero(44, 4);
-            //Rendering Intent
-            SetZero(64, 4);
-            //Profile ID
-            SetZero(84, 16);
-
-            var hash = md5.ComputeHash(Data);
-
-            uint p1 = ReadUInt32(hash, 0);
-            uint p2 = ReadUInt32(hash, 4);
-            uint p3 = ReadUInt32(hash, 8);
-            uint p4 = ReadUInt32(hash, 12);
-
-            return new ProfileID(p1, p2, p3, p4);
-        }
-
-        /// <summary>
-        /// Sets a range of values in the Data array to zero
-        /// </summary>
-        /// <param name="start">start index</param>
-        /// <param name="length">number of values to set zero</param>
-        private void SetZero(int start, int length)
-        {
-            for (int i = 0; i < length; i++) Data[start + i] = 0;
-        }
-
         #endregion
     }
 }
