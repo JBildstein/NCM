@@ -82,27 +82,27 @@ namespace ColorManager.ICC
 
     public struct DeviceAttribute
     {
-        public DeviceAttributeType Opacity;
-        public DeviceAttributeType Reflectivity;
-        public DeviceAttributeType Polarity;
-        public DeviceAttributeType Chroma;
+        public OpacityAttribute Opacity;
+        public ReflectivityAttribute Reflectivity;
+        public PolarityAttribute Polarity;
+        public ChromaAttribute Chroma;
         public byte[] VendorData;
 
         public DeviceAttribute(bool Opacity, bool Reflectivity, bool Polarity, bool Chroma, byte[] VendorData)
         {
             if (VendorData == null) throw new ArgumentNullException(nameof(VendorData));
 
-            if (Opacity) this.Opacity = DeviceAttributeType.Transparency;
-            else this.Opacity = DeviceAttributeType.Reflective;
+            if (Opacity) this.Opacity = OpacityAttribute.Transparency;
+            else this.Opacity = OpacityAttribute.Reflective;
 
-            if (Reflectivity) this.Reflectivity = DeviceAttributeType.Matte;
-            else this.Reflectivity = DeviceAttributeType.Glossy;
+            if (Reflectivity) this.Reflectivity = ReflectivityAttribute.Matte;
+            else this.Reflectivity = ReflectivityAttribute.Glossy;
 
-            if (Polarity) this.Polarity = DeviceAttributeType.Negative;
-            else this.Polarity = DeviceAttributeType.Positive;
+            if (Polarity) this.Polarity = PolarityAttribute.Negative;
+            else this.Polarity = PolarityAttribute.Positive;
 
-            if (Chroma) this.Chroma = DeviceAttributeType.BlackWhite;
-            else this.Chroma = DeviceAttributeType.Color;
+            if (Chroma) this.Chroma = ChromaAttribute.BlackWhite;
+            else this.Chroma = ChromaAttribute.Color;
 
             this.VendorData = VendorData;
         }
@@ -463,8 +463,8 @@ namespace ColorManager.ICC
         public uint DeviceModel;
         public DeviceAttribute DeviceAttributes;
         public TagSignature TechnologyInformation;
-        public readonly MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo;
-        public readonly MultiLocalizedUnicodeTagDataEntry DeviceModelInfo;
+        public MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo;
+        public MultiLocalizedUnicodeTagDataEntry DeviceModelInfo;
 
         public ProfileDescription(uint DeviceManufacturer, uint DeviceModel, DeviceAttribute DeviceAttributes,
             TagSignature TechnologyInformation, MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo,
