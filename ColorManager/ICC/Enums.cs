@@ -61,18 +61,39 @@ namespace ColorManager.ICC
     }
 
     /// <summary>
-    /// Device Attribute Type
+    /// Opacity Attribute
     /// </summary>
-    public enum DeviceAttributeType
+    public enum OpacityAttribute
     {
-        Reflective,
-        Transparency,
-        Glossy,
-        Matte,
-        Positive,
-        Negative,
-        Color,
-        BlackWhite,
+        Reflective = 0,
+        Transparency = 1,
+    }
+
+    /// <summary>
+    /// Reflectivity Attribute
+    /// </summary>
+    public enum ReflectivityAttribute
+    {
+        Glossy = 0,
+        Matte = 1,
+    }
+
+    /// <summary>
+    /// Polarity Attribute
+    /// </summary>
+    public enum PolarityAttribute
+    {
+        Positive = 0,
+        Negative = 1,
+    }
+
+    /// <summary>
+    /// Chroma Attribute
+    /// </summary>
+    public enum ChromaAttribute
+    {
+        Color = 0,
+        BlackWhite = 1,
     }
 
     /// <summary>

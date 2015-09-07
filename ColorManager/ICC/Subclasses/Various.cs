@@ -463,8 +463,8 @@ namespace ColorManager.ICC
         public uint DeviceModel;
         public DeviceAttribute DeviceAttributes;
         public TagSignature TechnologyInformation;
-        public MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo;
-        public MultiLocalizedUnicodeTagDataEntry DeviceModelInfo;
+        public readonly MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo;
+        public readonly MultiLocalizedUnicodeTagDataEntry DeviceModelInfo;
 
         public ProfileDescription(uint DeviceManufacturer, uint DeviceModel, DeviceAttribute DeviceAttributes,
             TagSignature TechnologyInformation, MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo,
