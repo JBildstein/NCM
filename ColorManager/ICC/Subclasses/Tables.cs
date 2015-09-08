@@ -10,6 +10,11 @@ namespace ColorManager.ICC
         }
         private double[][] _Values;
 
+        public CLUTDataType DataType
+        {
+            get { return _DataType; }
+            set { _DataType = value; }
+        }
         public int InputChannelCount
         {
             get { return _InputChannelCount; }
@@ -23,15 +28,17 @@ namespace ColorManager.ICC
             get { return _GridPointCount; }
         }
 
+        private CLUTDataType _DataType;
         private int _InputChannelCount;
         private int _OutputChannelCount;
         private byte[] _GridPointCount;
 
 
-        private CLUT(int inChCount, int outChCount, byte[] gridPointCount)
+        private CLUT(int inChCount, int outChCount, byte[] gridPointCount, CLUTDataType type)
         {
             if (gridPointCount == null) throw new ArgumentNullException(nameof(gridPointCount));
 
+            _DataType = type;
             _InputChannelCount = inChCount;
             _OutputChannelCount = outChCount;
             _GridPointCount = gridPointCount;
@@ -44,8 +51,9 @@ namespace ColorManager.ICC
         /// <param name="inChCount">The input channel count</param>
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
-        public CLUT(double[][] values, int inChCount, int outChCount, byte[] gridPointCount)
-            :this(inChCount, outChCount, gridPointCount)
+        /// <param name="type">The data type of this CLUT</param>
+        public CLUT(double[][] values, int inChCount, int outChCount, byte[] gridPointCount, CLUTDataType type)
+            : this(inChCount, outChCount, gridPointCount, type)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
             _Values = values;
@@ -59,7 +67,7 @@ namespace ColorManager.ICC
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         public CLUT(ushort[][] values, int inChCount, int outChCount, byte[] gridPointCount)
-            : this(inChCount, outChCount, gridPointCount)
+            : this(inChCount, outChCount, gridPointCount, CLUTDataType.UInt16)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
 
@@ -81,7 +89,7 @@ namespace ColorManager.ICC
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         public CLUT(byte[][] values, int inChCount, int outChCount, byte[] gridPointCount)
-            : this(inChCount, outChCount, gridPointCount)
+            : this(inChCount, outChCount, gridPointCount, CLUTDataType.UInt8)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
 
@@ -150,7 +158,7 @@ namespace ColorManager.ICC
             }
         }
     }
-    
+
     public sealed class LUT
     {
         public double[] Values
