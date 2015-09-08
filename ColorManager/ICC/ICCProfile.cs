@@ -10,183 +10,98 @@ namespace ColorManager.ICC
     /// </summary>
     public class ICCProfile
     {
-        #region ICC Variables
+        #region Variables
 
         /// <summary>
         /// Size of profile in bytes
         /// </summary>
-        public uint Size
-        {
-            get { return _Size; }
-        }
+        public uint Size { get; set; }
         /// <summary>
         /// Preferred CMM (Color Management Module) type
         /// </summary>
-        public string CMMType
-        {
-            get { return _CMMType; }
-        }
+        public string CMMType { get; set; }
         /// <summary>
         /// Version number of profile
         /// </summary>
-        public VersionNumber Version
-        {
-            get { return _Version; }
-        }
+        public VersionNumber Version { get; set; }
         /// <summary>
         /// Type of profile
         /// </summary>
-        public ProfileClassName Class
-        {
-            get { return _Class; }
-        }
+        public ProfileClassName Class { get; set; }
         /// <summary>
         /// Colorspace of data
         /// </summary>
-        public Type DataColorspace
-        {
-            get { return _DataColorspace; }
-        }
+        public Type DataColorspace { get; set; }
         /// <summary>
         /// Type name of colorspace of data
         /// </summary>
-        public ColorSpaceType DataColorspaceType
-        {
-            get { return _DataColorspaceType; }
-        }
+        public ColorSpaceType DataColorspaceType { get; set; }
         /// <summary>
         /// Profile Connection Space
         /// </summary>
-        public Type PCS
-        {
-            get { return _PCS; }
-        }
+        public Type PCS { get; set; }
         /// <summary>
         /// Type name of Profile Connection Space
         /// </summary>
-        public ColorSpaceType PCSType
-        {
-            get { return _PCSType; }
-        }
+        public ColorSpaceType PCSType { get; set; }
         /// <summary>
-        /// Date and time this profile was first created
+        /// Date and time this profile as first created
         /// </summary>
-        public DateTime CreationDate
-        {
-            get { return _CreationDate; }
-        }
+        public DateTime CreationDate { get; set; }
         /// <summary>
         /// Has to be "acsp"
         /// </summary>
-        public string FileSignature
-        {
-            get { return _FileSignature; }
-        }
+        public string FileSignature { get; set; }
         /// <summary>
-        /// Primary platform this profile was created for
+        /// Primary platform this profile as created for
         /// </summary>
-        public PrimaryPlatformType PrimaryPlatformSignature
-        {
-            get { return _PrimaryPlatformSignature; }
-        }
+        public PrimaryPlatformType PrimaryPlatformSignature { get; set; }
         /// <summary>
         /// Profile flags to indicate various options for the CMM such as distributed processing and caching options
         /// </summary>
-        public ProfileFlag Flags
-        {
-            get { return _Flags; }
-        }
+        public ProfileFlag Flags { get; set; }
         /// <summary>
-        /// Device manufacturer of the device for which this profile is created
+        /// Device manufacturer of the device for hich this profile is created
         /// </summary>
-        public uint DeviceManufacturer
-        {
-            get { return _DeviceManufacturer; }
-        }
+        public uint DeviceManufacturer { get; set; }
         /// <summary>
-        /// Device model of the device for which this profile is created
+        /// Device model of the device for hich this profile is created
         /// </summary>
-        public uint DeviceModel
-        {
-            get { return _DeviceModel; }
-        }
+        public uint DeviceModel { get; set; }
         /// <summary>
         /// Device attributes unique to the particular device setup such as media type
         /// </summary>
-        public DeviceAttribute DeviceAttributes
-        {
-            get { return _DeviceAttributes; }
-        }
+        public DeviceAttribute DeviceAttributes { get; set; }
         /// <summary>
         /// Rendering Intent
         /// </summary>
-        public RenderingIntent RenderingIntent
-        {
-            get { return _RenderingIntent; }
-        }
+        public RenderingIntent RenderingIntent { get; set; }
         /// <summary>
         /// The normalized XYZ values of the illuminant of the PCS
         /// </summary>
-        public XYZNumber PCSIlluminant
-        {
-            get { return _PCSIlluminant; }
-        }
+        public XYZNumber PCSIlluminant { get; set; }
         /// <summary>
         /// Profile creator signature
         /// </summary>
-        public string CreatorSignature
-        {
-            get { return _CreatorSignature; }
-        }
+        public string CreatorSignature { get; set; }
         /// <summary>
         /// Profile ID
         /// </summary>
-        public ProfileID ID
-        {
-            get { return _ID; }
-        }
+        public ProfileID ID { get; set; }
 
         /// <summary>
         /// The actual profile data
         /// </summary>
-        public TagDataEntry[] Data
-        {
-            get { return _Data.ToArray(); }
-        }
-
-        #region Fields
-
-        protected uint _Size;
-        protected string _CMMType;
-        protected VersionNumber _Version;
-        protected ProfileClassName _Class;
-        protected Type _DataColorspace;
-        protected ColorSpaceType _DataColorspaceType;
-        protected Type _PCS;
-        protected ColorSpaceType _PCSType;
-        protected DateTime _CreationDate;
-        protected string _FileSignature;
-        protected PrimaryPlatformType _PrimaryPlatformSignature;
-        protected ProfileFlag _Flags;
-        protected uint _DeviceManufacturer;
-        protected uint _DeviceModel;
-        protected DeviceAttribute _DeviceAttributes;
-        protected RenderingIntent _RenderingIntent;
-        protected XYZNumber _PCSIlluminant;
-        protected string _CreatorSignature;
-        protected ProfileID _ID;
-        protected List<TagDataEntry> _Data;
-
-        #endregion
-
+        public List<TagDataEntry> Data { get; set; }
+        
         #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ICCProfile"/> class
         /// </summary>
-        protected ICCProfile()
+        public ICCProfile()
         {
-            _Data = new List<TagDataEntry>();
+            Data = new List<TagDataEntry>();
         }
 
         #region Tags
