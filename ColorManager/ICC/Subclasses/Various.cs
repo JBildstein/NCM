@@ -463,12 +463,12 @@ namespace ColorManager.ICC
         public uint DeviceModel;
         public DeviceAttribute DeviceAttributes;
         public TagSignature TechnologyInformation;
-        public readonly MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo;
-        public readonly MultiLocalizedUnicodeTagDataEntry DeviceModelInfo;
+        public LocalizedString[] DeviceManufacturerInfo;
+        public LocalizedString[] DeviceModelInfo;
 
         public ProfileDescription(uint DeviceManufacturer, uint DeviceModel, DeviceAttribute DeviceAttributes,
-            TagSignature TechnologyInformation, MultiLocalizedUnicodeTagDataEntry DeviceManufacturerInfo,
-            MultiLocalizedUnicodeTagDataEntry DeviceModelInfo)
+            TagSignature TechnologyInformation, LocalizedString[] DeviceManufacturerInfo,
+            LocalizedString[] DeviceModelInfo)
         {
             if (DeviceManufacturerInfo == null) throw new ArgumentNullException(nameof(DeviceManufacturerInfo));
             if (DeviceModelInfo == null) throw new ArgumentNullException(nameof(DeviceModelInfo));
@@ -492,7 +492,7 @@ namespace ColorManager.ICC
         {
             return a.DeviceManufacturer == b.DeviceManufacturer && a.DeviceModel == b.DeviceModel &&
                 a.DeviceAttributes == b.DeviceAttributes && a.TechnologyInformation == b.TechnologyInformation &&
-                a.DeviceManufacturerInfo == b.DeviceManufacturerInfo;
+                CMP.Compare(a.DeviceManufacturerInfo, b.DeviceManufacturerInfo) && CMP.Compare(a.DeviceModelInfo, b.DeviceModelInfo);
         }
 
         /// <summary>
@@ -529,8 +529,70 @@ namespace ColorManager.ICC
                 hash *= 16777619 ^ DeviceModel.GetHashCode();
                 hash *= 16777619 ^ DeviceAttributes.GetHashCode();
                 hash *= 16777619 ^ TechnologyInformation.GetHashCode();
-                hash *= 16777619 ^ DeviceManufacturerInfo.GetHashCode();
-                hash *= 16777619 ^ DeviceModelInfo.GetHashCode();
+                hash *= 16777619 ^ CMP.GetHashCode(DeviceManufacturerInfo);
+                hash *= 16777619 ^ CMP.GetHashCode(DeviceModelInfo);
+                return hash;
+            }
+        }
+    }
+
+    public struct ProfileSequenceIdentifier
+    {
+        public ProfileID ID;
+        public LocalizedString[] Description;
+
+        public ProfileSequenceIdentifier(ProfileID ID, LocalizedString[] Description)
+        {
+            if (Description == null) throw new ArgumentNullException(nameof(Description));
+
+            this.ID = ID;
+            this.Description = Description;
+        }
+
+
+        /// <summary>
+        /// Determines whether the specified <see cref="ProfileSequenceIdentifier"/>s are equal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="ProfileSequenceIdentifier"/></param>
+        /// <param name="b">The second <see cref="ProfileSequenceIdentifier"/></param>
+        /// <returns>True if the <see cref="ProfileSequenceIdentifier"/>s are equal; otherwise, false</returns>
+        public static bool operator ==(ProfileSequenceIdentifier a, ProfileSequenceIdentifier b)
+        {
+            return a.ID == b.ID && CMP.Compare(a.Description, b.Description);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="ProfileDescription"/>s are unequal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="ProfileDescription"/></param>
+        /// <param name="b">The second <see cref="ProfileDescription"/></param>
+        /// <returns>True if the <see cref="ProfileDescription"/>s are unequal; otherwise, false</returns>
+        public static bool operator !=(ProfileSequenceIdentifier a, ProfileSequenceIdentifier b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="ProfileSequenceIdentifier"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="ProfileSequenceIdentifier"/></param>
+        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="ProfileSequenceIdentifier"/>; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            return obj is ProfileSequenceIdentifier && this == (ProfileSequenceIdentifier)obj;
+        }
+
+        /// <summary>
+        /// Serves as a hash function for a <see cref="ProfileSequenceIdentifier"/>.
+        /// </summary>
+        /// <returns>A hash code for the current <see cref="ProfileSequenceIdentifier"/></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash *= 16777619 ^ ID.GetHashCode();
+                hash *= 16777619 ^ CMP.GetHashCode(Description);
                 return hash;
             }
         }
