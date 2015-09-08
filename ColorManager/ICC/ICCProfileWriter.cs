@@ -7,64 +7,23 @@ namespace ColorManager.ICC
 {
     public sealed class ICCProfileWriter
     {
+        #region Variables
+
         private readonly bool LittleEndian = BitConverter.IsLittleEndian;
 
         private MemoryStream DataStream;
         private List<TagEntry> TagTable;
 
+        private int HeaderSize
+        {
+            get { return 128; }
+        }
         private int TagTableSize
         {
             //4 = tag count; 12 = size of each table entry
             get { return 4 + TagTable.Count * 12; }
         }
-        private int HeaderSize
-        {
-            get { return 128; }
-        }
 
-        //TODO: some TagDataEntries might need padding bytes (see documentation)
-        //TODO: some TagDataEntries might reuse information by setting the same offset value
-
-        public ICCProfileWriter()
-        {
-            DataStream = new MemoryStream(128);
-            TagTable = new List<TagEntry>();
-        }
-        
-        public void WriteProfile()
-        {
-            WriteHeader();
-            //Write Data before Table to set offset and size
-            WriteTagData();
-            WriteTagTable();
-        }
-
-        private void WriteHeader()
-        {
-            DataStream.Position = 0;
-            //Write header
-        }
-
-        private void WriteTagTable()
-        {
-            DataStream.Position = HeaderSize;
-            WriteUInt32((uint)TagTable.Count);
-            foreach (var entry in TagTable)
-            {
-                WriteUInt32((uint)entry.Table.Signature);
-                WriteUInt32(entry.Table.Offset);
-                WriteUInt32(entry.Table.DataSize);
-            }
-        }
-
-        private void WriteTagData()
-        {
-            DataStream.Position = HeaderSize + TagTableSize;
-            foreach (var entry in TagTable)
-            {
-                WriteTagDataEntry(entry);
-            }
-        }
 
         private sealed class TagEntry
         {
@@ -80,6 +39,91 @@ namespace ColorManager.ICC
                 this.Data = Data;
             }
         }
+
+        #endregion
+
+        //TODO: some TagDataEntries might need padding bytes (see documentation)
+        //TODO: some TagDataEntries might reuse information by setting the same offset value
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCProfileWriter"/> class
+        /// </summary>
+        public ICCProfileWriter()
+        {
+            TagTable = new List<TagEntry>();
+        }
+
+        #region Write Base
+
+        public byte[] WriteProfile(ICCProfile profile)
+        {
+            using (DataStream = new MemoryStream(128))
+            {
+                foreach (var item in profile.Data)
+                {
+                    var entry = new TagEntry(new TagTableEntry(item.TagSignature), item);
+                    TagTable.Add(entry);
+                }
+
+                WriteHeader(profile);
+                //Write Data before Table to set offset and size
+                WriteTagData(profile);
+                WriteTagTable(profile);
+
+                //Calculate and set the profiles ID
+                profile.ID = ICCProfile.CalculateHash(DataStream.ToArray());
+                DataStream.Position = 84;
+                WriteProfileID(profile.ID);
+
+                return DataStream.ToArray();
+            }
+        }
+
+        private void WriteHeader(ICCProfile profile)
+        {
+            DataStream.Position = 0;
+
+            WriteUInt32(profile.Size);
+            WriteASCIIString(profile.CMMType, 4);
+            WriteVersionNumber(profile.Version);
+            WriteUInt32((uint)profile.Class);
+            WriteUInt32((uint)profile.DataColorspaceType);
+            WriteUInt32((uint)profile.PCSType);
+            WriteDateTime(profile.CreationDate);
+            WriteASCIIString(profile.FileSignature, 4);
+            WriteUInt32((uint)profile.PrimaryPlatformSignature);
+            WriteProfileFlag(profile.Flags);
+            WriteUInt32(profile.DeviceManufacturer);
+            WriteUInt32(profile.DeviceModel);
+            WriteDeviceAttribute(profile.DeviceAttributes);
+            WriteUInt32((uint)profile.RenderingIntent);
+            WriteXYZNumber(profile.PCSIlluminant);
+            WriteASCIIString(profile.CreatorSignature, 4);
+            WriteProfileID(profile.ID);
+        }
+
+        private void WriteTagTable(ICCProfile profile)
+        {
+            DataStream.Position = HeaderSize;
+            WriteUInt32((uint)TagTable.Count);
+            foreach (var entry in TagTable)
+            {
+                WriteUInt32((uint)entry.Table.Signature);
+                WriteUInt32(entry.Table.Offset);
+                WriteUInt32(entry.Table.DataSize);
+            }
+        }
+
+        private void WriteTagData(ICCProfile profile)
+        {
+            DataStream.Position = HeaderSize + TagTableSize;
+            foreach (var entry in TagTable)
+            {
+                WriteTagDataEntry(entry);
+            }
+        }
+
+        #endregion
 
         #region Write Primitives
 
@@ -540,7 +584,7 @@ namespace ColorManager.ICC
         private int WriteLutAToBTagDataEntry(LutAToBTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
-            
+
             long start = DataStream.Position - 8;
 
             int c = WriteByte((byte)value.InputChannelCount);
@@ -594,7 +638,7 @@ namespace ColorManager.ICC
             if (mCurveOffset != 0) mCurveOffset -= start;
             if (CLUTOffset != 0) CLUTOffset -= start;
             if (aCurveOffset != 0) aCurveOffset -= start;
-            
+
             c += WriteUInt32((uint)bCurveOffset);
             c += WriteUInt32((uint)matrixOffset);
             c += WriteUInt32((uint)mCurveOffset);
@@ -692,7 +736,7 @@ namespace ColorManager.ICC
 
             int c = WriteUInt32((uint)count);
             c += WriteUInt32(12);//One record has always 12 bytes size
-            
+
             //Jump over position table
             long tpos = DataStream.Position;
             DataStream.Position += count * 12;
