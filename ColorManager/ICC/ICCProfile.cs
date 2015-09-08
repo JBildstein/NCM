@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace ColorManager.ICC
@@ -150,31 +151,31 @@ namespace ColorManager.ICC
         /// </summary>
         public TagDataEntry[] Data
         {
-            get { return _Data; }
+            get { return _Data.ToArray(); }
         }
-        
+
         #region Fields
 
-        internal protected uint _Size;
-        internal protected string _CMMType;
-        internal protected VersionNumber _Version;
-        internal protected ProfileClassName _Class;
-        internal protected Type _DataColorspace;
-        internal protected ColorSpaceType _DataColorspaceType;
-        internal protected Type _PCS;
-        internal protected ColorSpaceType _PCSType;
-        internal protected DateTime _CreationDate;
-        internal protected string _FileSignature;
-        internal protected PrimaryPlatformType _PrimaryPlatformSignature;
-        internal protected ProfileFlag _Flags;
-        internal protected uint _DeviceManufacturer;
-        internal protected uint _DeviceModel;
-        internal protected DeviceAttribute _DeviceAttributes;
-        internal protected RenderingIntent _RenderingIntent;
-        internal protected XYZNumber _PCSIlluminant;
-        internal protected string _CreatorSignature;
-        internal protected ProfileID _ID;
-        internal protected TagDataEntry[] _Data;
+        protected uint _Size;
+        protected string _CMMType;
+        protected VersionNumber _Version;
+        protected ProfileClassName _Class;
+        protected Type _DataColorspace;
+        protected ColorSpaceType _DataColorspaceType;
+        protected Type _PCS;
+        protected ColorSpaceType _PCSType;
+        protected DateTime _CreationDate;
+        protected string _FileSignature;
+        protected PrimaryPlatformType _PrimaryPlatformSignature;
+        protected ProfileFlag _Flags;
+        protected uint _DeviceManufacturer;
+        protected uint _DeviceModel;
+        protected DeviceAttribute _DeviceAttributes;
+        protected RenderingIntent _RenderingIntent;
+        protected XYZNumber _PCSIlluminant;
+        protected string _CreatorSignature;
+        protected ProfileID _ID;
+        protected List<TagDataEntry> _Data;
 
         #endregion
 
@@ -183,8 +184,10 @@ namespace ColorManager.ICC
         /// <summary>
         /// Creates a new instance of the <see cref="ICCProfile"/> class
         /// </summary>
-        internal protected ICCProfile()
-        { }
+        protected ICCProfile()
+        {
+            _Data = new List<TagDataEntry>();
+        }
 
         #region Tags
 
