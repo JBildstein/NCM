@@ -67,7 +67,7 @@ namespace ColorManager.ICC
             ReadTagData(ReadTagTable(), Profile);
 
             var calcHash = ICCProfile.CalculateHash(Data);
-            if (!Profile.ID.IsSet) Profile._ID = calcHash;
+            if (!Profile.ID.IsSet) Profile.ID = calcHash;
             else if (Profile.ID != calcHash) throw new CorruptProfileException("Hash stored in profile does not match");
 
             Data = null;
@@ -77,25 +77,25 @@ namespace ColorManager.ICC
         private void ReadHeader(ICCProfile profile)
         {
             Index = 0;
-            profile._Size = ReadUInt32();
-            profile._CMMType = ReadASCIIString(4);
-            profile._Version = ReadVersionNumber();
-            profile._Class = (ProfileClassName)ReadUInt32();
-            profile._DataColorspaceType = (ColorSpaceType)ReadUInt32();
-            profile._DataColorspace = GetColorType(profile.DataColorspaceType);
-            profile._PCSType = (ColorSpaceType)ReadUInt32();
-            profile._PCS = GetColorType(profile.PCSType);
-            profile._CreationDate = ReadDateTime();
-            profile._FileSignature = ReadASCIIString(4);
-            profile._PrimaryPlatformSignature = (PrimaryPlatformType)ReadUInt32();
-            profile._Flags = ReadProfileFlag();
-            profile._DeviceManufacturer = ReadUInt32();
-            profile._DeviceModel = ReadUInt32();
-            profile._DeviceAttributes = ReadDeviceAttribute();
-            profile._RenderingIntent = (RenderingIntent)ReadUInt32();
-            profile._PCSIlluminant = ReadXYZNumber();
-            profile._CreatorSignature = ReadASCIIString(4);
-            profile._ID = ReadProfileID();
+            profile.Size = ReadUInt32();
+            profile.CMMType = ReadASCIIString(4);
+            profile.Version = ReadVersionNumber();
+            profile.Class = (ProfileClassName)ReadUInt32();
+            profile.DataColorspaceType = (ColorSpaceType)ReadUInt32();
+            profile.DataColorspace = GetColorType(profile.DataColorspaceType);
+            profile.PCSType = (ColorSpaceType)ReadUInt32();
+            profile.PCS = GetColorType(profile.PCSType);
+            profile.CreationDate = ReadDateTime();
+            profile.FileSignature = ReadASCIIString(4);
+            profile.PrimaryPlatformSignature = (PrimaryPlatformType)ReadUInt32();
+            profile.Flags = ReadProfileFlag();
+            profile.DeviceManufacturer = ReadUInt32();
+            profile.DeviceModel = ReadUInt32();
+            profile.DeviceAttributes = ReadDeviceAttribute();
+            profile.RenderingIntent = (RenderingIntent)ReadUInt32();
+            profile.PCSIlluminant = ReadXYZNumber();
+            profile.CreatorSignature = ReadASCIIString(4);
+            profile.ID = ReadProfileID();
         }
 
         private TagTableEntry[] ReadTagTable()
@@ -116,16 +116,16 @@ namespace ColorManager.ICC
 
         private void ReadTagData(TagTableEntry[] table, ICCProfile profile)
         {
-            profile._Data = new TagDataEntry[table.Length];
             for (int i = 0; i < table.Length; i++)
             {
-                profile.Data[i] = ReadTagDataEntry(table[i]);
-                profile.Data[i]._TagSignature = table[i].Signature;
+                TagDataEntry entry = ReadTagDataEntry(table[i]);
+                entry.TagSignature = table[i].Signature;
+                profile.Data.Add(entry);
             }
         }
 
-        #endregion
-        
+        #endregion        
+
         #region Read Primitives
 
         /// <summary>
