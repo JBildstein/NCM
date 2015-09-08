@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Globalization;
 
@@ -13,7 +12,7 @@ namespace ColorManager.ICC
         private byte[] Data;
         private int Index = 0;
         //ICC profiles are always encoded Big-Endian, so reversing is only necessary on Little-Endian machines:
-        private bool LittleEndian = BitConverter.IsLittleEndian;
+        private readonly bool LittleEndian = BitConverter.IsLittleEndian;
 
         #endregion
 
@@ -94,7 +93,7 @@ namespace ColorManager.ICC
             profile._DeviceModel = ReadUInt32();
             profile._DeviceAttributes = ReadDeviceAttribute();
             profile._RenderingIntent = (RenderingIntent)ReadUInt32();
-            profile._PCSIlluminant = ReadXYZnumber();
+            profile._PCSIlluminant = ReadXYZNumber();
             profile._CreatorSignature = ReadASCIIString(4);
             profile._ID = ReadProfileID();
         }
@@ -120,7 +119,7 @@ namespace ColorManager.ICC
             profile._Data = new TagDataEntry[table.Length];
             for (int i = 0; i < table.Length; i++)
             {
-                profile.Data[i] = GetTagDataEntry(table[i]);
+                profile.Data[i] = ReadTagDataEntry(table[i]);
                 profile.Data[i]._TagSignature = table[i].Signature;
             }
         }
@@ -346,7 +345,7 @@ namespace ColorManager.ICC
         /// Reads an XYZ number
         /// </summary>
         /// <returns>the XYZ number</returns>
-        private XYZNumber ReadXYZnumber()
+        private XYZNumber ReadXYZNumber()
         {
             return new XYZNumber(ReadFix16(), ReadFix16(), ReadFix16());
         }
@@ -405,7 +404,7 @@ namespace ColorManager.ICC
             var manufacturerInfo = ReadMultiLocalizedUnicodeTagDataEntry(true);
             var modelInfo = ReadMultiLocalizedUnicodeTagDataEntry(true);
 
-            return new ProfileDescription(manufacturer, model, attributes, technologyInfo, manufacturerInfo, modelInfo);
+            return new ProfileDescription(manufacturer, model, attributes, technologyInfo, manufacturerInfo.Text, modelInfo.Text);
         }
 
         #endregion
@@ -433,7 +432,7 @@ namespace ColorManager.ICC
             ColorantEncoding colorant = (ColorantEncoding)ReadUInt16();
 
             if (colorant != ColorantEncoding.Unknown && channelCount != 3) { throw new CorruptProfileException("ChromaticityTagDataEntry"); }
-            else if (colorant != ColorantEncoding.Unknown) { return new ChromaticityTagDataEntry(channelCount, colorant); }
+            else if (colorant != ColorantEncoding.Unknown && Enum.IsDefined(typeof(ColorantEncoding), colorant)) { return new ChromaticityTagDataEntry(channelCount, colorant); }
             else
             {
                 double[][] values = new double[channelCount][];
@@ -488,6 +487,8 @@ namespace ColorManager.ICC
                 for (int i = 0; i < pointCount; i++) { cdata[i] = ReadUInt16() / 65535d; }
                 return new CurveTagDataEntry(cdata);
             }
+
+            //TODO: Page 48: If the input is PCSXYZ, 1+(32 767/32 768) shall be mapped to the value 1,0. If the output is PCSXYZ, the value 1,0 shall be mapped to 1+(32 767/32 768).
         }
 
         private DataTagDataEntry ReadDataTagDataEntry(uint size, bool readHeader = false)
@@ -685,7 +686,7 @@ namespace ColorManager.ICC
         {
             if (readHeader) ReadTagDataEntryHeader(TypeSignature.Measurement);
 
-            return new MeasurementTagDataEntry((StandardObserver)ReadUInt32(), ReadXYZnumber(),
+            return new MeasurementTagDataEntry((StandardObserver)ReadUInt32(), ReadXYZNumber(),
                 (MeasurementGeometry)ReadUInt32(), ReadUFix16(), (StandardIlluminant)ReadUInt32());
         }
 
@@ -705,7 +706,7 @@ namespace ColorManager.ICC
 
             for (int i = 0; i < RecordCount; i++)
             {
-                culture[i] = new CultureInfo(string.Concat(ReadASCIIString(2), "-", ReadASCIIString(2)));
+                culture[i] = new CultureInfo($"{ReadASCIIString(2)}-{ReadASCIIString(2)}");
                 length[i] = ReadUInt32();
                 offset[i] = ReadUInt32();
             }
@@ -723,6 +724,8 @@ namespace ColorManager.ICC
         {
             if (readHeader) ReadTagDataEntryHeader(TypeSignature.MultiProcessElements);
 
+            int start = Index - 8;
+
             var inChCount = ReadUInt16();
             var outChCount = ReadUInt16();
             var elementCount = ReadUInt32();
@@ -731,9 +734,13 @@ namespace ColorManager.ICC
             for (int i = 0; i < elementCount; i++) positionTable[i] = ReadPositionNumber();
 
             var mdata = new MultiProcessElement[elementCount];
-            for (int i = 0; i < elementCount; i++) mdata[i] = ReadMultiProcessElement();
+            for (int i = 0; i < elementCount; i++)
+            {
+                Index = (int)positionTable[i].Offset + start;
+                mdata[i] = ReadMultiProcessElement();
+            }
 
-            return new MultiProcessElementsTagDataEntry(inChCount, outChCount, (int)elementCount, mdata);
+            return new MultiProcessElementsTagDataEntry(inChCount, outChCount, mdata);
         }
 
         private NamedColor2TagDataEntry ReadNamedColor2TagDataEntry(bool readHeader = false)
@@ -743,14 +750,14 @@ namespace ColorManager.ICC
             var vendorFlag = new byte[4];
             Buffer.BlockCopy(Data, AIndex(4), vendorFlag, 0, 4);
             var colorCount = ReadUInt32();
-            var coordCount = ReadUInt32();
+            var coordCount = (int)ReadUInt32();
             var prefix = ReadASCIIString(32);
             var suffix = ReadASCIIString(32);
 
             var colors = new NamedColor[colorCount];
-            for (int i = 0; i < colorCount; i++) colors[i] = ReadNamedColor((int)coordCount);
+            for (int i = 0; i < colorCount; i++) colors[i] = ReadNamedColor(coordCount);
 
-            return new NamedColor2TagDataEntry(vendorFlag, (int)colorCount, prefix, suffix, colors);
+            return new NamedColor2TagDataEntry(vendorFlag, coordCount, prefix, suffix, colors);
         }
 
         private ParametricCurveTagDataEntry ReadParametricCurveTagDataEntry(bool readHeader = false)
@@ -778,10 +785,16 @@ namespace ColorManager.ICC
             var count = ReadUInt32();
             var table = new PositionNumber[count];
             for (int i = 0; i < count; i++) table[i] = ReadPositionNumber();
-            var id = ReadProfileID();
-            var description = ReadMultiLocalizedUnicodeTagDataEntry(true);
 
-            return new ProfileSequenceIdentifierTagDataEntry(table, id, description);
+            var entries = new ProfileSequenceIdentifier[count];
+            for (int i = 0; i < count; i++)
+            {
+                var id = ReadProfileID();
+                var description = ReadMultiLocalizedUnicodeTagDataEntry(true);
+                entries[i] = new ProfileSequenceIdentifier(id, description.Text);
+            }
+
+            return new ProfileSequenceIdentifierTagDataEntry(entries);
         }
 
         private ResponseCurveSet16TagDataEntry ReadResponseCurveSet16TagDataEntry(bool readHeader = false)
@@ -803,10 +816,10 @@ namespace ColorManager.ICC
                 curves[i] = ReadResponseCurve(channelCount);
             }
 
-            return new ResponseCurveSet16TagDataEntry(measurmentCount, curves);
+            return new ResponseCurveSet16TagDataEntry(channelCount, curves);
         }
 
-        private Fix16ArrayTagDataEntry ReadS15Fixed16ArrayTagDataEntry(uint size, bool readHeader = false)
+        private Fix16ArrayTagDataEntry ReadFix16ArrayTagDataEntry(uint size, bool readHeader = false)
         {
             if (readHeader) ReadTagDataEntryHeader(TypeSignature.S15Fixed16Array);
 
@@ -831,7 +844,7 @@ namespace ColorManager.ICC
             return new TextTagDataEntry(ReadASCIIString((int)size - 8));
         }
 
-        private UFix16ArrayTagDataEntry ReadU16Fixed16ArrayTagDataEntry(uint size, bool readHeader = false)
+        private UFix16ArrayTagDataEntry ReadUFix16ArrayTagDataEntry(uint size, bool readHeader = false)
         {
             if (readHeader) ReadTagDataEntryHeader(TypeSignature.U16Fixed16Array);
 
@@ -890,7 +903,7 @@ namespace ColorManager.ICC
         {
             if (readHeader) ReadTagDataEntryHeader(TypeSignature.ViewingConditions);
 
-            return new ViewingConditionsTagDataEntry(ReadXYZnumber(), ReadXYZnumber(), (StandardIlluminant)ReadUInt32());
+            return new ViewingConditionsTagDataEntry(ReadXYZNumber(), ReadXYZNumber(), (StandardIlluminant)ReadUInt32());
         }
 
         private XYZTagDataEntry ReadXYZTagDataEntry(uint size, bool readHeader = false)
@@ -899,7 +912,7 @@ namespace ColorManager.ICC
 
             var count = (size - 8) / 12;
             var adata = new XYZNumber[count];
-            for (int i = 0; i < count; i++) adata[i] = ReadXYZnumber();
+            for (int i = 0; i < count; i++) adata[i] = ReadXYZNumber();
 
             return new XYZTagDataEntry(adata);
         }
@@ -971,7 +984,7 @@ namespace ColorManager.ICC
         private CLUT ReadCLUT(int inChCount, int outChCount, bool IsFloat)
         {
             byte[] gridPointCount = new byte[16];
-            for (int i = 0; i < 16; i++) { gridPointCount[i] = Data[AIndex(1)]; }
+            Buffer.BlockCopy(Data, AIndex(16), gridPointCount, 0, 16);
 
             if (!IsFloat)
             {
@@ -1006,7 +1019,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount;
-            return new CLUT(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.UInt8);
         }
 
         /// <summary>
@@ -1032,7 +1045,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount * 2;
-            return new CLUT(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.UInt16);
         }
 
         /// <summary>
@@ -1056,7 +1069,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount * 4;
-            return new CLUT(values, inChCount, outChCount, gridPointCount);
+            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.Float);
         }
 
         #endregion
@@ -1134,11 +1147,17 @@ namespace ColorManager.ICC
             for (int i = 0; i < channelCount; i++) measurment[i] = (int)ReadUInt32();
 
             var xyzValues = new XYZNumber[channelCount];
-            for (int i = 0; i < channelCount; i++) xyzValues[i] = ReadXYZnumber();
-
-            var sum = measurment.Sum();
-            var response = new ResponseNumber[sum];
-            for (int i = 0; i < sum; i++) response[i] = ReadResponseNumber();
+            for (int i = 0; i < channelCount; i++) xyzValues[i] = ReadXYZNumber();
+            
+            var response = new ResponseNumber[channelCount][];
+            for (int i = 0; i < channelCount; i++)
+            {
+                response[i] = new ResponseNumber[measurment[i]];
+                for (int j = 0; j < measurment[i]; j++)
+                {
+                    response[i][j] = ReadResponseNumber();
+                }
+            }
 
             return new ResponseCurve(type, xyzValues, response);
         }
@@ -1297,7 +1316,7 @@ namespace ColorManager.ICC
         {
             TypeSignature t = (TypeSignature)ReadUInt32();
             AIndex(4);//4 bytes are not used
-            if (expected != (TypeSignature)uint.MaxValue && t != expected) throw new CorruptProfileException("Signature " + t.ToString() + " is not expected " + expected.ToString());
+            if (expected != (TypeSignature)uint.MaxValue && t != expected) throw new CorruptProfileException($"Signature {t} is not expected {expected}");
             return t;
         }
 
@@ -1306,7 +1325,7 @@ namespace ColorManager.ICC
         /// </summary>
         /// <param name="info">The table entry with reading information</param>
         /// <returns>the tag data entry</returns>
-        private TagDataEntry GetTagDataEntry(TagTableEntry info)
+        private TagDataEntry ReadTagDataEntry(TagTableEntry info)
         {
             Index = (int)info.Offset;
             TypeSignature t = ReadTagDataEntryHeader();
@@ -1350,13 +1369,13 @@ namespace ColorManager.ICC
                 case TypeSignature.ResponseCurveSet16:
                     return ReadResponseCurveSet16TagDataEntry();
                 case TypeSignature.S15Fixed16Array:
-                    return ReadS15Fixed16ArrayTagDataEntry(info.DataSize);
+                    return ReadFix16ArrayTagDataEntry(info.DataSize);
                 case TypeSignature.Signature:
                     return ReadSignatureTagDataEntry();
                 case TypeSignature.Text:
                     return ReadTextTagDataEntry(info.DataSize);
                 case TypeSignature.U16Fixed16Array:
-                    return ReadU16Fixed16ArrayTagDataEntry(info.DataSize);
+                    return ReadUFix16ArrayTagDataEntry(info.DataSize);
                 case TypeSignature.UInt16Array:
                     return ReadUInt16ArrayTagDataEntry(info.DataSize);
                 case TypeSignature.UInt32Array:
