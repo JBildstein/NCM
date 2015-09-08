@@ -350,4 +350,14 @@ namespace ColorManager.ICC
         ColorTRC,
         GrayTRC,
     }
+
+    /// <summary>
+    /// CLUT Data Type
+    /// </summary>
+    public enum CLUTDataType
+    {
+        Float,
+        UInt8,
+        UInt16,
+    }
 }
