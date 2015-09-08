@@ -457,33 +457,49 @@ namespace ColorManager.ICC
         #endregion
 
         #region Static Methods
-
+                
         /// <summary>
-        /// Calculates the MD5 hash value of the data array
+        /// Calculates the MD5 hash value of the data array.
         /// </summary>
+        /// <param name="data">The data of which to calculate the hash value</param>
         /// <returns>The calculated hash</returns>
         public static ProfileID CalculateHash(byte[] data)
         {
-            byte[] ndata = new byte[data.Length];
-            Buffer.BlockCopy(data, 0, ndata, 0, data.Length);
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data.Length < 128) throw new ArgumentException("Given data is not a valid ICC profile");
 
-            var md5 = new MD5CryptoServiceProvider();
+            using (var md5 = new MD5CryptoServiceProvider())
+            {
+                byte[] tmpdata = new byte[24];
 
-            //Profile flags
-            SetZero(ndata, 44, 4);
-            //Rendering Intent
-            SetZero(ndata, 64, 4);
-            //Profile ID
-            SetZero(ndata, 84, 16);
+                //Copy data
+                Buffer.BlockCopy(data, 44, tmpdata, 0, 4);
+                Buffer.BlockCopy(data, 64, tmpdata, 4, 4);
+                Buffer.BlockCopy(data, 84, tmpdata, 8, 16);
 
-            var hash = md5.ComputeHash(ndata);
+                //Profile flags
+                SetZero(data, 44, 4);
+                //Rendering Intent
+                SetZero(data, 64, 4);
+                //Profile ID
+                SetZero(data, 84, 16);
 
-            uint p1 = ReadUInt32(hash, 0);
-            uint p2 = ReadUInt32(hash, 4);
-            uint p3 = ReadUInt32(hash, 8);
-            uint p4 = ReadUInt32(hash, 12);
+                //Calculate hash
+                var hash = md5.ComputeHash(data);
 
-            return new ProfileID(p1, p2, p3, p4);
+                //Reset data
+                Buffer.BlockCopy(tmpdata, 0, data, 44, 4);
+                Buffer.BlockCopy(tmpdata, 4, data, 64, 4);
+                Buffer.BlockCopy(tmpdata, 8, data, 84, 16);
+
+                //Read values from hash
+                uint p1 = ReadUInt32(hash, 0);
+                uint p2 = ReadUInt32(hash, 4);
+                uint p3 = ReadUInt32(hash, 8);
+                uint p4 = ReadUInt32(hash, 12);
+
+                return new ProfileID(p1, p2, p3, p4);
+            }
         }
 
         /// <summary>
