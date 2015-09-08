@@ -15,10 +15,11 @@ namespace ColorManager.ICC
         public TagSignature TagSignature
         {
             get { return _TagSignature; }
+            set { _TagSignature = value; }
         }
 
         private TypeSignature _Signature = TypeSignature.Unknown;
-        internal protected TagSignature _TagSignature = TagSignature.Unknown;
+        private TagSignature _TagSignature = TagSignature.Unknown;
 
         protected TagDataEntry(TypeSignature signature)
         {
