@@ -489,7 +489,7 @@ namespace ColorManager.ICC
             _Gamma = Gamma;
             _CurveData = new double[] { Gamma };
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="CurveTagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -740,7 +740,7 @@ namespace ColorManager.ICC
             _CLUTValues = CLUTValues;
             _OutputValues = OutputValues;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="Lut16TagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -839,7 +839,7 @@ namespace ColorManager.ICC
             _CLUTValues = CLUTValues;
             _OutputValues = OutputValues;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="Lut8TagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -957,7 +957,7 @@ namespace ColorManager.ICC
             _CurveM = CurveM;
             _CurveA = CurveA;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="LutAToBTagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -1081,7 +1081,7 @@ namespace ColorManager.ICC
             _CurveM = CurveM;
             _CurveA = CurveA;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="LutBToATagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -1333,10 +1333,6 @@ namespace ColorManager.ICC
         {
             get { return _OutputChannelCount; }
         }
-        public int ProcessingElementCount
-        {
-            get { return _ProcessingElementCount; }
-        }
         public MultiProcessElement[] Data
         {
             get { return _Data; }
@@ -1344,19 +1340,17 @@ namespace ColorManager.ICC
 
         private int _InputChannelCount;
         private int _OutputChannelCount;
-        private int _ProcessingElementCount;
         private MultiProcessElement[] _Data;
 
-        public MultiProcessElementsTagDataEntry(int inChCount, int outChCount, int elementCount, MultiProcessElement[] Data)
+        public MultiProcessElementsTagDataEntry(int inChCount, int outChCount, MultiProcessElement[] Data)
             : base(TypeSignature.MultiProcessElements)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
             _InputChannelCount = inChCount;
             _OutputChannelCount = outChCount;
-            _ProcessingElementCount = elementCount;
             _Data = Data;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="MultiProcessElementsTagDataEntry"/>s are equal to each other.
         /// </summary>
@@ -1368,8 +1362,7 @@ namespace ColorManager.ICC
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
-                && a.OutputChannelCount == b.OutputChannelCount && a.ProcessingElementCount == b.ProcessingElementCount
-                && CMP.Compare(a.Data, b.Data);
+                && a.OutputChannelCount == b.OutputChannelCount && CMP.Compare(a.Data, b.Data);
         }
 
         /// <summary>
@@ -1407,7 +1400,6 @@ namespace ColorManager.ICC
                 hash *= 16777619 ^ Signature.GetHashCode();
                 hash *= 16777619 ^ InputChannelCount.GetHashCode();
                 hash *= 16777619 ^ OutputChannelCount.GetHashCode();
-                hash *= 16777619 ^ ProcessingElementCount.GetHashCode();
                 hash *= CMP.GetHashCode(Data);
                 return hash;
             }
@@ -1424,9 +1416,9 @@ namespace ColorManager.ICC
         {
             get { return _VendorFlag; }
         }
-        public int NamedColorCount
+        public int CoordCount
         {
-            get { return _NamedColorCount; }
+            get { return _CoordCount; }
         }
         public string Prefix
         {
@@ -1442,19 +1434,19 @@ namespace ColorManager.ICC
         }
 
         private byte[] _VendorFlag;
-        private int _NamedColorCount;
+        private int _CoordCount;
         private string _Prefix;
         private string _Suffix;
         private NamedColor[] _Colors;
 
-        public NamedColor2TagDataEntry(byte[] VendorFlag, int NamedColorCount, string Prefix, string Suffix, NamedColor[] Colors)
+        public NamedColor2TagDataEntry(byte[] VendorFlag, int CoordCount, string Prefix, string Suffix, NamedColor[] Colors)
             : base(TypeSignature.NamedColor2)
         {
             if (VendorFlag == null) throw new ArgumentNullException(nameof(VendorFlag));
             if (Colors == null) throw new ArgumentNullException(nameof(Colors));
 
             _VendorFlag = VendorFlag;
-            _NamedColorCount = NamedColorCount;
+            _CoordCount = CoordCount;
             _Prefix = Prefix;
             _Suffix = Suffix;
             _Colors = Colors;
@@ -1470,7 +1462,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-            return a.Signature == b.Signature && a.NamedColorCount == b.NamedColorCount
+            return a.Signature == b.Signature && a.CoordCount == b.CoordCount
                 && a.Prefix == b.Prefix && a.Suffix == b.Suffix && CMP.Compare(a.VendorFlag, b.VendorFlag)
                 && CMP.Compare(a.Colors, b.Colors);
         }
@@ -1508,7 +1500,7 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Signature.GetHashCode();
-                hash *= 16777619 ^ NamedColorCount.GetHashCode();
+                hash *= 16777619 ^ CoordCount.GetHashCode();
                 hash *= 16777619 ^ Prefix.GetHashCode();
                 hash *= 16777619 ^ Suffix.GetHashCode();
                 hash *= CMP.GetHashCode(VendorFlag);
@@ -1666,33 +1658,18 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ProfileSequenceIdentifierTagDataEntry : TagDataEntry
     {
-        public PositionNumber[] PositionTable
+        public ProfileSequenceIdentifier[] Data
         {
-            get { return _PositionTable; }
+            get { return _Data; }
         }
-        public ProfileID ProfileID
-        {
-            get { return _ProfileID; }
-        }
-        public MultiLocalizedUnicodeTagDataEntry ProfileDescription
-        {
-            get { return _ProfileDescription; }
-        }
+        private ProfileSequenceIdentifier[] _Data;
 
-        private PositionNumber[] _PositionTable;
-        private ProfileID _ProfileID;
-        private MultiLocalizedUnicodeTagDataEntry _ProfileDescription;
-
-        public ProfileSequenceIdentifierTagDataEntry(PositionNumber[] PositionTable, ProfileID ProfileID,
-            MultiLocalizedUnicodeTagDataEntry ProfileDescription)
+        public ProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifier[] Data)
             : base(TypeSignature.ProfileSequenceIdentifier)
         {
-            if (PositionTable == null) throw new ArgumentNullException(nameof(PositionTable));
-            if (ProfileDescription == null) throw new ArgumentNullException(nameof(ProfileDescription));
+            if (Data == null) throw new ArgumentNullException(nameof(Data));
 
-            _PositionTable = PositionTable;
-            _ProfileID = ProfileID;
-            _ProfileDescription = ProfileDescription;
+            _Data = Data;
         }
 
         /// <summary>
@@ -1705,8 +1682,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-            return a.Signature == b.Signature && a.ProfileID == b.ProfileID && a.ProfileDescription == b.ProfileDescription
-                && CMP.Compare(a.PositionTable, b.PositionTable);
+            return a.Signature == b.Signature && CMP.Compare(a.Data, b.Data);
         }
 
         /// <summary>
@@ -1742,9 +1718,7 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Signature.GetHashCode();
-                hash *= 16777619 ^ ProfileID.GetHashCode();
-                hash *= 16777619 ^ ProfileDescription.GetHashCode();
-                hash *= CMP.GetHashCode(PositionTable);
+                hash *= 16777619 ^ CMP.GetHashCode(Data);
                 return hash;
             }
         }
@@ -1758,23 +1732,23 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ResponseCurveSet16TagDataEntry : TagDataEntry
     {
-        public int MeasurmentTypesCount
+        public int ChannelCount
         {
-            get { return _MeasurmentTypesCount; }
+            get { return _ChannelCount; }
         }
         public ResponseCurve[] Curves
         {
             get { return _Curves; }
         }
 
-        private int _MeasurmentTypesCount;
+        private int _ChannelCount;
         private ResponseCurve[] _Curves;
 
-        public ResponseCurveSet16TagDataEntry(int MeasurmentTypesCount, ResponseCurve[] Curves)
+        public ResponseCurveSet16TagDataEntry(int ChannelCount, ResponseCurve[] Curves)
             : base(TypeSignature.ResponseCurveSet16)
         {
             if (Curves == null) throw new ArgumentNullException(nameof(Curves));
-            _MeasurmentTypesCount = MeasurmentTypesCount;
+            _ChannelCount = ChannelCount;
             _Curves = Curves;
         }
 
@@ -1788,7 +1762,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-            return a.Signature == b.Signature && a.MeasurmentTypesCount == b.MeasurmentTypesCount
+            return a.Signature == b.Signature && a.ChannelCount == b.ChannelCount
                 && CMP.Compare(a.Curves, b.Curves);
         }
 
@@ -1825,7 +1799,7 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Signature.GetHashCode();
-                hash *= 16777619 ^ MeasurmentTypesCount.GetHashCode();
+                hash *= 16777619 ^ ChannelCount.GetHashCode();
                 hash *= CMP.GetHashCode(Curves);
                 return hash;
             }
