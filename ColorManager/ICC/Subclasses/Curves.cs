@@ -81,12 +81,13 @@ namespace ColorManager.ICC
     {
         public CurveMeasurementEncodings CurveType;
         public XYZNumber[] XYZvalues;
-        public ResponseNumber[] ResponseArrays;
+        public ResponseNumber[][] ResponseArrays;
 
-        public ResponseCurve(CurveMeasurementEncodings CurveType, XYZNumber[] XYZvalues, ResponseNumber[] ResponseArrays)
+        public ResponseCurve(CurveMeasurementEncodings CurveType, XYZNumber[] XYZvalues, ResponseNumber[][] ResponseArrays)
         {
             if (XYZvalues == null) throw new ArgumentNullException(nameof(XYZvalues));
             if (ResponseArrays == null) throw new ArgumentNullException(nameof(ResponseArrays));
+            if (XYZvalues.Length != ResponseArrays.Length) throw new ArgumentException("Arrays must have same length");
 
             this.CurveType = CurveType;
             this.XYZvalues = XYZvalues;
