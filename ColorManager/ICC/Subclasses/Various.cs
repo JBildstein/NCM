@@ -182,6 +182,12 @@ namespace ColorManager.ICC
             this.DataSize = DataSize;
         }
 
+        public TagTableEntry(TagSignature Signature)
+        {
+            this.Signature = Signature;
+            Offset = DataSize = 0;
+        }
+
         /// <summary>
         /// Determines whether the specified <see cref="TagTableEntry"/>s are equal to each other.
         /// </summary>
