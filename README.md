@@ -5,10 +5,10 @@ A .Net color conversion/managment library
 
 - [x] Standard color conversion
 - [x] Reading ICC profiles (needs testing with more profiles)
+- [x] Writing ICC profiles (needs lots of testing)
 - [x] XML comments documentation (not for ICC yet)
-- [ ] ICC color conversion
+- [ ] ICC color conversion (partially implemented)
 - [ ] Documentation (code and usage)
-- [ ] Writing ICC profiles
 
 ## Basic Usage
 
