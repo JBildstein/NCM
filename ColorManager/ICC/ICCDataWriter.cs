@@ -6,7 +6,7 @@ namespace ColorManager.ICC
 {
     public sealed class ICCDataWriter
     {
-        private readonly bool LittleEndian = BitConverter.IsLittleEndian;
+        private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
         public readonly Stream DataStream;
 
         //TODO: some TagDataEntries might need padding bytes (see documentation)
@@ -629,17 +629,17 @@ namespace ColorManager.ICC
             if (value.CurveB != null)
             {
                 bCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveB);
+                c += WriteCurves(value.CurveB);
             }
             if (value.CurveM != null)
             {
                 mCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveM);
+                c += WriteCurves(value.CurveM);
             }
             if (value.CurveA != null)
             {
                 aCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveA);
+                c += WriteCurves(value.CurveA);
             }
 
             if (value.CLUTValues != null)
@@ -696,17 +696,17 @@ namespace ColorManager.ICC
             if (value.CurveB != null)
             {
                 bCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveB);
+                c += WriteCurves(value.CurveB);
             }
             if (value.CurveM != null)
             {
                 mCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveM);
+                c += WriteCurves(value.CurveM);
             }
             if (value.CurveA != null)
             {
                 aCurveOffset = DataStream.Position;
-                c += WriteCurve(value.CurveA);
+                c += WriteCurves(value.CurveA);
             }
 
             if (value.CLUTValues != null)
@@ -1182,21 +1182,6 @@ namespace ColorManager.ICC
 
         #region Write Curves
 
-        public int WriteCurve(TagDataEntry[] curves)
-        {
-            int c = 0;
-            foreach (var curve in curves)
-            {
-                if (curve.Signature != TypeSignature.Curve && curve.Signature != TypeSignature.ParametricCurve)
-                {
-                    string msg = "Curve has to be either of type \"Curve\" or \"ParametricCurve\" for LutAToB- and LutBToA-TagDataEntries";
-                    throw new CorruptProfileException(msg);
-                }
-                c += WriteTagDataEntry(curve);
-            }
-            return c;
-        }
-
         public int WriteOneDimensionalCurve(OneDimensionalCurve value)
         {
             int c = WriteUInt16((ushort)value.Segments.Length);
@@ -1372,6 +1357,21 @@ namespace ColorManager.ICC
             }
 
             return length;
+        }
+
+        private int WriteCurves(TagDataEntry[] curves)
+        {
+            int c = 0;
+            foreach (var curve in curves)
+            {
+                if (curve.Signature != TypeSignature.Curve && curve.Signature != TypeSignature.ParametricCurve)
+                {
+                    string msg = "Curve has to be either of type \"Curve\" or \"ParametricCurve\" for LutAToB- and LutBToA-TagDataEntries";
+                    throw new CorruptProfileException(msg);
+                }
+                c += WriteTagDataEntry(curve);
+            }
+            return c;
         }
 
         #endregion
