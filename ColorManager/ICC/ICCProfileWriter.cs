@@ -35,6 +35,12 @@ namespace ColorManager.ICC
             stream.Write(data, 0, data.Length);
         }
 
+        public void WriteProfile(ICCProfile profile, string path)
+        {
+            var data = WriteProfile(profile);
+            File.WriteAllBytes(path, data);
+        }
+
 
         private void WriteHeader(ICCDataWriter writer, ICCProfile profile)
         {
