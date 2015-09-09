@@ -92,8 +92,12 @@ namespace ColorManager.ICC
         /// <summary>
         /// The actual profile data
         /// </summary>
-        public List<TagDataEntry> Data { get; set; }
-        
+        public List<TagDataEntry> Data
+        {
+            get { return _Data; }
+        }
+        private List<TagDataEntry> _Data;
+
         #endregion
 
         /// <summary>
@@ -101,7 +105,7 @@ namespace ColorManager.ICC
         /// </summary>
         public ICCProfile()
         {
-            Data = new List<TagDataEntry>();
+            _Data = new List<TagDataEntry>();
         }
 
         #region Tags
