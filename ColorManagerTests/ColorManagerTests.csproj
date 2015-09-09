@@ -93,6 +93,10 @@
     <Compile Include="ClassImplementations\TestChromaticAdaption.cs" />
     <Compile Include="ClassImplementations\TestConversionPath.cs" />
     <Compile Include="ClassImplementations\TestWhitepoint.cs" />
+    <Compile Include="ICC\ICCDataReaderTest.cs" />
+    <Compile Include="ICC\ICCDataWriterTest.cs" />
+    <Compile Include="ICC\ICCProfileReaderTest.cs" />
+    <Compile Include="ICC\ICCProfileWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\Conversion.cs" />
   </ItemGroup>
@@ -102,9 +106,7 @@
       <Name>ColorManager</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ICC\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
