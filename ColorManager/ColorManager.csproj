@@ -125,6 +125,7 @@
     <Compile Include="Conversions\RGB.cs" />
     <Compile Include="ICC\Conversion\ICCData.cs" />
     <Compile Include="ICC\Enums.cs" />
+    <Compile Include="ICC\ICCDataReader.cs" />
     <Compile Include="ICC\ICCDataWriter.cs" />
     <Compile Include="ICC\ICCProfileWriter.cs" />
     <Compile Include="ICC\ICCValidator.cs" />
