@@ -114,7 +114,7 @@ namespace ColorManager.ICC
         public unsafe float ReadSingle()
         {
             int val = ReadInt32();
-            return *(&val);
+            return *((float*)&val);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace ColorManager.ICC
         public unsafe double ReadDouble()
         {
             long val = ReadInt64();
-            return *(&val);
+            return *((double*)&val);
         }
 
 
