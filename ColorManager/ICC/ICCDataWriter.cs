@@ -4,10 +4,16 @@ using System.Text;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Provides methods to write ICC data types
+    /// </summary>
     public sealed class ICCDataWriter
     {
-        private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
+        /// <summary>
+        /// The underlying stream where the data is written to
+        /// </summary>
         public readonly Stream DataStream;
+        private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
 
         //TODO: some TagDataEntries might need padding bytes (see documentation)
 

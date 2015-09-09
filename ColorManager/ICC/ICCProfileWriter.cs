@@ -4,10 +4,16 @@ using System.Collections.Generic;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Provides methods to write ICC profiles
+    /// </summary>
     public sealed class ICCProfileWriter
     {
-        //TODO: some TagDataEntries might reuse information by setting the same offset value
-
+        /// <summary>
+        /// Writes an <see cref="ICCProfile"/> into a byte array
+        /// </summary>
+        /// <param name="profile">the ICC profile to write</param>
+        /// <returns>the ICC data</returns>
         public byte[] WriteProfile(ICCProfile profile)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
@@ -29,18 +35,30 @@ namespace ColorManager.ICC
             }
         }
 
-        public void WriteProfile(ICCProfile profile, Stream stream)
-        {
-            var data = WriteProfile(profile);
-            stream.Write(data, 0, data.Length);
-        }
-
+        /// <summary>
+        /// Writes an <see cref="ICCProfile"/> into a file
+        /// </summary>
+        /// <param name="profile">the ICC profile to write</param>
+        /// <param name="path">the path to the new ICC file</param>
         public void WriteProfile(ICCProfile profile, string path)
         {
             var data = WriteProfile(profile);
             File.WriteAllBytes(path, data);
         }
 
+        /// <summary>
+        /// Writes an <see cref="ICCProfile"/> into a <see cref="Stream"/>
+        /// </summary>
+        /// <param name="profile">the ICC profile to write</param>
+        /// <param name="stream">the stream to which the ICC data will be written to</param>
+        public void WriteProfile(ICCProfile profile, Stream stream)
+        {
+            var data = WriteProfile(profile);
+            stream.Write(data, 0, data.Length);
+        }
+        
+
+        //TODO: some TagDataEntries might reuse information by setting the same offset value
 
         private void WriteHeader(ICCDataWriter writer, ICCProfile profile)
         {

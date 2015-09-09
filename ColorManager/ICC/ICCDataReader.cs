@@ -4,12 +4,36 @@ using System.Globalization;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Provides methods to read ICC data types
+    /// </summary>
     public sealed class ICCDataReader
     {
+        /// <summary>
+        /// The data that is read
+        /// </summary>
         public readonly byte[] Data;
-        public int Index = 0;
+        /// <summary>
+        /// The current reading position
+        /// </summary>
+        public int Index
+        {
+            get { return _Index; }
+            set
+            {
+                if (value < 0) _Index = 0;
+                else if (value > Data.Length - 1) _Index = Data.Length - 1;
+                else _Index = value;
+            }
+        }
+
+        private int _Index;
         private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ICCDataReader"/> class
+        /// </summary>
+        /// <param name="Data">The data to read</param>
         public ICCDataReader(byte[] Data)
         {
             this.Data = Data;
@@ -163,7 +187,7 @@ namespace ColorManager.ICC
 
         #endregion
 
-        #region Read structs
+        #region Read Structs
 
         /// <summary>
         /// Reads a DateTime

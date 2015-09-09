@@ -3,6 +3,9 @@ using System.IO;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Provides methods to read ICC profiles
+    /// </summary>
     public sealed class ICCProfileReader
     {
         /// <summary>
@@ -19,7 +22,7 @@ namespace ColorManager.ICC
         /// <summary>
         /// Reads an <see cref="ICCProfile"/> from a file
         /// </summary>
-        /// <param name="path">Path to the ICC file</param>
+        /// <param name="path">the path to the ICC file</param>
         /// <returns>the read ICC profile</returns>
         public ICCProfile Read(string path)
         {
@@ -30,7 +33,7 @@ namespace ColorManager.ICC
         /// <summary>
         /// Reads an <see cref="ICCProfile"/> from a stream
         /// </summary>
-        /// <param name="path">stream of the ICC file</param>
+        /// <param name="dataStream">stream of the ICC file</param>
         /// <returns>the read ICC profile</returns>
         public ICCProfile Read(Stream dataStream)
         {
