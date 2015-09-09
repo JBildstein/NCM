@@ -13,8 +13,8 @@ A .Net color conversion/managment library
 ## Basic Usage
 
 ```csharp
-var col1 = new ColorRGB(0.35, 0.17, 0.63, new Colorspace_AdobeRGB());
-var col2 = new ColorXYZ(new WhitepointD50());
+var col1 = new ColorRGB(0.35, 0.17, 0.63, ColorspaceRGB.AdobeRGB);
+var col2 = new ColorXYZ(Whitepoint.D50);
 
 using (ColorConverter conv = new ColorConverter(col1, col2))
 {
@@ -28,8 +28,8 @@ using (ColorConverter conv = new ColorConverter(col1, col2))
 If you want to change the input color, it's best to use it like this:
 
 ```csharp
-var col1 = new ColorRGB(0.35, 0.17, 0.63, new Colorspace_AdobeRGB());
-var col2 = new ColorXYZ(new WhitepointD50());
+var col1 = new ColorRGB(0.35, 0.17, 0.63, ColorspaceRGB.AdobeRGB);
+var col2 = new ColorXYZ(Whitepoint.D50);
 
 using (ColorConverter conv = new ColorConverter(col1, col2))
 {
