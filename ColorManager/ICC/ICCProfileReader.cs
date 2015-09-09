@@ -8,6 +8,8 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ICCProfileReader
     {
+        #region Read Profile
+
         /// <summary>
         /// Reads an <see cref="ICCProfile"/> from a given byte array
         /// </summary>
@@ -50,6 +52,51 @@ namespace ColorManager.ICC
             return ReadAll(reader);
         }
 
+        #endregion
+
+        #region Read Profile Header
+
+        /// <summary>
+        /// Reads the header of an <see cref="ICCProfile"/> from a given byte array
+        /// </summary>
+        /// <param name="data">the ICC data</param>
+        /// <returns>the read ICC profile header</returns>
+        public ICCProfile ReadHeader(byte[] data)
+        {
+            var reader = new ICCDataReader(data);
+            var profile = new ICCProfile();
+            ReadHeader(reader, profile);
+            return profile;
+        }
+
+        /// <summary>
+        /// Reads the header of an <see cref="ICCProfile"/> from a file
+        /// </summary>
+        /// <param name="path">the path to the ICC file</param>
+        /// <returns>the read ICC profile header</returns>
+        public ICCProfile ReadHeader(string path)
+        {
+            using (var freader = File.OpenRead(path))
+            {
+                return ReadHeader(freader);
+            }
+        }
+
+        /// <summary>
+        /// Reads the header of an <see cref="ICCProfile"/> from a stream
+        /// </summary>
+        /// <param name="dataStream">stream of the ICC file</param>
+        /// <returns>the read ICC profile header</returns>
+        public ICCProfile ReadHeader(Stream dataStream)
+        {
+            var data = new byte[128];
+            dataStream.Read(data, 0, 128);
+            return ReadHeader(data);
+        }
+
+        #endregion
+
+        #region Subroutines
 
         private ICCProfile ReadAll(ICCDataReader reader)
         {
@@ -154,5 +201,7 @@ namespace ColorManager.ICC
                     throw new CorruptProfileException("Unsupported color type: " + tp.ToString());
             }
         }
+
+        #endregion
     }
 }
