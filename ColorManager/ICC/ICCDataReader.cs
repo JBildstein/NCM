@@ -195,7 +195,12 @@ namespace ColorManager.ICC
         /// <returns>the value</returns>
         public DateTime ReadDateTime()
         {
-            return new DateTime(ReadUInt16(), ReadUInt16(), ReadUInt16(), ReadUInt16(), ReadUInt16(), ReadUInt16(), DateTimeKind.Utc);
+            try
+            {
+                return new DateTime(ReadUInt16(), ReadUInt16(), ReadUInt16(),
+                    ReadUInt16(), ReadUInt16(), ReadUInt16(), DateTimeKind.Utc);
+            }
+            catch (ArgumentOutOfRangeException) { throw new InvalidProfileException("Invalid DateTime format"); }
         }
 
         /// <summary>
