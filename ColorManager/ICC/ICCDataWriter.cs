@@ -243,8 +243,8 @@ namespace ColorManager.ICC
         public int WriteVersionNumber(VersionNumber value)
         {
             byte major = SetRangeUInt8(value.Major);
-            byte minor = SetRangeUInt8(value.Minor);
-            byte bugfix = SetRangeUInt8(value.Minor);
+            byte minor = (byte)SetRange(value.Minor, 0, 15);
+            byte bugfix = (byte)SetRange(value.Minor, 0, 15);
             byte mb = (byte)((minor << 4) | bugfix);
 
             return WriteByte(major)
