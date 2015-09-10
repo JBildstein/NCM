@@ -67,7 +67,7 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(Major, ".", Minor, ".", BugFix);
+            return $"{Major}.{ Minor}.{BugFix}.0";
         }
     }
 
