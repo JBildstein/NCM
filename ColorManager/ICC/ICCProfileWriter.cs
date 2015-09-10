@@ -22,13 +22,12 @@ namespace ColorManager.ICC
             {
                 var writer = new ICCDataWriter(stream);
 
-                WriteHeader(writer, profile);
                 TagTableEntry[] table = WriteTagData(writer, profile);
                 WriteTagTable(writer, table);
 
-                //Calculate and set the profiles ID
+                profile.Size = (uint)stream.Length;
+                WriteHeader(writer, profile);
                 profile.ID = ICCProfile.CalculateHash(stream.ToArray());
-                stream.Position = 84;
                 writer.WriteProfileID(profile.ID);
 
                 return stream.ToArray();
@@ -80,7 +79,6 @@ namespace ColorManager.ICC
             writer.WriteUInt32((uint)profile.RenderingIntent);
             writer.WriteXYZNumber(profile.PCSIlluminant);
             writer.WriteASCIIString(profile.CreatorSignature, 4);
-            writer.WriteProfileID(profile.ID);
         }
 
         private void WriteTagTable(ICCDataWriter writer, TagTableEntry[] table)
