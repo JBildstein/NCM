@@ -858,26 +858,26 @@ namespace ColorManager.ICC
 
         #region Read Matrix
 
-        public double[,] ReadMatrix(int xCount, int yCount, bool isFloat)
+        public double[,] ReadMatrix(int xCount, int yCount, bool isSingle)
         {
             double[,] Matrix = new double[xCount, yCount];
             for (int y = 0; y < yCount; y++)
             {
                 for (int x = 0; x < xCount; x++)
                 {
-                    if (isFloat) { Matrix[x, y] = ReadSingle(); }
+                    if (isSingle) { Matrix[x, y] = ReadSingle(); }
                     else { Matrix[x, y] = ReadFix16(); }
                 }
             }
             return Matrix;
         }
 
-        public double[] ReadMatrix(int yCount, bool isFloat)
+        public double[] ReadMatrix(int yCount, bool isSingle)
         {
             double[] Matrix = new double[yCount];
             for (int i = 0; i < yCount; i++)
             {
-                if (isFloat) { Matrix[i] = ReadSingle(); }
+                if (isSingle) { Matrix[i] = ReadSingle(); }
                 else { Matrix[i] = ReadFix16(); }
             }
             return Matrix;
@@ -1045,7 +1045,7 @@ namespace ColorManager.ICC
             for (int i = 0; i < inChCount; i++)
             {
                 curves[i] = ReadOneDimensionalCurve();
-                Index += Index % 4;
+                APadding();
             }
             return new CurveSetProcessElement(inChCount, outChCount, curves);
         }
