@@ -410,56 +410,7 @@ namespace ColorManager.ICC
         }
 
         #endregion
-
-        #region Comparison
-
-        /// <summary>
-        /// Determines whether the specified <see cref="ICCProfile"/>s are equal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="ICCProfile"/></param>
-        /// <param name="b">The second <see cref="ICCProfile"/></param>
-        /// <returns>True if the <see cref="ICCProfile"/>s are equal; otherwise, false</returns>
-        public static bool operator ==(ICCProfile a, ICCProfile b)
-        {
-            if (ReferenceEquals(a, b)) return true;
-            if ((object)a == null || (object)b == null) return false;
-            return a.ID == b.ID;
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="ICCProfile"/>s are unequal to each other.
-        /// </summary>
-        /// <param name="a">The first <see cref="ICCProfile"/></param>
-        /// <param name="b">The second <see cref="ICCProfile"/></param>
-        /// <returns>True if the <see cref="ICCProfile"/>s are unequal; otherwise, false</returns>
-        public static bool operator !=(ICCProfile a, ICCProfile b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="ICCProfile"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="ICCProfile"/></param>
-        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="ICCProfile"/>; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            ICCProfile c = obj as ICCProfile;
-            if ((object)c == null) return false;
-            return c == this;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for a <see cref="ICCProfile"/>.
-        /// </summary>
-        /// <returns>A hash code for the current <see cref="ICCProfile"/></returns>
-        public override int GetHashCode()
-        {
-            return ID.GetHashCode();
-        }
-
-        #endregion
-
+        
         #region Static Methods
                 
         /// <summary>
