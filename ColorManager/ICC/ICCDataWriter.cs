@@ -265,7 +265,7 @@ namespace ColorManager.ICC
             }
 
             return WriteUInt16((ushort)flags)
-                 + WriteArray(value.Data);
+                 + WriteEmpty(2);
         }
 
         /// <summary>

@@ -221,14 +221,14 @@ namespace ColorManager.ICC
         /// Reads an ICC profile flag
         /// </summary>
         /// <returns>the profile flag</returns>
-        public ProfileFlag ReadProfileFlag()
+        public unsafe ProfileFlag ReadProfileFlag()
         {
             var flags = new bool[16];
-            ushort flagVal = BitConverter.ToUInt16(Data, AIndex(2));
-            for (int i = 0; i < 16; i++) flags[i] = GetBit(flagVal, i);
-            var idata = new byte[] { Data[AIndex(1)], Data[AIndex(1)] };//ICC reserved data
+            ushort flagVal = (ushort)((Data[AIndex(1)] << 8) | Data[AIndex(1)]);
+            for (int i = 0; i < 16; i++) flags[15 - i] = GetBit(flagVal, i);
+            AIndex(2);//ICC reserved data
 
-            return new ProfileFlag(flags, idata);
+            return new ProfileFlag(flags);
         }
 
         /// <summary>

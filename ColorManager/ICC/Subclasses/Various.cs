@@ -7,20 +7,16 @@ namespace ColorManager.ICC
     {
         public bool IsEmbedded;
         public bool IsIndependent;
-        public byte[] Data;
         public bool[] Flags;
 
-        public ProfileFlag(bool[] Flags, byte[] Data)
+        public ProfileFlag(bool[] Flags)
         {
             if (Flags == null) throw new ArgumentNullException(nameof(Flags));
-            if (Data == null) throw new ArgumentNullException(nameof(Data));
             if (Flags.Length != 16) throw new ArgumentException("Flags must have a length of 16");
-            if (Data.Length != 2) throw new ArgumentException("Data must have a length of 2");
 
             IsEmbedded = Flags[0];
             IsIndependent = Flags[1];
             this.Flags = Flags;
-            this.Data = Data;
         }
 
         /// <summary>
@@ -31,7 +27,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ProfileFlag"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ProfileFlag a, ProfileFlag b)
         {
-            return CMP.Compare(a.Data, b.Data) && CMP.Compare(a.Flags, b.Flags);
+            return CMP.Compare(a.Flags, b.Flags);
         }
 
         /// <summary>
@@ -64,7 +60,6 @@ namespace ColorManager.ICC
             unchecked
             {
                 int hash = (int)2166136261;
-                hash *= CMP.GetHashCode(Data);
                 hash *= CMP.GetHashCode(Flags);
                 return hash;
             }
