@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ColorManager.ICC;
 using ColorManagerTests.ICC.Data;
 
@@ -280,51 +279,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadDateTime()
         {
-            //Year (1-9999)
-            //Month 1-12
-            //Day 1-31
-            //Hour 0-23
-            //Minute 0-59
-            //Second 0-59
-
-            var data = new byte[]
-            {
-                0x00, 0x01, //Year      1
-                0x00, 0x01, //Month     1
-                0x00, 0x01, //Day       1
-                0x00, 0x00, //Hour      0
-                0x00, 0x00, //Minute    0
-                0x00, 0x00, //Second    0
-            };
-            var result = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.DateTime_Min);
             var value = reader.ReadDateTime();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[]
-            {
-                0x27, 0x0F, //Year      9999
-                0x00, 0x0C, //Month     12
-                0x00, 0x1F, //Day       31
-                0x00, 0x17, //Hour      23
-                0x00, 0x3B, //Minute    59
-                0x00, 0x3B, //Second    59
-            };
-            result = new DateTime(9999, 12, 31, 23, 59, 59, DateTimeKind.Utc);
-            reader = new ICCDataReader(data);
-            value = reader.ReadDateTime();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.DateTime_ValMin, value, "Read Min");
             
-            data = new byte[]
-            {
-                0xFF, 0xFF, //Year      65535
-                0x00, 0x0E, //Month     14
-                0x00, 0x21, //Day       33
-                0x00, 0x19, //Hour      25
-                0x00, 0x3D, //Minute    61
-                0x00, 0x3D, //Second    61
-            };
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Structs.DateTime_Max);
+            value = reader.ReadDateTime();
+            Assert.AreEqual(Structs.DateTime_ValMax, value, "Read Max");
+            
+            reader = new ICCDataReader(Structs.DateTime_Invalid);
             try
             {
                 value = reader.ReadDateTime();
@@ -336,289 +299,149 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadVersionNumber()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            var result = new VersionNumber(0, 0, 0);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.VersionNumber_Min);
             var value = reader.ReadVersionNumber();
-            Assert.IsTrue(value == result, "Read Min");
-            Assert.AreEqual("0.0.0.0", value.ToString(), "Read Min ToString");
-
-            data = new byte[] { 0x04, 0x30, 0x00, 0x00 };
-            result = new VersionNumber(4, 3, 0);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.VersionNumber_ValMin, value, "Read Min");
+            Assert.AreEqual(Structs.VersionNumber_StrMin, value.ToString(), "Read Min ToString");
+            
+            reader = new ICCDataReader(Structs.VersionNumber_211);
             value = reader.ReadVersionNumber();
-            Assert.IsTrue(value == result, "Read Version 4.3");
-            Assert.AreEqual("4.3.0.0", value.ToString(), "Read Version 4.3 ToString");
+            Assert.AreEqual(Structs.VersionNumber_Val211, value, "Read Version 2.1.1");
+            Assert.AreEqual(Structs.VersionNumber_Str211, value.ToString(), "Read Version 2.1.1 ToString");
 
-            data = new byte[] { 0x02, 0x11, 0x00, 0x00 };
-            result = new VersionNumber(2, 1, 1);
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Structs.VersionNumber_430);
             value = reader.ReadVersionNumber();
-            Assert.IsTrue(value == result, "Read Version 2.1.1");
-            Assert.AreEqual("2.1.1.0", value.ToString(), "Read Version 2.1.1 ToString");
-
-            data = new byte[] { 0xFF, 0xFF, 0x00, 0x00 };
-            result = new VersionNumber(255, 15, 15);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.VersionNumber_Val430, value, "Read Version 4.3");
+            Assert.AreEqual(Structs.VersionNumber_Str430, value.ToString(), "Read Version 4.3 ToString");
+            
+            reader = new ICCDataReader(Structs.VersionNumber_Max);
             value = reader.ReadVersionNumber();
-            Assert.IsTrue(value == result, "Read Max");
-            Assert.AreEqual("255.15.15.0", value.ToString(), "Read Max ToString");
+            Assert.AreEqual(Structs.VersionNumber_ValMax, value, "Read Max");
+            Assert.AreEqual(Structs.VersionNumber_StrMax, value.ToString(), "Read Max ToString");
         }
 
         [TestMethod]
         public void ReadProfileFlag()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            var arr = new bool[] { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-            var result = new ProfileFlag(arr);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.ProfileFlag_Min);
             var value = reader.ReadProfileFlag();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[] { 0x00, 0x01, 0x00, 0x00 };
-            arr =new bool[] { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-            result = new ProfileFlag(arr);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.ProfileFlag_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.ProfileFlag_Embedded);
             value = reader.ReadProfileFlag();
-            Assert.IsTrue(value == result, "Read Flag: Embedded");
-
-            data = new byte[] { 0x00, 0x02, 0x00, 0x00 };
-            arr = new bool[] { false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-            result = new ProfileFlag(arr);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.ProfileFlag_ValEmbedded, value, "Read Flag: Embedded");
+            
+            reader = new ICCDataReader(Structs.ProfileFlag_NotIndependent);
             value = reader.ReadProfileFlag();
-            Assert.IsTrue(value == result, "Read Flag: Not Independent");
-
-            data = new byte[] { 0xFF, 0xFF, 0x00, 0x00 };
-            arr = new bool[] { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true };
-            result = new ProfileFlag(arr);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.ProfileFlag_ValNotIndependent, value, "Read Flag: Not Independent");
+            
+            reader = new ICCDataReader(Structs.ProfileFlag_Max);
             value = reader.ReadProfileFlag();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.ProfileFlag_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadDeviceAttribute()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            var result = new DeviceAttribute(false, false, false, false, new byte[] { 0x00, 0x00, 0x00, 0x00 });
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.DeviceAttribute_Min);
             var value = reader.ReadDeviceAttribute();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[] { 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF };
-            result = new DeviceAttribute(false, true, false, true, new byte[] { 0x00, 0xFF, 0x00, 0xFF });
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.DeviceAttribute_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.DeviceAttribute_Var1);
             value = reader.ReadDeviceAttribute();
-            Assert.IsTrue(value == result, "Read Var1");
-
-            data = new byte[] { 0xA0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x0F, 0x00 };
-            result = new DeviceAttribute(true, false, true, false, new byte[] { 0x0F, 0x00, 0x0F, 0x00 });
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.DeviceAttribute_ValVar1, value, "Read Var1");
+            
+            reader = new ICCDataReader(Structs.DeviceAttribute_Var2);
             value = reader.ReadDeviceAttribute();
-            Assert.IsTrue(value == result, "Read Var2");
-
-            data = new byte[] { 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF };
-            result = new DeviceAttribute(true, true, true, true, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF });
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.DeviceAttribute_ValVar2, value, "Read Var2");
+            
+            reader = new ICCDataReader(Structs.DeviceAttribute_Max);
             value = reader.ReadDeviceAttribute();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.DeviceAttribute_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadXYZNumber()
         {
-            var data = new byte[]
-            {
-                0x80, 0x00, 0x00, 0x00, //X
-                0x80, 0x00, 0x00, 0x00, //Y
-                0x80, 0x00, 0x00, 0x00, //Z
-            };
-            var result = new XYZNumber(short.MinValue, short.MinValue, short.MinValue);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.XYZNumber_Min);
             var value = reader.ReadXYZNumber();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[]
-            {
-                0x00, 0x00, 0x00, 0x00, //X
-                0x00, 0x00, 0x00, 0x00, //Y
-                0x00, 0x00, 0x00, 0x00, //Z
-            };
-            result = new XYZNumber(0, 0, 0);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.XYZNumber_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.XYZNumber_0);
             value = reader.ReadXYZNumber();
-            Assert.IsTrue(value == result, "Read Zero");
-
-            data = new byte[]
-            {
-                0x00, 0x01, 0x00, 0x00, //X
-                0x00, 0x01, 0x00, 0x00, //Y
-                0x00, 0x01, 0x00, 0x00, //Z
-            };
-            result = new XYZNumber(1, 1, 1);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.XYZNumber_Val0, value, "Read Zero");
+            
+            reader = new ICCDataReader(Structs.XYZNumber_1);
             value = reader.ReadXYZNumber();
-            Assert.IsTrue(value == result, "Read One");
+            Assert.AreEqual(Structs.XYZNumber_Val1, value, "Read One");
 
-            const double max = short.MaxValue + 65535d / 65536d;
-            data = new byte[]
-            {
-                0x7F, 0xFF, 0xFF, 0xFF, //X
-                0x7F, 0xFF, 0xFF, 0xFF, //Y
-                0x7F, 0xFF, 0xFF, 0xFF, //Z
-            };
-            result = new XYZNumber(max, max, max);
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Structs.XYZNumber_Var);
             value = reader.ReadXYZNumber();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.XYZNumber_ValVar, value, "Read Var");
+
+            reader = new ICCDataReader(Structs.XYZNumber_Max);
+            value = reader.ReadXYZNumber();
+            Assert.AreEqual(Structs.XYZNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadProfileID()
         {
-            var data = new byte[]
-            {
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-            };
-            var result = new ProfileID(0, 0, 0, 0);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.ProfileID_Min);
             var value = reader.ReadProfileID();
-            Assert.IsTrue(value == result, "Read Min");
+            Assert.AreEqual(Structs.ProfileID_ValMin, value, "Read Min");
             
-            data = new byte[]
-            {
-                0x68, 0x3F, 0xD6, 0x6B,
-                0xE6, 0xB4, 0x12, 0xDD,
-                0x3E, 0x97, 0x1B, 0x5E,
-                0xD3, 0x9C, 0x8F, 0x4A,
-            };
-            result = new ProfileID(1749014123, 3870560989, 1050090334, 3550252874);
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Structs.ProfileID_Rand);
             value = reader.ReadProfileID();
-            Assert.IsTrue(value == result, "Read Random");
+            Assert.AreEqual(Structs.ProfileID_ValRand, value, "Read Random");
             
-            data = new byte[]
-            {
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-            };
-            result = new ProfileID(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue);
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Structs.ProfileID_Max);
             value = reader.ReadProfileID();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.ProfileID_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadPositionNumber()
         {
-            var data = new byte[]
-            {
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-            };
-            var result = new PositionNumber(0, 0);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.PositionNumber_Min);
             var value = reader.ReadPositionNumber();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[]
-            {
-                0x68, 0x3F, 0xD6, 0x6B,
-                0xE6, 0xB4, 0x12, 0xDD,
-            };
-            result = new PositionNumber(1749014123, 3870560989);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.PositionNumber_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.PositionNumber_Rand);
             value = reader.ReadPositionNumber();
-            Assert.IsTrue(value == result, "Read Random");
-
-            data = new byte[]
-            {
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-                0xFF, 0xFF, 0xFF, 0xFF,
-            };
-            result = new PositionNumber(uint.MaxValue, uint.MaxValue);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.PositionNumber_ValRand, value, "Read Random");
+            
+            reader = new ICCDataReader(Structs.PositionNumber_Max);
             value = reader.ReadPositionNumber();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.PositionNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadResponseNumber()
         {
-            var data = new byte[]
-            {
-                0x00, 0x00,
-                0x80, 0x00, 0x00, 0x00,
-            };
-            var result = new ResponseNumber(0, short.MinValue);
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Structs.ResponseNumber_Min);
             var value = reader.ReadResponseNumber();
-            Assert.IsTrue(value == result, "Read Min");
-
-            data = new byte[]
-            {
-                0x00, 0x01,
-                0x00, 0x01, 0x00, 0x00,
-            };
-            result = new ResponseNumber(1, 1);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.ResponseNumber_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.ResponseNumber_1);
             value = reader.ReadResponseNumber();
-            Assert.IsTrue(value == result, "Read One");
-
-            data = new byte[]
-            {
-                0xFF, 0xFF,
-                0x7F, 0xFF, 0xFF, 0xFF,
-            };
-            result = new ResponseNumber(ushort.MaxValue, short.MaxValue + 65535d / 65536d);
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Structs.ResponseNumber_Val1, value, "Read One");
+            
+            reader = new ICCDataReader(Structs.ResponseNumber_Max);
             value = reader.ReadResponseNumber();
-            Assert.IsTrue(value == result, "Read Max");
+            Assert.AreEqual(Structs.ResponseNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadNamedColor()
         {
-            const int devCoordCount = 3;
-
-            var data = new byte[32 + 6 + devCoordCount * 2];
-            for (int i = 0; i < data.Length; i++)
-            {
-                if (i < 32) data[i] = 0x41;         //Name (0x41==A)
-                else if (i < 32 + 6) data[i] = 0x00;//PCS Coordinates
-                else data[i] = 0x00;                //Device Coordinates
-            }
-            var r_name = "".PadRight(32, 'A');
-            var r_pcs = new ushort[] { 0, 0, 0 };
-            var r_dev = new ushort[devCoordCount] { 0, 0, 0 };            
-            var result = new NamedColor(r_name, r_pcs, r_dev);
-            var reader = new ICCDataReader(data);
-            var value = reader.ReadNamedColor(devCoordCount);
-            Assert.IsTrue(value == result, "Read Min");
-
-
-            data = new byte[32 + 6 + devCoordCount * 2];
-            for (int i = 0; i < data.Length; i++)
-            {
-                if (i < 32) data[i] = 0x34;         //Name (0x34==4)
-                else if (i < 32 + 6) data[i] = 0xFF;//PCS Coordinates
-                else data[i] = 0xFF;                //Device Coordinates
-            }
-            r_name = "".PadRight(32, '4');
-            r_pcs = new ushort[] { ushort.MaxValue, ushort.MaxValue, ushort.MaxValue };
-            r_dev = new ushort[devCoordCount] { ushort.MaxValue, ushort.MaxValue, ushort.MaxValue };
-            result = new NamedColor(r_name, r_pcs, r_dev);
-            reader = new ICCDataReader(data);
-            value = reader.ReadNamedColor(devCoordCount);
-            Assert.IsTrue(value == result, "Read Max");
+            var reader = new ICCDataReader(Structs.NamedColor_Min);
+            var value = reader.ReadNamedColor(Structs.NamedColor_ValMin.DeviceCoordinates.Length);
+            Assert.AreEqual(Structs.NamedColor_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Structs.NamedColor_Max);
+            value = reader.ReadNamedColor(Structs.NamedColor_ValMax.DeviceCoordinates.Length);
+            Assert.AreEqual(Structs.NamedColor_ValMax, value, "Read Max");
         }
 
         [TestMethod]
