@@ -1106,8 +1106,8 @@ namespace ColorManager.ICC
         public ResponseCurve ReadResponseCurve(int channelCount)
         {
             var type = (CurveMeasurementEncodings)ReadUInt32();
-            var measurment = new int[channelCount];
-            for (int i = 0; i < channelCount; i++) measurment[i] = (int)ReadUInt32();
+            var measurment = new uint[channelCount];
+            for (int i = 0; i < channelCount; i++) measurment[i] = ReadUInt32();
 
             var xyzValues = new XYZNumber[channelCount];
             for (int i = 0; i < channelCount; i++) xyzValues[i] = ReadXYZNumber();
@@ -1116,7 +1116,7 @@ namespace ColorManager.ICC
             for (int i = 0; i < channelCount; i++)
             {
                 response[i] = new ResponseNumber[measurment[i]];
-                for (int j = 0; j < measurment[i]; j++)
+                for (uint j = 0; j < measurment[i]; j++)
                 {
                     response[i][j] = ReadResponseNumber();
                 }
