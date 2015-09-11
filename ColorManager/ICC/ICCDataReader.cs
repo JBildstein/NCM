@@ -888,6 +888,17 @@ namespace ColorManager.ICC
         #region Read (C)LUT
 
         /// <summary>
+        /// Reads an 8bit lookup table
+        /// </summary>
+        /// <returns>the LUT</returns>
+        public LUT ReadLUT8()
+        {
+            var values = new byte[256];
+            Buffer.BlockCopy(Data, AIndex(256), values, 0, 256);
+            return new LUT(values);
+        }
+
+        /// <summary>
         /// Reads a 16bit lookup table
         /// </summary>
         /// <param name="count">The number of entries</param>
@@ -896,17 +907,6 @@ namespace ColorManager.ICC
         {
             var values = new ushort[count];
             for (int i = 0; i < count; i++) { values[i] = ReadUInt16(); }
-            return new LUT(values);
-        }
-
-        /// <summary>
-        /// Reads an 8bit lookup table
-        /// </summary>
-        /// <returns>the LUT</returns>
-        public LUT ReadLUT8()
-        {
-            var values = new byte[256];
-            Buffer.BlockCopy(Data, AIndex(256), values, 0, 256);
             return new LUT(values);
         }
 
@@ -944,10 +944,11 @@ namespace ColorManager.ICC
         {
             int start = Index;
             int length = 0;
-            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount) / inChCount; }
+            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount); }
+            length /= inChCount;
 
             const double max = byte.MaxValue;
-
+            
             var values = new double[length][];
             for (int i = 0; i < length; i++)
             {
@@ -970,7 +971,8 @@ namespace ColorManager.ICC
         {
             int start = Index;
             int length = 0;
-            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount) / inChCount; }
+            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount); }
+            length /= inChCount;
 
             const double max = ushort.MaxValue;
 
@@ -996,7 +998,8 @@ namespace ColorManager.ICC
         {
             int start = Index;
             int length = 0;
-            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount) / inChCount; }
+            for (int i = 0; i < inChCount; i++) { length += (int)Math.Pow(gridPointCount[i], inChCount); }
+            length /= inChCount;
 
             var values = new double[length][];
             for (int i = 0; i < length; i++)
