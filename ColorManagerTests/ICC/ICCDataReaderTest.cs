@@ -647,79 +647,25 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadMatrix2D()
         {
-            var data = new byte[]
-            {
-                0x00, 0x01, 0x00, 0x00, //1
-                0x00, 0x04, 0x00, 0x00, //4
-                0x00, 0x07, 0x00, 0x00, //7
-
-                0x00, 0x02, 0x00, 0x00, //2
-                0x00, 0x05, 0x00, 0x00, //5
-                0x00, 0x08, 0x00, 0x00, //8
-
-                0x00, 0x03, 0x00, 0x00, //3
-                0x00, 0x06, 0x00, 0x00, //6
-                0x00, 0x09, 0x00, 0x00, //9
-            };
-            var result = new double[,]
-            {
-                { 1, 2, 3 },
-                { 4, 5, 6 },
-                { 7, 8, 9 },
-            };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Matrix.Fix16_2D_Grad);
             var value = reader.ReadMatrix(3, 3, false);
-            CollectionAssert.AreEqual(result, value, "Read Fix16");
-
-            data = new byte[]
-            {
-                0x3F, 0x80, 0x00, 0x00, //1
-                0x40, 0x80, 0x00, 0x00, //4
-                0x40, 0xE0, 0x00, 0x00, //7
-
-                0x40, 0x00, 0x00, 0x00, //2
-                0x40, 0xA0, 0x00, 0x00, //5
-                0x41, 0x00, 0x00, 0x00, //8
-
-                0x40, 0x40, 0x00, 0x00, //3
-                0x40, 0xC0, 0x00, 0x00, //6
-                0x41, 0x10, 0x00, 0x00, //9
-            };
-            result = new double[,]
-            {
-                { 1, 2, 3 },
-                { 4, 5, 6 },
-                { 7, 8, 9 },
-            };
-            reader = new ICCDataReader(data);
+            CollectionAssert.AreEqual(Matrix.Fix16_2D_ValGrad, value, "Read Fix16");
+            
+            reader = new ICCDataReader(Matrix.Single_2D_Grad);
             value = reader.ReadMatrix(3, 3, true);
-            CollectionAssert.AreEqual(result, value, "Read Single");
+            CollectionAssert.AreEqual(Matrix.Single_2D_ValGrad, value, "Read Single");
         }
 
         [TestMethod]
         public void ReadMatrix1D()
         {
-            var data = new byte[]
-            {
-                0x00, 0x01, 0x00, 0x00, //1
-                0x00, 0x04, 0x00, 0x00, //4
-                0x00, 0x07, 0x00, 0x00, //7
-            };
-            var result = new double[] { 1, 4, 7 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Matrix.Fix16_1D_Grad);
             var value = reader.ReadMatrix(3, false);
-            CollectionAssert.AreEqual(result, value, "Read Fix16");
-
-            data = new byte[]
-            {
-                0x3F, 0x80, 0x00, 0x00, //1
-                0x40, 0x80, 0x00, 0x00, //4
-                0x40, 0xE0, 0x00, 0x00, //7
-            };
-            result = new double[] { 1, 4, 7 };
-            reader = new ICCDataReader(data);
+            CollectionAssert.AreEqual(Matrix.Fix16_1D_ValGrad, value, "Read Fix16");
+            
+            reader = new ICCDataReader(Matrix.Single_1D_Grad);
             value = reader.ReadMatrix(3, true);
-            CollectionAssert.AreEqual(result, value, "Read Single");
+            CollectionAssert.AreEqual(Matrix.Single_1D_ValGrad, value, "Read Single");
         }
 
         #endregion
