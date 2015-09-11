@@ -1,7 +1,7 @@
 ﻿
 namespace ColorManagerTests.ICC.Data
 {
-    public static class Matrix
+    public static class MatrixData
     {
         #region 2D
 
@@ -29,17 +29,17 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly byte[] Fix16_2D_Grad = ArrayHelper.Concat
         (
-            Primitives.Fix16_1,
-            Primitives.Fix16_4,
-            Primitives.Fix16_7,
+            PrimitivesData.Fix16_1,
+            PrimitivesData.Fix16_4,
+            PrimitivesData.Fix16_7,
 
-            Primitives.Fix16_2,
-            Primitives.Fix16_5,
-            Primitives.Fix16_8,
+            PrimitivesData.Fix16_2,
+            PrimitivesData.Fix16_5,
+            PrimitivesData.Fix16_8,
 
-            Primitives.Fix16_3,
-            Primitives.Fix16_6,
-            Primitives.Fix16_9
+            PrimitivesData.Fix16_3,
+            PrimitivesData.Fix16_6,
+            PrimitivesData.Fix16_9
         );
 
         /// <summary>
@@ -47,17 +47,17 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly byte[] Single_2D_Grad = ArrayHelper.Concat
         (
-            Primitives.Single_1,
-            Primitives.Single_4,
-            Primitives.Single_7,
+            PrimitivesData.Single_1,
+            PrimitivesData.Single_4,
+            PrimitivesData.Single_7,
 
-            Primitives.Single_2,
-            Primitives.Single_5,
-            Primitives.Single_8,
+            PrimitivesData.Single_2,
+            PrimitivesData.Single_5,
+            PrimitivesData.Single_8,
 
-            Primitives.Single_3,
-            Primitives.Single_6,
-            Primitives.Single_9
+            PrimitivesData.Single_3,
+            PrimitivesData.Single_6,
+            PrimitivesData.Single_9
         );
 
         #endregion
@@ -78,9 +78,9 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly byte[] Fix16_1D_Grad = ArrayHelper.Concat
         (
-            Primitives.Fix16_1,
-            Primitives.Fix16_4,
-            Primitives.Fix16_7
+            PrimitivesData.Fix16_1,
+            PrimitivesData.Fix16_4,
+            PrimitivesData.Fix16_7
         );
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly byte[] Single_1D_Grad = ArrayHelper.Concat
         (
-            Primitives.Single_1,
-            Primitives.Single_4,
-            Primitives.Single_7
+            PrimitivesData.Single_1,
+            PrimitivesData.Single_4,
+            PrimitivesData.Single_7
         );
 
         #endregion

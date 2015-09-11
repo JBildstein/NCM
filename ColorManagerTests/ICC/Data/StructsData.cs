@@ -3,7 +3,7 @@ using ColorManager.ICC;
 
 namespace ColorManagerTests.ICC.Data
 {
-    public static class Structs
+    public static class StructsData
     {
         #region DateTime
 
@@ -105,53 +105,53 @@ namespace ColorManagerTests.ICC.Data
 
         #region XYZNumber
 
-        public static readonly XYZNumber XYZNumber_ValMin = new XYZNumber(Primitives.Fix16_ValMin, Primitives.Fix16_ValMin, Primitives.Fix16_ValMin);
+        public static readonly XYZNumber XYZNumber_ValMin = new XYZNumber(PrimitivesData.Fix16_ValMin, PrimitivesData.Fix16_ValMin, PrimitivesData.Fix16_ValMin);
         public static readonly XYZNumber XYZNumber_Val0 = new XYZNumber(0, 0, 0);
         public static readonly XYZNumber XYZNumber_Val1 = new XYZNumber(1, 1, 1);
-        public static readonly XYZNumber XYZNumber_ValVar = new XYZNumber(Primitives.Fix16_ValMin, 1, Primitives.Fix16_ValMax);
-        public static readonly XYZNumber XYZNumber_ValMax = new XYZNumber(Primitives.Fix16_ValMax, Primitives.Fix16_ValMax, Primitives.Fix16_ValMax);
+        public static readonly XYZNumber XYZNumber_ValVar = new XYZNumber(PrimitivesData.Fix16_ValMin, 1, PrimitivesData.Fix16_ValMax);
+        public static readonly XYZNumber XYZNumber_ValMax = new XYZNumber(PrimitivesData.Fix16_ValMax, PrimitivesData.Fix16_ValMax, PrimitivesData.Fix16_ValMax);
 
-        public static readonly byte[] XYZNumber_Min = ArrayHelper.Concat(Primitives.Fix16_Min, Primitives.Fix16_Min, Primitives.Fix16_Min);
-        public static readonly byte[] XYZNumber_0 = ArrayHelper.Concat(Primitives.Fix16_0, Primitives.Fix16_0, Primitives.Fix16_0);
-        public static readonly byte[] XYZNumber_1 = ArrayHelper.Concat(Primitives.Fix16_1, Primitives.Fix16_1, Primitives.Fix16_1);
-        public static readonly byte[] XYZNumber_Var = ArrayHelper.Concat(Primitives.Fix16_Min, Primitives.Fix16_1, Primitives.Fix16_Max);
-        public static readonly byte[] XYZNumber_Max = ArrayHelper.Concat(Primitives.Fix16_Max, Primitives.Fix16_Max, Primitives.Fix16_Max);
+        public static readonly byte[] XYZNumber_Min = ArrayHelper.Concat(PrimitivesData.Fix16_Min, PrimitivesData.Fix16_Min, PrimitivesData.Fix16_Min);
+        public static readonly byte[] XYZNumber_0 = ArrayHelper.Concat(PrimitivesData.Fix16_0, PrimitivesData.Fix16_0, PrimitivesData.Fix16_0);
+        public static readonly byte[] XYZNumber_1 = ArrayHelper.Concat(PrimitivesData.Fix16_1, PrimitivesData.Fix16_1, PrimitivesData.Fix16_1);
+        public static readonly byte[] XYZNumber_Var = ArrayHelper.Concat(PrimitivesData.Fix16_Min, PrimitivesData.Fix16_1, PrimitivesData.Fix16_Max);
+        public static readonly byte[] XYZNumber_Max = ArrayHelper.Concat(PrimitivesData.Fix16_Max, PrimitivesData.Fix16_Max, PrimitivesData.Fix16_Max);
 
         #endregion
 
         #region ProfileID
 
         public static readonly ProfileID ProfileID_ValMin = new ProfileID(0, 0, 0, 0);
-        public static readonly ProfileID ProfileID_ValRand = new ProfileID(Primitives.UInt32_ValRand1, Primitives.UInt32_ValRand2, Primitives.UInt32_ValRand3, Primitives.UInt32_ValRand4);
+        public static readonly ProfileID ProfileID_ValRand = new ProfileID(PrimitivesData.UInt32_ValRand1, PrimitivesData.UInt32_ValRand2, PrimitivesData.UInt32_ValRand3, PrimitivesData.UInt32_ValRand4);
         public static readonly ProfileID ProfileID_ValMax = new ProfileID(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue);
 
-        public static readonly byte[] ProfileID_Min = ArrayHelper.Concat(Primitives.UInt32_0, Primitives.UInt32_0, Primitives.UInt32_0, Primitives.UInt32_0);
-        public static readonly byte[] ProfileID_Rand = ArrayHelper.Concat(Primitives.UInt32_Rand1, Primitives.UInt32_Rand2, Primitives.UInt32_Rand3, Primitives.UInt32_Rand4);
-        public static readonly byte[] ProfileID_Max = ArrayHelper.Concat(Primitives.UInt32_Max, Primitives.UInt32_Max, Primitives.UInt32_Max, Primitives.UInt32_Max);
+        public static readonly byte[] ProfileID_Min = ArrayHelper.Concat(PrimitivesData.UInt32_0, PrimitivesData.UInt32_0, PrimitivesData.UInt32_0, PrimitivesData.UInt32_0);
+        public static readonly byte[] ProfileID_Rand = ArrayHelper.Concat(PrimitivesData.UInt32_Rand1, PrimitivesData.UInt32_Rand2, PrimitivesData.UInt32_Rand3, PrimitivesData.UInt32_Rand4);
+        public static readonly byte[] ProfileID_Max = ArrayHelper.Concat(PrimitivesData.UInt32_Max, PrimitivesData.UInt32_Max, PrimitivesData.UInt32_Max, PrimitivesData.UInt32_Max);
 
         #endregion
 
         #region PositionNumber
 
         public static readonly PositionNumber PositionNumber_ValMin = new PositionNumber(0, 0);
-        public static readonly PositionNumber PositionNumber_ValRand = new PositionNumber(Primitives.UInt32_ValRand1, Primitives.UInt32_ValRand2);
+        public static readonly PositionNumber PositionNumber_ValRand = new PositionNumber(PrimitivesData.UInt32_ValRand1, PrimitivesData.UInt32_ValRand2);
         public static readonly PositionNumber PositionNumber_ValMax = new PositionNumber(uint.MaxValue, uint.MaxValue);
 
-        public static readonly byte[] PositionNumber_Min = ArrayHelper.Concat(Primitives.UInt32_0, Primitives.UInt32_0);
-        public static readonly byte[] PositionNumber_Rand = ArrayHelper.Concat(Primitives.UInt32_Rand1, Primitives.UInt32_Rand2);
-        public static readonly byte[] PositionNumber_Max = ArrayHelper.Concat(Primitives.UInt32_Max, Primitives.UInt32_Max);
+        public static readonly byte[] PositionNumber_Min = ArrayHelper.Concat(PrimitivesData.UInt32_0, PrimitivesData.UInt32_0);
+        public static readonly byte[] PositionNumber_Rand = ArrayHelper.Concat(PrimitivesData.UInt32_Rand1, PrimitivesData.UInt32_Rand2);
+        public static readonly byte[] PositionNumber_Max = ArrayHelper.Concat(PrimitivesData.UInt32_Max, PrimitivesData.UInt32_Max);
 
         #endregion
 
         #region ResponseNumber
 
-        public static readonly ResponseNumber ResponseNumber_ValMin = new ResponseNumber(0, Primitives.Fix16_ValMin);
+        public static readonly ResponseNumber ResponseNumber_ValMin = new ResponseNumber(0, PrimitivesData.Fix16_ValMin);
         public static readonly ResponseNumber ResponseNumber_Val1 = new ResponseNumber(1, 1);
-        public static readonly ResponseNumber ResponseNumber_ValMax = new ResponseNumber(ushort.MaxValue, Primitives.Fix16_ValMax);
+        public static readonly ResponseNumber ResponseNumber_ValMax = new ResponseNumber(ushort.MaxValue, PrimitivesData.Fix16_ValMax);
 
-        public static readonly byte[] ResponseNumber_Min = ArrayHelper.Concat(Primitives.UInt16_0, Primitives.Fix16_Min);
-        public static readonly byte[] ResponseNumber_1 = ArrayHelper.Concat(Primitives.UInt16_1, Primitives.Fix16_1);
-        public static readonly byte[] ResponseNumber_Max = ArrayHelper.Concat(Primitives.UInt16_Max, Primitives.Fix16_Max);
+        public static readonly byte[] ResponseNumber_Min = ArrayHelper.Concat(PrimitivesData.UInt16_0, PrimitivesData.Fix16_Min);
+        public static readonly byte[] ResponseNumber_1 = ArrayHelper.Concat(PrimitivesData.UInt16_1, PrimitivesData.Fix16_1);
+        public static readonly byte[] ResponseNumber_Max = ArrayHelper.Concat(PrimitivesData.UInt16_Max, PrimitivesData.Fix16_Max);
 
         #endregion
 

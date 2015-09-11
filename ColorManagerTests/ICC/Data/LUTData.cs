@@ -44,17 +44,17 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly byte[] LUT16_Grad = ArrayHelper.Concat
         (
-            Primitives.UInt16_1,
-            Primitives.UInt16_2,
-            Primitives.UInt16_3,
-            Primitives.UInt16_4,
-            Primitives.UInt16_5,
-            Primitives.UInt16_6,
-            Primitives.UInt16_7,
-            Primitives.UInt16_8,
-            Primitives.UInt16_9,
-            Primitives.UInt16_32768,
-            Primitives.UInt16_Max
+            PrimitivesData.UInt16_1,
+            PrimitivesData.UInt16_2,
+            PrimitivesData.UInt16_3,
+            PrimitivesData.UInt16_4,
+            PrimitivesData.UInt16_5,
+            PrimitivesData.UInt16_6,
+            PrimitivesData.UInt16_7,
+            PrimitivesData.UInt16_8,
+            PrimitivesData.UInt16_9,
+            PrimitivesData.UInt16_32768,
+            PrimitivesData.UInt16_Max
         );
 
         #endregion
@@ -173,17 +173,17 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly byte[] CLUTf32_Grad = ArrayHelper.Concat
         (
-            Primitives.Single_1, Primitives.Single_2, Primitives.Single_3,
-            Primitives.Single_4, Primitives.Single_5, Primitives.Single_6,
-            Primitives.Single_7, Primitives.Single_8, Primitives.Single_9,
+            PrimitivesData.Single_1, PrimitivesData.Single_2, PrimitivesData.Single_3,
+            PrimitivesData.Single_4, PrimitivesData.Single_5, PrimitivesData.Single_6,
+            PrimitivesData.Single_7, PrimitivesData.Single_8, PrimitivesData.Single_9,
 
-            Primitives.Single_1, Primitives.Single_2, Primitives.Single_3,
-            Primitives.Single_4, Primitives.Single_5, Primitives.Single_6,
-            Primitives.Single_7, Primitives.Single_8, Primitives.Single_9,
+            PrimitivesData.Single_1, PrimitivesData.Single_2, PrimitivesData.Single_3,
+            PrimitivesData.Single_4, PrimitivesData.Single_5, PrimitivesData.Single_6,
+            PrimitivesData.Single_7, PrimitivesData.Single_8, PrimitivesData.Single_9,
 
-            Primitives.Single_1, Primitives.Single_2, Primitives.Single_3,
-            Primitives.Single_4, Primitives.Single_5, Primitives.Single_6,
-            Primitives.Single_7, Primitives.Single_8, Primitives.Single_9
+            PrimitivesData.Single_1, PrimitivesData.Single_2, PrimitivesData.Single_3,
+            PrimitivesData.Single_4, PrimitivesData.Single_5, PrimitivesData.Single_6,
+            PrimitivesData.Single_7, PrimitivesData.Single_8, PrimitivesData.Single_9
         );
 
         #endregion

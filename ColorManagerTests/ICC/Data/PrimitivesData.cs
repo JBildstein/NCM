@@ -1,7 +1,7 @@
 ﻿
 namespace ColorManagerTests.ICC.Data
 {
-    public static class Primitives
+    public static class PrimitivesData
     {
         #region UInt16
 
