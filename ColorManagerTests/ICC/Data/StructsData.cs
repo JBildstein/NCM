@@ -108,13 +108,17 @@ namespace ColorManagerTests.ICC.Data
         public static readonly XYZNumber XYZNumber_ValMin = new XYZNumber(PrimitivesData.Fix16_ValMin, PrimitivesData.Fix16_ValMin, PrimitivesData.Fix16_ValMin);
         public static readonly XYZNumber XYZNumber_Val0 = new XYZNumber(0, 0, 0);
         public static readonly XYZNumber XYZNumber_Val1 = new XYZNumber(1, 1, 1);
-        public static readonly XYZNumber XYZNumber_ValVar = new XYZNumber(PrimitivesData.Fix16_ValMin, 1, PrimitivesData.Fix16_ValMax);
+        public static readonly XYZNumber XYZNumber_ValVar1 = new XYZNumber(1, 2, 3);
+        public static readonly XYZNumber XYZNumber_ValVar2 = new XYZNumber(4, 5, 6);
+        public static readonly XYZNumber XYZNumber_ValVar3 = new XYZNumber(7, 8, 9);
         public static readonly XYZNumber XYZNumber_ValMax = new XYZNumber(PrimitivesData.Fix16_ValMax, PrimitivesData.Fix16_ValMax, PrimitivesData.Fix16_ValMax);
 
         public static readonly byte[] XYZNumber_Min = ArrayHelper.Concat(PrimitivesData.Fix16_Min, PrimitivesData.Fix16_Min, PrimitivesData.Fix16_Min);
         public static readonly byte[] XYZNumber_0 = ArrayHelper.Concat(PrimitivesData.Fix16_0, PrimitivesData.Fix16_0, PrimitivesData.Fix16_0);
         public static readonly byte[] XYZNumber_1 = ArrayHelper.Concat(PrimitivesData.Fix16_1, PrimitivesData.Fix16_1, PrimitivesData.Fix16_1);
-        public static readonly byte[] XYZNumber_Var = ArrayHelper.Concat(PrimitivesData.Fix16_Min, PrimitivesData.Fix16_1, PrimitivesData.Fix16_Max);
+        public static readonly byte[] XYZNumber_Var1 = ArrayHelper.Concat(PrimitivesData.Fix16_1, PrimitivesData.Fix16_2, PrimitivesData.Fix16_3);
+        public static readonly byte[] XYZNumber_Var2 = ArrayHelper.Concat(PrimitivesData.Fix16_4, PrimitivesData.Fix16_5, PrimitivesData.Fix16_6);
+        public static readonly byte[] XYZNumber_Var3 = ArrayHelper.Concat(PrimitivesData.Fix16_7, PrimitivesData.Fix16_8, PrimitivesData.Fix16_9);
         public static readonly byte[] XYZNumber_Max = ArrayHelper.Concat(PrimitivesData.Fix16_Max, PrimitivesData.Fix16_Max, PrimitivesData.Fix16_Max);
 
         #endregion
@@ -147,10 +151,26 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly ResponseNumber ResponseNumber_ValMin = new ResponseNumber(0, PrimitivesData.Fix16_ValMin);
         public static readonly ResponseNumber ResponseNumber_Val1 = new ResponseNumber(1, 1);
+        public static readonly ResponseNumber ResponseNumber_Val2 = new ResponseNumber(2, 2);
+        public static readonly ResponseNumber ResponseNumber_Val3 = new ResponseNumber(3, 3);
+        public static readonly ResponseNumber ResponseNumber_Val4 = new ResponseNumber(4, 4);
+        public static readonly ResponseNumber ResponseNumber_Val5 = new ResponseNumber(5, 5);
+        public static readonly ResponseNumber ResponseNumber_Val6 = new ResponseNumber(6, 6);
+        public static readonly ResponseNumber ResponseNumber_Val7 = new ResponseNumber(7, 7);
+        public static readonly ResponseNumber ResponseNumber_Val8 = new ResponseNumber(8, 8);
+        public static readonly ResponseNumber ResponseNumber_Val9 = new ResponseNumber(9, 9);
         public static readonly ResponseNumber ResponseNumber_ValMax = new ResponseNumber(ushort.MaxValue, PrimitivesData.Fix16_ValMax);
 
         public static readonly byte[] ResponseNumber_Min = ArrayHelper.Concat(PrimitivesData.UInt16_0, PrimitivesData.Fix16_Min);
         public static readonly byte[] ResponseNumber_1 = ArrayHelper.Concat(PrimitivesData.UInt16_1, PrimitivesData.Fix16_1);
+        public static readonly byte[] ResponseNumber_2 = ArrayHelper.Concat(PrimitivesData.UInt16_2, PrimitivesData.Fix16_2);
+        public static readonly byte[] ResponseNumber_3 = ArrayHelper.Concat(PrimitivesData.UInt16_3, PrimitivesData.Fix16_3);
+        public static readonly byte[] ResponseNumber_4 = ArrayHelper.Concat(PrimitivesData.UInt16_4, PrimitivesData.Fix16_4);
+        public static readonly byte[] ResponseNumber_5 = ArrayHelper.Concat(PrimitivesData.UInt16_5, PrimitivesData.Fix16_5);
+        public static readonly byte[] ResponseNumber_6 = ArrayHelper.Concat(PrimitivesData.UInt16_6, PrimitivesData.Fix16_6);
+        public static readonly byte[] ResponseNumber_7 = ArrayHelper.Concat(PrimitivesData.UInt16_7, PrimitivesData.Fix16_7);
+        public static readonly byte[] ResponseNumber_8 = ArrayHelper.Concat(PrimitivesData.UInt16_8, PrimitivesData.Fix16_8);
+        public static readonly byte[] ResponseNumber_9 = ArrayHelper.Concat(PrimitivesData.UInt16_9, PrimitivesData.Fix16_9);
         public static readonly byte[] ResponseNumber_Max = ArrayHelper.Concat(PrimitivesData.UInt16_Max, PrimitivesData.Fix16_Max);
 
         #endregion
