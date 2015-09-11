@@ -33,6 +33,14 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly byte[] UInt32_0 = { 0x00, 0x00, 0x00, 0x00 };
         public static readonly byte[] UInt32_1 = { 0x00, 0x00, 0x00, 0x01 };
+        public static readonly byte[] UInt32_2 = { 0x00, 0x00, 0x00, 0x02 };
+        public static readonly byte[] UInt32_3 = { 0x00, 0x00, 0x00, 0x03 };
+        public static readonly byte[] UInt32_4 = { 0x00, 0x00, 0x00, 0x04 };
+        public static readonly byte[] UInt32_5 = { 0x00, 0x00, 0x00, 0x05 };
+        public static readonly byte[] UInt32_6 = { 0x00, 0x00, 0x00, 0x06 };
+        public static readonly byte[] UInt32_7 = { 0x00, 0x00, 0x00, 0x07 };
+        public static readonly byte[] UInt32_8 = { 0x00, 0x00, 0x00, 0x08 };
+        public static readonly byte[] UInt32_9 = { 0x00, 0x00, 0x00, 0x09 };
         public static readonly byte[] UInt32_Max = { 0xFF, 0xFF, 0xFF, 0xFF };
 
 
