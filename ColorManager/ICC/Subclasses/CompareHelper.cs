@@ -346,7 +346,7 @@ namespace ColorManager.ICC
                 {
                     for (int j = 0; j < a[i].Length; j++)
                     {
-                        if (!Equals(ap[i], bp[i])) return false;
+                        if (!Compare(ap[i], bp[i])) return false;
                     }
                 }
             }
@@ -365,7 +365,7 @@ namespace ColorManager.ICC
                 {
                     for (int j = 0; j < a[i].Length; j++)
                     {
-                        if (!Equals(ap[i], bp[i])) return false;
+                        if (!Compare(ap[i], bp[i])) return false;
                     }
                 }
             }
@@ -384,7 +384,7 @@ namespace ColorManager.ICC
                 {
                     for (int j = 0; j < a[i].Length; j++)
                     {
-                        if (!Equals(ap[i], bp[i])) return false;
+                        if (!Compare(ap[i], bp[i])) return false;
                     }
                 }
             }
@@ -510,7 +510,7 @@ namespace ColorManager.ICC
             fixed (float* ap = a)
             fixed (float* bp = b)
             {
-                for (int i = 0; i < a.Length; i++) { if (!Equals(ap[i], bp[i])) return false; }
+                for (int i = 0; i < a.Length; i++) { if (!Compare(ap[i], bp[i])) return false; }
             }
             return true;
         }
@@ -521,7 +521,7 @@ namespace ColorManager.ICC
             fixed (double* ap = a)
             fixed (double* bp = b)
             {
-                for (int i = 0; i < a.Length; i++) { if (!Equals(ap[i], bp[i])) return false; }
+                for (int i = 0; i < a.Length; i++) { if (!Compare(ap[i], bp[i])) return false; }
             }
             return true;
         }
@@ -532,7 +532,7 @@ namespace ColorManager.ICC
             fixed (decimal* ap = a)
             fixed (decimal* bp = b)
             {
-                for (int i = 0; i < a.Length; i++) { if (!Equals(ap[i], bp[i])) return false; }
+                for (int i = 0; i < a.Length; i++) { if (!Compare(ap[i], bp[i])) return false; }
             }
             return true;
         }
