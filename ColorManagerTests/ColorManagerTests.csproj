@@ -93,10 +93,12 @@
     <Compile Include="ClassImplementations\TestChromaticAdaption.cs" />
     <Compile Include="ClassImplementations\TestConversionPath.cs" />
     <Compile Include="ClassImplementations\TestWhitepoint.cs" />
-    <Compile Include="ICC\Data\LUT.cs" />
-    <Compile Include="ICC\Data\Matrix.cs" />
-    <Compile Include="ICC\Data\Primitives.cs" />
-    <Compile Include="ICC\Data\Structs.cs" />
+    <Compile Include="ICC\Data\CurveData.cs" />
+    <Compile Include="ICC\Data\MultiProcessElementData.cs" />
+    <Compile Include="ICC\Data\LUTData.cs" />
+    <Compile Include="ICC\Data\MatrixData.cs" />
+    <Compile Include="ICC\Data\PrimitivesData.cs" />
+    <Compile Include="ICC\Data\StructsData.cs" />
     <Compile Include="ICC\ICCDataReaderTest.cs" />
     <Compile Include="ICC\ICCDataWriterTest.cs" />
     <Compile Include="ICC\ICCProfileReaderTest.cs" />

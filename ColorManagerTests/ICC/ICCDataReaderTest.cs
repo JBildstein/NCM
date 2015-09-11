@@ -12,15 +12,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt16()
         {
-            var reader = new ICCDataReader(Primitives.UInt16_0);
+            var reader = new ICCDataReader(PrimitivesData.UInt16_0);
             ushort value = reader.ReadUInt16();
             Assert.IsTrue(value == ushort.MinValue, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.UInt16_1);
+            reader = new ICCDataReader(PrimitivesData.UInt16_1);
             value = reader.ReadUInt16();
             Assert.IsTrue(value == 1, "Read 1");
             
-            reader = new ICCDataReader(Primitives.UInt16_Max);
+            reader = new ICCDataReader(PrimitivesData.UInt16_Max);
             value = reader.ReadUInt16();
             Assert.IsTrue(value == ushort.MaxValue, "Read Max");
         }
@@ -28,19 +28,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt16()
         {
-            var reader = new ICCDataReader(Primitives.Int16_Min);
+            var reader = new ICCDataReader(PrimitivesData.Int16_Min);
             short value = reader.ReadInt16();
             Assert.IsTrue(value == short.MinValue, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Int16_0);
+            reader = new ICCDataReader(PrimitivesData.Int16_0);
             value = reader.ReadInt16();
             Assert.IsTrue(value == 0, "Read Zero");
 
-            reader = new ICCDataReader(Primitives.Int16_1);
+            reader = new ICCDataReader(PrimitivesData.Int16_1);
             value = reader.ReadInt16();
             Assert.IsTrue(value == 1, "Read One");
 
-            reader = new ICCDataReader(Primitives.Int16_Max);
+            reader = new ICCDataReader(PrimitivesData.Int16_Max);
             value = reader.ReadInt16();
             Assert.IsTrue(value == short.MaxValue, "Read Max");
         }
@@ -48,15 +48,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt32()
         {
-            var reader = new ICCDataReader(Primitives.UInt32_0);
+            var reader = new ICCDataReader(PrimitivesData.UInt32_0);
             uint value = reader.ReadUInt32();
             Assert.IsTrue(value == uint.MinValue, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.UInt32_1);
+            reader = new ICCDataReader(PrimitivesData.UInt32_1);
             value = reader.ReadUInt32();
             Assert.IsTrue(value == 1, "Read One");
             
-            reader = new ICCDataReader(Primitives.UInt32_Max);
+            reader = new ICCDataReader(PrimitivesData.UInt32_Max);
             value = reader.ReadUInt32();
             Assert.IsTrue(value == uint.MaxValue, "Read Max");
         }
@@ -64,19 +64,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt32()
         {
-            var reader = new ICCDataReader(Primitives.Int32_Min);
+            var reader = new ICCDataReader(PrimitivesData.Int32_Min);
             int value = reader.ReadInt32();
             Assert.IsTrue(value == int.MinValue, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Int32_0);
+            reader = new ICCDataReader(PrimitivesData.Int32_0);
             value = reader.ReadInt32();
             Assert.IsTrue(value == 0, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.Int32_1);
+            reader = new ICCDataReader(PrimitivesData.Int32_1);
             value = reader.ReadInt32();
             Assert.IsTrue(value == 1, "Read One");
             
-            reader = new ICCDataReader(Primitives.Int32_Max);
+            reader = new ICCDataReader(PrimitivesData.Int32_Max);
             value = reader.ReadInt32();
             Assert.IsTrue(value == int.MaxValue, "Read Max");
         }
@@ -84,15 +84,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt64()
         {
-            var reader = new ICCDataReader(Primitives.UInt64_0);
+            var reader = new ICCDataReader(PrimitivesData.UInt64_0);
             ulong value = reader.ReadUInt64();
             Assert.IsTrue(value == ulong.MinValue, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.UInt64_1);
+            reader = new ICCDataReader(PrimitivesData.UInt64_1);
             value = reader.ReadUInt64();
             Assert.IsTrue(value == 1, "Read One");
             
-            reader = new ICCDataReader(Primitives.UInt64_Max);
+            reader = new ICCDataReader(PrimitivesData.UInt64_Max);
             value = reader.ReadUInt64();
             Assert.IsTrue(value == ulong.MaxValue, "Read Max");
         }
@@ -100,19 +100,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt64()
         {
-            var reader = new ICCDataReader(Primitives.Int64_Min);
+            var reader = new ICCDataReader(PrimitivesData.Int64_Min);
             long value = reader.ReadInt64();
             Assert.IsTrue(value == long.MinValue, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Int64_0);
+            reader = new ICCDataReader(PrimitivesData.Int64_0);
             value = reader.ReadInt64();
             Assert.IsTrue(value == 0, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.Int64_1);
+            reader = new ICCDataReader(PrimitivesData.Int64_1);
             value = reader.ReadInt64();
             Assert.IsTrue(value == 1, "Read One");
 
-            reader = new ICCDataReader(Primitives.Int64_Max);
+            reader = new ICCDataReader(PrimitivesData.Int64_Max);
             value = reader.ReadInt64();
             Assert.IsTrue(value == long.MaxValue, "Read Max");
         }
@@ -120,19 +120,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadSingle()
         {
-            var reader = new ICCDataReader(Primitives.Single_Min);
+            var reader = new ICCDataReader(PrimitivesData.Single_Min);
             float value = reader.ReadSingle();
             Assert.AreEqual(float.MinValue, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Single_0);
+            reader = new ICCDataReader(PrimitivesData.Single_0);
             value = reader.ReadSingle();
             Assert.AreEqual(0f, value, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.Single_1);
+            reader = new ICCDataReader(PrimitivesData.Single_1);
             value = reader.ReadSingle();
             Assert.AreEqual(1f, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.Single_Max);
+            reader = new ICCDataReader(PrimitivesData.Single_Max);
             value = reader.ReadSingle();
             Assert.AreEqual(float.MaxValue, value, "Read Max");
         }
@@ -140,19 +140,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadDouble()
         {
-            var reader = new ICCDataReader(Primitives.Double_Min);
+            var reader = new ICCDataReader(PrimitivesData.Double_Min);
             double value = reader.ReadDouble();
             Assert.AreEqual(double.MinValue, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Double_0);
+            reader = new ICCDataReader(PrimitivesData.Double_0);
             value = reader.ReadDouble();
             Assert.AreEqual(0d, value, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.Double_1);
+            reader = new ICCDataReader(PrimitivesData.Double_1);
             value = reader.ReadDouble();
             Assert.AreEqual(1d, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.Double_Max);
+            reader = new ICCDataReader(PrimitivesData.Double_Max);
             value = reader.ReadDouble();
             Assert.AreEqual(double.MaxValue, value, "Read Max");
         }
@@ -160,69 +160,69 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadFix16()
         {
-            var reader = new ICCDataReader(Primitives.Fix16_Min);
+            var reader = new ICCDataReader(PrimitivesData.Fix16_Min);
             double value = reader.ReadFix16();
-            Assert.AreEqual(Primitives.Fix16_ValMin, value, "Read Min");
+            Assert.AreEqual(PrimitivesData.Fix16_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.Fix16_0);
+            reader = new ICCDataReader(PrimitivesData.Fix16_0);
             value = reader.ReadFix16();
             Assert.AreEqual(0, value, "Read Zero");
             
-            reader = new ICCDataReader(Primitives.Fix16_1);
+            reader = new ICCDataReader(PrimitivesData.Fix16_1);
             value = reader.ReadFix16();
             Assert.AreEqual(1, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.Fix16_Max);
+            reader = new ICCDataReader(PrimitivesData.Fix16_Max);
             value = reader.ReadFix16();
-            Assert.AreEqual(Primitives.Fix16_ValMax, value, "Read Max");
+            Assert.AreEqual(PrimitivesData.Fix16_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadUFix16()
         {
-            var reader = new ICCDataReader(Primitives.UFix16_0);
+            var reader = new ICCDataReader(PrimitivesData.UFix16_0);
             double value = reader.ReadUFix16();
-            Assert.AreEqual(Primitives.UFix16_ValMin, value, "Read Min");
+            Assert.AreEqual(PrimitivesData.UFix16_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.UFix16_1);
+            reader = new ICCDataReader(PrimitivesData.UFix16_1);
             value = reader.ReadUFix16();
             Assert.AreEqual(1, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.UFix16_Max);
+            reader = new ICCDataReader(PrimitivesData.UFix16_Max);
             value = reader.ReadUFix16();
-            Assert.AreEqual(Primitives.UFix16_ValMax, value, "Read Max");
+            Assert.AreEqual(PrimitivesData.UFix16_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadU1Fix15()
         {
-            var reader = new ICCDataReader(Primitives.U1Fix15_0);
+            var reader = new ICCDataReader(PrimitivesData.U1Fix15_0);
             double value = reader.ReadU1Fix15();
-            Assert.AreEqual(Primitives.U1Fix15_ValMin, value, "Read Min");
+            Assert.AreEqual(PrimitivesData.U1Fix15_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.U1Fix15_1);
+            reader = new ICCDataReader(PrimitivesData.U1Fix15_1);
             value = reader.ReadU1Fix15();
             Assert.AreEqual(1, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.U1Fix15_Max);
+            reader = new ICCDataReader(PrimitivesData.U1Fix15_Max);
             value = reader.ReadU1Fix15();
-            Assert.AreEqual(Primitives.U1Fix15_ValMax, value, "Read Max");
+            Assert.AreEqual(PrimitivesData.U1Fix15_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadUFix8()
         {
-            var reader = new ICCDataReader(Primitives.UFix8_0);
+            var reader = new ICCDataReader(PrimitivesData.UFix8_0);
             double value = reader.ReadUFix8();
-            Assert.AreEqual(Primitives.UFix8_ValMin, value, "Read Min");
+            Assert.AreEqual(PrimitivesData.UFix8_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Primitives.UFix8_1);
+            reader = new ICCDataReader(PrimitivesData.UFix8_1);
             value = reader.ReadUFix8();
             Assert.AreEqual(1, value, "Read One");
             
-            reader = new ICCDataReader(Primitives.UFix8_Max);
+            reader = new ICCDataReader(PrimitivesData.UFix8_Max);
             value = reader.ReadUFix8();
-            Assert.AreEqual(Primitives.UFix8_ValMax, value, "Read Max");
+            Assert.AreEqual(PrimitivesData.UFix8_ValMax, value, "Read Max");
         }
         
         [TestMethod]
@@ -279,15 +279,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadDateTime()
         {
-            var reader = new ICCDataReader(Structs.DateTime_Min);
+            var reader = new ICCDataReader(StructsData.DateTime_Min);
             var value = reader.ReadDateTime();
-            Assert.AreEqual(Structs.DateTime_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.DateTime_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.DateTime_Max);
+            reader = new ICCDataReader(StructsData.DateTime_Max);
             value = reader.ReadDateTime();
-            Assert.AreEqual(Structs.DateTime_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.DateTime_ValMax, value, "Read Max");
             
-            reader = new ICCDataReader(Structs.DateTime_Invalid);
+            reader = new ICCDataReader(StructsData.DateTime_Invalid);
             try
             {
                 value = reader.ReadDateTime();
@@ -299,149 +299,149 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadVersionNumber()
         {
-            var reader = new ICCDataReader(Structs.VersionNumber_Min);
+            var reader = new ICCDataReader(StructsData.VersionNumber_Min);
             var value = reader.ReadVersionNumber();
-            Assert.AreEqual(Structs.VersionNumber_ValMin, value, "Read Min");
-            Assert.AreEqual(Structs.VersionNumber_StrMin, value.ToString(), "Read Min ToString");
+            Assert.AreEqual(StructsData.VersionNumber_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.VersionNumber_StrMin, value.ToString(), "Read Min ToString");
             
-            reader = new ICCDataReader(Structs.VersionNumber_211);
+            reader = new ICCDataReader(StructsData.VersionNumber_211);
             value = reader.ReadVersionNumber();
-            Assert.AreEqual(Structs.VersionNumber_Val211, value, "Read Version 2.1.1");
-            Assert.AreEqual(Structs.VersionNumber_Str211, value.ToString(), "Read Version 2.1.1 ToString");
+            Assert.AreEqual(StructsData.VersionNumber_Val211, value, "Read Version 2.1.1");
+            Assert.AreEqual(StructsData.VersionNumber_Str211, value.ToString(), "Read Version 2.1.1 ToString");
 
-            reader = new ICCDataReader(Structs.VersionNumber_430);
+            reader = new ICCDataReader(StructsData.VersionNumber_430);
             value = reader.ReadVersionNumber();
-            Assert.AreEqual(Structs.VersionNumber_Val430, value, "Read Version 4.3");
-            Assert.AreEqual(Structs.VersionNumber_Str430, value.ToString(), "Read Version 4.3 ToString");
+            Assert.AreEqual(StructsData.VersionNumber_Val430, value, "Read Version 4.3");
+            Assert.AreEqual(StructsData.VersionNumber_Str430, value.ToString(), "Read Version 4.3 ToString");
             
-            reader = new ICCDataReader(Structs.VersionNumber_Max);
+            reader = new ICCDataReader(StructsData.VersionNumber_Max);
             value = reader.ReadVersionNumber();
-            Assert.AreEqual(Structs.VersionNumber_ValMax, value, "Read Max");
-            Assert.AreEqual(Structs.VersionNumber_StrMax, value.ToString(), "Read Max ToString");
+            Assert.AreEqual(StructsData.VersionNumber_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.VersionNumber_StrMax, value.ToString(), "Read Max ToString");
         }
 
         [TestMethod]
         public void ReadProfileFlag()
         {
-            var reader = new ICCDataReader(Structs.ProfileFlag_Min);
+            var reader = new ICCDataReader(StructsData.ProfileFlag_Min);
             var value = reader.ReadProfileFlag();
-            Assert.AreEqual(Structs.ProfileFlag_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.ProfileFlag_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.ProfileFlag_Embedded);
+            reader = new ICCDataReader(StructsData.ProfileFlag_Embedded);
             value = reader.ReadProfileFlag();
-            Assert.AreEqual(Structs.ProfileFlag_ValEmbedded, value, "Read Flag: Embedded");
+            Assert.AreEqual(StructsData.ProfileFlag_ValEmbedded, value, "Read Flag: Embedded");
             
-            reader = new ICCDataReader(Structs.ProfileFlag_NotIndependent);
+            reader = new ICCDataReader(StructsData.ProfileFlag_NotIndependent);
             value = reader.ReadProfileFlag();
-            Assert.AreEqual(Structs.ProfileFlag_ValNotIndependent, value, "Read Flag: Not Independent");
+            Assert.AreEqual(StructsData.ProfileFlag_ValNotIndependent, value, "Read Flag: Not Independent");
             
-            reader = new ICCDataReader(Structs.ProfileFlag_Max);
+            reader = new ICCDataReader(StructsData.ProfileFlag_Max);
             value = reader.ReadProfileFlag();
-            Assert.AreEqual(Structs.ProfileFlag_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.ProfileFlag_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadDeviceAttribute()
         {
-            var reader = new ICCDataReader(Structs.DeviceAttribute_Min);
+            var reader = new ICCDataReader(StructsData.DeviceAttribute_Min);
             var value = reader.ReadDeviceAttribute();
-            Assert.AreEqual(Structs.DeviceAttribute_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.DeviceAttribute_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.DeviceAttribute_Var1);
+            reader = new ICCDataReader(StructsData.DeviceAttribute_Var1);
             value = reader.ReadDeviceAttribute();
-            Assert.AreEqual(Structs.DeviceAttribute_ValVar1, value, "Read Var1");
+            Assert.AreEqual(StructsData.DeviceAttribute_ValVar1, value, "Read Var1");
             
-            reader = new ICCDataReader(Structs.DeviceAttribute_Var2);
+            reader = new ICCDataReader(StructsData.DeviceAttribute_Var2);
             value = reader.ReadDeviceAttribute();
-            Assert.AreEqual(Structs.DeviceAttribute_ValVar2, value, "Read Var2");
+            Assert.AreEqual(StructsData.DeviceAttribute_ValVar2, value, "Read Var2");
             
-            reader = new ICCDataReader(Structs.DeviceAttribute_Max);
+            reader = new ICCDataReader(StructsData.DeviceAttribute_Max);
             value = reader.ReadDeviceAttribute();
-            Assert.AreEqual(Structs.DeviceAttribute_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.DeviceAttribute_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadXYZNumber()
         {
-            var reader = new ICCDataReader(Structs.XYZNumber_Min);
+            var reader = new ICCDataReader(StructsData.XYZNumber_Min);
             var value = reader.ReadXYZNumber();
-            Assert.AreEqual(Structs.XYZNumber_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.XYZNumber_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.XYZNumber_0);
+            reader = new ICCDataReader(StructsData.XYZNumber_0);
             value = reader.ReadXYZNumber();
-            Assert.AreEqual(Structs.XYZNumber_Val0, value, "Read Zero");
+            Assert.AreEqual(StructsData.XYZNumber_Val0, value, "Read Zero");
             
-            reader = new ICCDataReader(Structs.XYZNumber_1);
+            reader = new ICCDataReader(StructsData.XYZNumber_1);
             value = reader.ReadXYZNumber();
-            Assert.AreEqual(Structs.XYZNumber_Val1, value, "Read One");
+            Assert.AreEqual(StructsData.XYZNumber_Val1, value, "Read One");
 
-            reader = new ICCDataReader(Structs.XYZNumber_Var);
+            reader = new ICCDataReader(StructsData.XYZNumber_Var1);
             value = reader.ReadXYZNumber();
-            Assert.AreEqual(Structs.XYZNumber_ValVar, value, "Read Var");
+            Assert.AreEqual(StructsData.XYZNumber_ValVar1, value, "Read Var1");
 
-            reader = new ICCDataReader(Structs.XYZNumber_Max);
+            reader = new ICCDataReader(StructsData.XYZNumber_Max);
             value = reader.ReadXYZNumber();
-            Assert.AreEqual(Structs.XYZNumber_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.XYZNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadProfileID()
         {
-            var reader = new ICCDataReader(Structs.ProfileID_Min);
+            var reader = new ICCDataReader(StructsData.ProfileID_Min);
             var value = reader.ReadProfileID();
-            Assert.AreEqual(Structs.ProfileID_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.ProfileID_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.ProfileID_Rand);
+            reader = new ICCDataReader(StructsData.ProfileID_Rand);
             value = reader.ReadProfileID();
-            Assert.AreEqual(Structs.ProfileID_ValRand, value, "Read Random");
+            Assert.AreEqual(StructsData.ProfileID_ValRand, value, "Read Random");
             
-            reader = new ICCDataReader(Structs.ProfileID_Max);
+            reader = new ICCDataReader(StructsData.ProfileID_Max);
             value = reader.ReadProfileID();
-            Assert.AreEqual(Structs.ProfileID_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.ProfileID_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadPositionNumber()
         {
-            var reader = new ICCDataReader(Structs.PositionNumber_Min);
+            var reader = new ICCDataReader(StructsData.PositionNumber_Min);
             var value = reader.ReadPositionNumber();
-            Assert.AreEqual(Structs.PositionNumber_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.PositionNumber_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.PositionNumber_Rand);
+            reader = new ICCDataReader(StructsData.PositionNumber_Rand);
             value = reader.ReadPositionNumber();
-            Assert.AreEqual(Structs.PositionNumber_ValRand, value, "Read Random");
+            Assert.AreEqual(StructsData.PositionNumber_ValRand, value, "Read Random");
             
-            reader = new ICCDataReader(Structs.PositionNumber_Max);
+            reader = new ICCDataReader(StructsData.PositionNumber_Max);
             value = reader.ReadPositionNumber();
-            Assert.AreEqual(Structs.PositionNumber_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.PositionNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadResponseNumber()
         {
-            var reader = new ICCDataReader(Structs.ResponseNumber_Min);
+            var reader = new ICCDataReader(StructsData.ResponseNumber_Min);
             var value = reader.ReadResponseNumber();
-            Assert.AreEqual(Structs.ResponseNumber_ValMin, value, "Read Min");
+            Assert.AreEqual(StructsData.ResponseNumber_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.ResponseNumber_1);
+            reader = new ICCDataReader(StructsData.ResponseNumber_1);
             value = reader.ReadResponseNumber();
-            Assert.AreEqual(Structs.ResponseNumber_Val1, value, "Read One");
+            Assert.AreEqual(StructsData.ResponseNumber_Val1, value, "Read One");
             
-            reader = new ICCDataReader(Structs.ResponseNumber_Max);
+            reader = new ICCDataReader(StructsData.ResponseNumber_Max);
             value = reader.ReadResponseNumber();
-            Assert.AreEqual(Structs.ResponseNumber_ValMax, value, "Read Max");
+            Assert.AreEqual(StructsData.ResponseNumber_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadNamedColor()
         {
-            var reader = new ICCDataReader(Structs.NamedColor_Min);
-            var value = reader.ReadNamedColor(Structs.NamedColor_ValMin.DeviceCoordinates.Length);
-            Assert.AreEqual(Structs.NamedColor_ValMin, value, "Read Min");
+            var reader = new ICCDataReader(StructsData.NamedColor_Min);
+            var value = reader.ReadNamedColor(StructsData.NamedColor_ValMin.DeviceCoordinates.Length);
+            Assert.AreEqual(StructsData.NamedColor_ValMin, value, "Read Min");
             
-            reader = new ICCDataReader(Structs.NamedColor_Max);
-            value = reader.ReadNamedColor(Structs.NamedColor_ValMax.DeviceCoordinates.Length);
-            Assert.AreEqual(Structs.NamedColor_ValMax, value, "Read Max");
+            reader = new ICCDataReader(StructsData.NamedColor_Max);
+            value = reader.ReadNamedColor(StructsData.NamedColor_ValMax.DeviceCoordinates.Length);
+            Assert.AreEqual(StructsData.NamedColor_ValMax, value, "Read Max");
         }
 
         [TestMethod]
@@ -647,25 +647,25 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadMatrix2D()
         {
-            var reader = new ICCDataReader(Matrix.Fix16_2D_Grad);
+            var reader = new ICCDataReader(MatrixData.Fix16_2D_Grad);
             var value = reader.ReadMatrix(3, 3, false);
-            CollectionAssert.AreEqual(Matrix.Fix16_2D_ValGrad, value, "Read Fix16");
+            CollectionAssert.AreEqual(MatrixData.Fix16_2D_ValGrad, value, "Read Fix16");
             
-            reader = new ICCDataReader(Matrix.Single_2D_Grad);
+            reader = new ICCDataReader(MatrixData.Single_2D_Grad);
             value = reader.ReadMatrix(3, 3, true);
-            CollectionAssert.AreEqual(Matrix.Single_2D_ValGrad, value, "Read Single");
+            CollectionAssert.AreEqual(MatrixData.Single_2D_ValGrad, value, "Read Single");
         }
 
         [TestMethod]
         public void ReadMatrix1D()
         {
-            var reader = new ICCDataReader(Matrix.Fix16_1D_Grad);
+            var reader = new ICCDataReader(MatrixData.Fix16_1D_Grad);
             var value = reader.ReadMatrix(3, false);
-            CollectionAssert.AreEqual(Matrix.Fix16_1D_ValGrad, value, "Read Fix16");
+            CollectionAssert.AreEqual(MatrixData.Fix16_1D_ValGrad, value, "Read Fix16");
             
-            reader = new ICCDataReader(Matrix.Single_1D_Grad);
+            reader = new ICCDataReader(MatrixData.Single_1D_Grad);
             value = reader.ReadMatrix(3, true);
-            CollectionAssert.AreEqual(Matrix.Single_1D_ValGrad, value, "Read Single");
+            CollectionAssert.AreEqual(MatrixData.Single_1D_ValGrad, value, "Read Single");
         }
 
         #endregion
@@ -735,25 +735,49 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadMultiProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(MultiProcessElementData.MPE_Matrix);
+            var value = reader.ReadMultiProcessElement();
+            Assert.AreEqual(MultiProcessElementData.MPE_ValMatrix, value, "Read Matrix Element");
+
+            reader = new ICCDataReader(MultiProcessElementData.MPE_CLUT);
+            value = reader.ReadMultiProcessElement();
+            Assert.AreEqual(MultiProcessElementData.MPE_ValCLUT, value, "Read CLUT Element");
+
+            reader = new ICCDataReader(MultiProcessElementData.MPE_Curve);
+            value = reader.ReadMultiProcessElement();
+            Assert.AreEqual(MultiProcessElementData.MPE_ValCurve, value, "Read Curve Element");
+
+            reader = new ICCDataReader(MultiProcessElementData.MPE_bACS);
+            value = reader.ReadMultiProcessElement();
+            Assert.AreEqual(MultiProcessElementData.MPE_ValbACS, value, "Read bACS Element");
+
+            reader = new ICCDataReader(MultiProcessElementData.MPE_eACS);
+            value = reader.ReadMultiProcessElement();
+            Assert.AreEqual(MultiProcessElementData.MPE_ValeACS, value, "Read eACS Element");
         }
 
         [TestMethod]
         public void ReadCurveSetProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(MultiProcessElementData.CurvePE_Grad);
+            var value = reader.ReadCurveSetProcessElement(2, 3);
+            Assert.AreEqual(MultiProcessElementData.CurvePE_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadMatrixProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(MultiProcessElementData.MatrixPE_Grad);
+            var value = reader.ReadMatrixProcessElement(3, 3);
+            Assert.AreEqual(MultiProcessElementData.MatrixPE_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadCLUTProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(MultiProcessElementData.CLUTPE_Grad);
+            var value = reader.ReadCLUTProcessElement(2, 3);
+            Assert.AreEqual(MultiProcessElementData.CLUTPE_ValGrad, value);
         }
 
         #endregion
@@ -763,37 +787,101 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadOneDimensionalCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.OneDimensional_Formula1);
+            var value = reader.ReadOneDimensionalCurve();
+            Assert.AreEqual(CurveData.OneDimensional_ValFormula1, value, "Read Formula1");
+
+            reader = new ICCDataReader(CurveData.OneDimensional_Formula2);
+            value = reader.ReadOneDimensionalCurve();
+            Assert.AreEqual(CurveData.OneDimensional_ValFormula2, value, "Read Formula2");
+
+            reader = new ICCDataReader(CurveData.OneDimensional_Sampled);
+            value = reader.ReadOneDimensionalCurve();
+            Assert.AreEqual(CurveData.OneDimensional_ValSampled, value, "Read Sampled");
         }
 
         [TestMethod]
         public void ReadResponseCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.Response_Grad);
+            var value = reader.ReadResponseCurve(3);
+            Assert.AreEqual(CurveData.Response_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadParametricCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.Parametric_Var1);
+            var value = reader.ReadParametricCurve();
+            Assert.AreEqual(CurveData.Parametric_ValVar1, value, "Read Var1");
+
+            reader = new ICCDataReader(CurveData.Parametric_Var2);
+            value = reader.ReadParametricCurve();
+            Assert.AreEqual(CurveData.Parametric_ValVar2, value, "Read Var2");
+
+            reader = new ICCDataReader(CurveData.Parametric_Var3);
+            value = reader.ReadParametricCurve();
+            Assert.AreEqual(CurveData.Parametric_ValVar3, value, "Read Var3");
+
+            reader = new ICCDataReader(CurveData.Parametric_Var4);
+            value = reader.ReadParametricCurve();
+            Assert.AreEqual(CurveData.Parametric_ValVar4, value, "Read Var4");
+
+            reader = new ICCDataReader(CurveData.Parametric_Var5);
+            value = reader.ReadParametricCurve();
+            Assert.AreEqual(CurveData.Parametric_ValVar5, value, "Read Var5");
         }
 
         [TestMethod]
         public void ReadCurveSegment()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.Segment_Formula1);
+            var value = reader.ReadCurveSegment();
+            Assert.AreEqual(CurveData.Segment_ValFormula1, value, "Read Formula1");
+
+            reader = new ICCDataReader(CurveData.Segment_Formula2);
+            value = reader.ReadCurveSegment();
+            Assert.AreEqual(CurveData.Segment_ValFormula2, value, "Read Formula2");
+
+            reader = new ICCDataReader(CurveData.Segment_Formula3);
+            value = reader.ReadCurveSegment();
+            Assert.AreEqual(CurveData.Segment_ValFormula3, value, "Read Formula3");
+
+            reader = new ICCDataReader(CurveData.Segment_Sampled1);
+            value = reader.ReadCurveSegment();
+            Assert.AreEqual(CurveData.Segment_ValSampled1, value, "Read Sampled1");
+
+            reader = new ICCDataReader(CurveData.Segment_Sampled2);
+            value = reader.ReadCurveSegment();
+            Assert.AreEqual(CurveData.Segment_ValSampled2, value, "Read Sampled2");
         }
 
         [TestMethod]
         public void ReadFormulaCurveElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.Formula_Var1);
+            var value = reader.ReadFormulaCurveElement();
+            Assert.AreEqual(CurveData.Formula_ValVar1, value, "Read Var1");
+
+            reader = new ICCDataReader(CurveData.Formula_Var2);
+            value = reader.ReadFormulaCurveElement();
+            Assert.AreEqual(CurveData.Formula_ValVar2, value, "Read Var2");
+
+            reader = new ICCDataReader(CurveData.Formula_Var3);
+            value = reader.ReadFormulaCurveElement();
+            Assert.AreEqual(CurveData.Formula_ValVar3, value, "Read Var3");
         }
 
         [TestMethod]
         public void ReadSampledCurveElement()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(CurveData.Sampled_Grad1);
+            var value = reader.ReadSampledCurveElement();
+            Assert.AreEqual(CurveData.Sampled_ValGrad1, value, "Read Grad1");
+
+            reader = new ICCDataReader(CurveData.Sampled_Grad2);
+            value = reader.ReadSampledCurveElement();
+            Assert.AreEqual(CurveData.Sampled_ValGrad2, value, "Read Grad2");
         }
 
         #endregion
