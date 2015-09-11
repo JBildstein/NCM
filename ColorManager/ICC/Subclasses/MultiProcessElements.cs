@@ -326,4 +326,130 @@ namespace ColorManager.ICC
             }
         }
     }
+
+    /// <summary>
+    /// A placeholder <see cref="MultiProcessElement"/>
+    /// </summary>
+    public sealed class bACSProcessElement : MultiProcessElement
+    {
+        public bACSProcessElement(int inChCount, int outChCount)
+            : base(MultiProcessElementSignature.bACS, inChCount, outChCount)
+        { }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="bACSProcessElement"/>s are equal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="bACSProcessElement"/></param>
+        /// <param name="b">The second <see cref="bACSProcessElement"/></param>
+        /// <returns>True if the <see cref="bACSProcessElement"/>s are equal; otherwise, false</returns>
+        public static bool operator ==(bACSProcessElement a, bACSProcessElement b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if ((object)a == null || (object)b == null) return false;
+            return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
+                && a.OutputChannelCount == b.OutputChannelCount;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="bACSProcessElement"/>s are unequal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="bACSProcessElement"/></param>
+        /// <param name="b">The second <see cref="bACSProcessElement"/></param>
+        /// <returns>True if the <see cref="bACSProcessElement"/>s are unequal; otherwise, false</returns>
+        public static bool operator !=(bACSProcessElement a, bACSProcessElement b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="bACSProcessElement"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="bACSProcessElement"/></param>
+        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="bACSProcessElement"/>; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            bACSProcessElement c = obj as bACSProcessElement;
+            if ((object)c == null) return false;
+            return c == this;
+        }
+
+        /// <summary>
+        /// Serves as a hash function for a <see cref="bACSProcessElement"/>.
+        /// </summary>
+        /// <returns>A hash code for the current <see cref="bACSProcessElement"/></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash *= 16777619 ^ Signature.GetHashCode();
+                hash *= 16777619 ^ InputChannelCount.GetHashCode();
+                hash *= 16777619 ^ OutputChannelCount.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A placeholder <see cref="MultiProcessElement"/>
+    /// </summary>
+    public sealed class eACSProcessElement : MultiProcessElement
+    {
+        public eACSProcessElement(int inChCount, int outChCount)
+            : base(MultiProcessElementSignature.eACS, inChCount, outChCount)
+        { }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="eACSProcessElement"/>s are equal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="eACSProcessElement"/></param>
+        /// <param name="b">The second <see cref="eACSProcessElement"/></param>
+        /// <returns>True if the <see cref="eACSProcessElement"/>s are equal; otherwise, false</returns>
+        public static bool operator ==(eACSProcessElement a, eACSProcessElement b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if ((object)a == null || (object)b == null) return false;
+            return a.Signature == b.Signature && a.InputChannelCount == b.InputChannelCount
+                && a.OutputChannelCount == b.OutputChannelCount;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="eACSProcessElement"/>s are unequal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="eACSProcessElement"/></param>
+        /// <param name="b">The second <see cref="eACSProcessElement"/></param>
+        /// <returns>True if the <see cref="eACSProcessElement"/>s are unequal; otherwise, false</returns>
+        public static bool operator !=(eACSProcessElement a, eACSProcessElement b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="eACSProcessElement"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="eACSProcessElement"/></param>
+        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="eACSProcessElement"/>; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            eACSProcessElement c = obj as eACSProcessElement;
+            if ((object)c == null) return false;
+            return c == this;
+        }
+
+        /// <summary>
+        /// Serves as a hash function for a <see cref="eACSProcessElement"/>.
+        /// </summary>
+        /// <returns>A hash code for the current <see cref="eACSProcessElement"/></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash *= 16777619 ^ Signature.GetHashCode();
+                hash *= 16777619 ^ InputChannelCount.GetHashCode();
+                hash *= 16777619 ^ OutputChannelCount.GetHashCode();
+                return hash;
+            }
+        }
+    }
 }

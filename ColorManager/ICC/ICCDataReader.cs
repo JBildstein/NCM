@@ -1032,11 +1032,14 @@ namespace ColorManager.ICC
                 case MultiProcessElementSignature.CLUT:
                     return ReadCLUTProcessElement(inChCount, outChCount);
 
+                //Currently just placeholder for future ICC expansion
                 case MultiProcessElementSignature.bACS:
+                    AIndex(8);
+                    return new bACSProcessElement(inChCount, outChCount);
                 case MultiProcessElementSignature.eACS:
                     AIndex(8);
-                    return null;//Those are just placeholders for future ICC expansion
-                    
+                    return new eACSProcessElement(inChCount, outChCount);
+
                 default:
                     throw new CorruptProfileException("MultiProcessElement");
             }
