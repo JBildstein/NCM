@@ -253,7 +253,6 @@ namespace ColorManager.ICC
     /// </summary>
     public enum MultiProcessElementSignature : uint
     {
-        Unknown = 0,
         CurveSet = 0x6D666C74,  //cvst
         Matrix = 0x6D617466,    //matf
         CLUT = 0x636C7574,      //clut

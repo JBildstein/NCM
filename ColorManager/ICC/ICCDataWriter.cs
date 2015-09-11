@@ -1149,8 +1149,7 @@ namespace ColorManager.ICC
                 case MultiProcessElementSignature.bACS:
                 case MultiProcessElementSignature.eACS:
                     return c + WriteEmpty(8);
-
-                case MultiProcessElementSignature.Unknown:
+                    
                 default:
                     throw new CorruptProfileException("MultiProcessElement");
             }

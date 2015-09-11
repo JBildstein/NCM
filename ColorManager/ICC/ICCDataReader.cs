@@ -1036,8 +1036,7 @@ namespace ColorManager.ICC
                 case MultiProcessElementSignature.eACS:
                     AIndex(8);
                     return null;//Those are just placeholders for future ICC expansion
-
-                case MultiProcessElementSignature.Unknown:
+                    
                 default:
                     throw new CorruptProfileException("MultiProcessElement");
             }
