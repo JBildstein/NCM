@@ -920,8 +920,9 @@ namespace ColorManager.ICC
         /// <returns>A CLUT depending on type</returns>
         public CLUT ReadCLUT(int inChCount, int outChCount, bool IsFloat)
         {
-            byte[] gridPointCount = new byte[16];
-            Buffer.BlockCopy(Data, AIndex(16), gridPointCount, 0, 16);
+            //Grid-points are always 16 bytes long but only 0-inChCount are used
+            byte[] gridPointCount = new byte[inChCount];
+            Buffer.BlockCopy(Data, AIndex(16), gridPointCount, 0, inChCount);
 
             if (!IsFloat)
             {
