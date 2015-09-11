@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ColorManager.ICC;
+using ColorManagerTests.ICC.Data;
 
 namespace ColorManagerTests.ICC
 {
@@ -12,18 +13,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt16()
         {
-            var data = new byte[] { 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.UInt16_0);
             ushort value = reader.ReadUInt16();
-            Assert.IsTrue(value == ushort.MinValue, "Read Min");
-
-            data = new byte[] { 0x80, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == ushort.MinValue, "Read Zero");
+            
+            reader = new ICCDataReader(Primitives.UInt16_1);
             value = reader.ReadUInt16();
-            Assert.IsTrue(value == 1 + ushort.MaxValue / 2, "Read Mid");
-
-            data = new byte[] { 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == 1, "Read 1");
+            
+            reader = new ICCDataReader(Primitives.UInt16_Max);
             value = reader.ReadUInt16();
             Assert.IsTrue(value == ushort.MaxValue, "Read Max");
         }
@@ -31,18 +29,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt16()
         {
-            var data = new byte[] { 0x80, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Int16_Min);
             short value = reader.ReadInt16();
             Assert.IsTrue(value == short.MinValue, "Read Min");
-
-            data = new byte[] { 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Int16_0);
             value = reader.ReadInt16();
-            Assert.IsTrue(value == 0, "Read Mid");
+            Assert.IsTrue(value == 0, "Read Zero");
 
-            data = new byte[] { 0x7F, 0xFF };
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Primitives.Int16_1);
+            value = reader.ReadInt16();
+            Assert.IsTrue(value == 1, "Read One");
+
+            reader = new ICCDataReader(Primitives.Int16_Max);
             value = reader.ReadInt16();
             Assert.IsTrue(value == short.MaxValue, "Read Max");
         }
@@ -50,18 +49,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt32()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.UInt32_0);
             uint value = reader.ReadUInt32();
-            Assert.IsTrue(value == uint.MinValue, "Read Min");
-
-            data = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == uint.MinValue, "Read Zero");
+            
+            reader = new ICCDataReader(Primitives.UInt32_1);
             value = reader.ReadUInt32();
-            Assert.IsTrue(value == 1 + uint.MaxValue / 2, "Read Mid");
-
-            data = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == 1, "Read One");
+            
+            reader = new ICCDataReader(Primitives.UInt32_Max);
             value = reader.ReadUInt32();
             Assert.IsTrue(value == uint.MaxValue, "Read Max");
         }
@@ -69,18 +65,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt32()
         {
-            var data = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Int32_Min);
             int value = reader.ReadInt32();
             Assert.IsTrue(value == int.MinValue, "Read Min");
-
-            data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Int32_0);
             value = reader.ReadInt32();
-            Assert.IsTrue(value == 0, "Read Mid");
-
-            data = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == 0, "Read Zero");
+            
+            reader = new ICCDataReader(Primitives.Int32_1);
+            value = reader.ReadInt32();
+            Assert.IsTrue(value == 1, "Read One");
+            
+            reader = new ICCDataReader(Primitives.Int32_Max);
             value = reader.ReadInt32();
             Assert.IsTrue(value == int.MaxValue, "Read Max");
         }
@@ -88,18 +85,15 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadUInt64()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.UInt64_0);
             ulong value = reader.ReadUInt64();
-            Assert.IsTrue(value == ulong.MinValue, "Read Min");
-
-            data = new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == ulong.MinValue, "Read Zero");
+            
+            reader = new ICCDataReader(Primitives.UInt64_1);
             value = reader.ReadUInt64();
-            Assert.IsTrue(value == 1 + ulong.MaxValue / 2, "Read Mid");
-
-            data = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            Assert.IsTrue(value == 1, "Read One");
+            
+            reader = new ICCDataReader(Primitives.UInt64_Max);
             value = reader.ReadUInt64();
             Assert.IsTrue(value == ulong.MaxValue, "Read Max");
         }
@@ -107,18 +101,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadInt64()
         {
-            var data = new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Int64_Min);
             long value = reader.ReadInt64();
             Assert.IsTrue(value == long.MinValue, "Read Min");
-
-            data = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Int64_0);
             value = reader.ReadInt64();
-            Assert.IsTrue(value == 0, "Read Mid");
+            Assert.IsTrue(value == 0, "Read Zero");
+            
+            reader = new ICCDataReader(Primitives.Int64_1);
+            value = reader.ReadInt64();
+            Assert.IsTrue(value == 1, "Read One");
 
-            data = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Primitives.Int64_Max);
             value = reader.ReadInt64();
             Assert.IsTrue(value == long.MaxValue, "Read Max");
         }
@@ -126,23 +121,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadSingle()
         {
-            var data = new byte[] { 0xFF, 0x7F, 0xFF, 0xFF };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Single_Min);
             float value = reader.ReadSingle();
             Assert.AreEqual(float.MinValue, value, "Read Min");
-
-            data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Single_0);
             value = reader.ReadSingle();
             Assert.AreEqual(0f, value, "Read Zero");
-
-            data = new byte[] {  0x3F, 0x80, 0x00, 0x00  };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Single_1);
             value = reader.ReadSingle();
             Assert.AreEqual(1f, value, "Read One");
-
-            data = new byte[] { 0x7F, 0x7F, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Single_Max);
             value = reader.ReadSingle();
             Assert.AreEqual(float.MaxValue, value, "Read Max");
         }
@@ -150,23 +141,19 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadDouble()
         {
-            var data = new byte[] { 0xFF, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Double_Min);
             double value = reader.ReadDouble();
             Assert.AreEqual(double.MinValue, value, "Read Min");
-
-            data = new byte[] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Double_0);
             value = reader.ReadDouble();
             Assert.AreEqual(0d, value, "Read Zero");
-
-            data = new byte[] { 0x3F, 0xF0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Double_1);
             value = reader.ReadDouble();
             Assert.AreEqual(1d, value, "Read One");
-
-            data = new byte[] { 0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Double_Max);
             value = reader.ReadDouble();
             Assert.AreEqual(double.MaxValue, value, "Read Max");
         }
@@ -174,82 +161,69 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadFix16()
         {
-            var data = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.Fix16_Min);
             double value = reader.ReadFix16();
-            Assert.AreEqual(short.MinValue, value, "Read Min");
-
-            data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Primitives.Fix16_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Primitives.Fix16_0);
             value = reader.ReadFix16();
             Assert.AreEqual(0, value, "Read Zero");
-
-            data = new byte[] { 0x00, 0x01, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Fix16_1);
             value = reader.ReadFix16();
             Assert.AreEqual(1, value, "Read One");
-
-            data = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.Fix16_Max);
             value = reader.ReadFix16();
-            Assert.AreEqual(short.MaxValue + 65535d / 65536d, value, "Read Max");
+            Assert.AreEqual(Primitives.Fix16_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadUFix16()
         {
-            var data = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.UFix16_0);
             double value = reader.ReadUFix16();
-            Assert.AreEqual(0, value, "Read Min");
+            Assert.AreEqual(Primitives.UFix16_ValMin, value, "Read Min");
             
-            data = new byte[] { 0x00, 0x01, 0x00, 0x00 };
-            reader = new ICCDataReader(data);
+            reader = new ICCDataReader(Primitives.UFix16_1);
             value = reader.ReadUFix16();
             Assert.AreEqual(1, value, "Read One");
-
-            data = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.UFix16_Max);
             value = reader.ReadUFix16();
-            Assert.AreEqual(ushort.MaxValue + 65535d / 65536d, value, "Read Max");
+            Assert.AreEqual(Primitives.UFix16_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadU1Fix15()
         {
-            var data = new byte[] { 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.U1Fix15_0);
             double value = reader.ReadU1Fix15();
-            Assert.AreEqual(0, value, "Read Min");
-
-            data = new byte[] { 0x80, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Primitives.U1Fix15_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Primitives.U1Fix15_1);
             value = reader.ReadU1Fix15();
             Assert.AreEqual(1, value, "Read One");
-
-            data = new byte[] { 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.U1Fix15_Max);
             value = reader.ReadU1Fix15();
-            Assert.AreEqual(1d + 32767d / 32768d, value, "Read Max");
+            Assert.AreEqual(Primitives.U1Fix15_ValMax, value, "Read Max");
         }
 
         [TestMethod]
         public void ReadUFix8()
         {
-            var data = new byte[] { 0x00, 0x00 };
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(Primitives.UFix8_0);
             double value = reader.ReadUFix8();
-            Assert.AreEqual(0, value, "Read Min");
-
-            data = new byte[] { 0x01, 0x00 };
-            reader = new ICCDataReader(data);
+            Assert.AreEqual(Primitives.UFix8_ValMin, value, "Read Min");
+            
+            reader = new ICCDataReader(Primitives.UFix8_1);
             value = reader.ReadUFix8();
             Assert.AreEqual(1, value, "Read One");
-
-            data = new byte[] { 0xFF, 0xFF };
-            reader = new ICCDataReader(data);
+            
+            reader = new ICCDataReader(Primitives.UFix8_Max);
             value = reader.ReadUFix8();
-            Assert.AreEqual(byte.MaxValue + 255d / 256d, value, "Read Max");
+            Assert.AreEqual(Primitives.UFix8_ValMax, value, "Read Max");
         }
         
         [TestMethod]
