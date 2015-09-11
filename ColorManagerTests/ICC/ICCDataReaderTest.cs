@@ -673,58 +673,59 @@ namespace ColorManagerTests.ICC
         #region Read (C)LUT
 
         [TestMethod]
-        public void ReadLUT16()
+        public void ReadLUT8()
         {
-            var data = new byte[]
-            {
-                0x00, 0x01, //1
-                0x80, 0x00, //32768
-                0xFF, 0xFF, //65535
-            };
-            var result = new LUT(new double[] { 1d / ushort.MaxValue, 32768d / ushort.MaxValue, 1d });
-            var reader = new ICCDataReader(data);
-            var value = reader.ReadLUT16(3);
-            Assert.IsTrue(result == value);
+            var reader = new ICCDataReader(LUTData.LUT8_Grad);
+            var value = reader.ReadLUT8();
+            Assert.AreEqual(LUTData.LUT8_ValGrad, value);
         }
 
         [TestMethod]
-        public void ReadLUT8()
+        public void ReadLUT16()
         {
-            var data = new byte[256];
-            var resultArr = new double[256];
-            for (int i = 0; i < 256; i++)
-            {
-                data[i] = (byte)i;
-                resultArr[i] = i / 255d;
-            }
-            var result = new LUT(resultArr);
-            var reader = new ICCDataReader(data);
-            var value = reader.ReadLUT8();
-            Assert.IsTrue(result == value);
+            var reader = new ICCDataReader(LUTData.LUT16_Grad);
+            var value = reader.ReadLUT16(LUTData.LUT16_ValGrad.Values.Length);
+            Assert.AreEqual(LUTData.LUT16_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadCLUT()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(LUTData.CLUT_8);
+            var value = reader.ReadCLUT(2, 3, false);
+            Assert.AreEqual(LUTData.CLUT_Val8, value, "Read CLUT 8");
+
+            reader = new ICCDataReader(LUTData.CLUT_16);
+            value = reader.ReadCLUT(2, 3, false);
+            Assert.AreEqual(LUTData.CLUT_Val16, value, "Read CLUT 16");
+
+            reader = new ICCDataReader(LUTData.CLUT_f32);
+            value = reader.ReadCLUT(2, 3, true);
+            Assert.AreEqual(LUTData.CLUT_Valf32, value, "Read CLUT f32");
         }
 
         [TestMethod]
         public void ReadCLUT8()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(LUTData.CLUT8_Grad);
+            var value = reader.ReadCLUT8(2, 3, new byte[] { 3, 3 });
+            Assert.AreEqual(LUTData.CLUT8_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadCLUT16()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(LUTData.CLUT16_Grad);
+            var value = reader.ReadCLUT16(2, 3, new byte[] { 3, 3 });
+            Assert.AreEqual(LUTData.CLUT16_ValGrad, value);
         }
 
         [TestMethod]
         public void ReadCLUTf32()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(LUTData.CLUTf32_Grad);
+            var value = reader.ReadCLUTf32(2, 3, new byte[] { 3, 3 });
+            Assert.AreEqual(LUTData.CLUTf32_ValGrad, value);
         }
 
         #endregion
