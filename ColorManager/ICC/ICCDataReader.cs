@@ -22,7 +22,6 @@ namespace ColorManager.ICC
             set
             {
                 if (value < 0) _Index = 0;
-                else if (value > Data.Length - 1) _Index = Data.Length - 1;
                 else _Index = value;
             }
         }
