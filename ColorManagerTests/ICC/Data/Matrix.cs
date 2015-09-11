@@ -5,12 +5,18 @@ namespace ColorManagerTests.ICC.Data
     {
         #region 2D
 
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
         public static readonly double[,] Fix16_2D_ValGrad =
         {
             { 1, 2, 3 },
             { 4, 5, 6 },
             { 7, 8, 9 },
         };
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
         public static readonly double[,] Single_2D_ValGrad =
         {
             { 1, 2, 3 },
@@ -18,6 +24,9 @@ namespace ColorManagerTests.ICC.Data
             { 7, 8, 9 },
         };
 
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
         public static readonly byte[] Fix16_2D_Grad = ArrayHelper.Concat
         (
             Primitives.Fix16_1,
@@ -33,6 +42,9 @@ namespace ColorManagerTests.ICC.Data
             Primitives.Fix16_9
         );
 
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
         public static readonly byte[] Single_2D_Grad = ArrayHelper.Concat
         (
             Primitives.Single_1,
@@ -52,9 +64,18 @@ namespace ColorManagerTests.ICC.Data
 
         #region 1D
 
+        /// <summary>
+        /// 3x1 Matrix
+        /// </summary>
         public static readonly double[] Fix16_1D_ValGrad = { 1, 4, 7 };
+        /// <summary>
+        /// 3x1 Matrix
+        /// </summary>
         public static readonly double[] Single_1D_ValGrad = { 1, 4, 7 };
 
+        /// <summary>
+        /// 3x1 Matrix
+        /// </summary>
         public static readonly byte[] Fix16_1D_Grad = ArrayHelper.Concat
         (
             Primitives.Fix16_1,
@@ -62,6 +83,9 @@ namespace ColorManagerTests.ICC.Data
             Primitives.Fix16_7
         );
 
+        /// <summary>
+        /// 3x1 Matrix
+        /// </summary>
         public static readonly byte[] Single_1D_Grad = ArrayHelper.Concat
         (
             Primitives.Single_1,
