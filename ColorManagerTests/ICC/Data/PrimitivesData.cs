@@ -234,7 +234,7 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly string Unicode_ValRand1 = ".6Abäñ$€β𐐷𤭢";
         public static readonly string Unicode_ValRand2 = ".6Abäñ";
-        public static readonly string Unicode_ValRand3 = ".$€β𐐷𤭢";
+        public static readonly string Unicode_ValRand3 = "$€β𐐷𤭢";
 
         public static readonly byte[] Unicode_Rand1 =
         {
