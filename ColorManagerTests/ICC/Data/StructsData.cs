@@ -9,6 +9,7 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly DateTime DateTime_ValMin = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         public static readonly DateTime DateTime_ValMax = new DateTime(9999, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        public static readonly DateTime DateTime_ValRand1 = new DateTime(1990, 11, 26, 3, 19, 47, DateTimeKind.Utc);
 
         public static readonly byte[] DateTime_Min =
         {
@@ -19,6 +20,7 @@ namespace ColorManagerTests.ICC.Data
             0x00, 0x00, //Minute    0
             0x00, 0x00, //Second    0
         };
+
         public static readonly byte[] DateTime_Max =
         {
                 0x27, 0x0F, //Year      9999
@@ -28,6 +30,7 @@ namespace ColorManagerTests.ICC.Data
                 0x00, 0x3B, //Minute    59
                 0x00, 0x3B, //Second    59
         };
+
         public static readonly byte[] DateTime_Invalid =
         {
                 0xFF, 0xFF, //Year      65535
@@ -36,6 +39,16 @@ namespace ColorManagerTests.ICC.Data
                 0x00, 0x19, //Hour      25
                 0x00, 0x3D, //Minute    61
                 0x00, 0x3D, //Second    61
+        };
+
+        public static readonly byte[] DateTime_Rand1 =
+        {
+                0x07, 0xC6, //Year      1990
+                0x00, 0x0B, //Month     11
+                0x00, 0x1A, //Day       26
+                0x00, 0x03, //Hour      3
+                0x00, 0x13, //Minute    19
+                0x00, 0x2F, //Second    47
         };
 
         #endregion
