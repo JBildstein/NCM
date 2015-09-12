@@ -151,13 +151,14 @@ namespace ColorManager.ICC
 
         public static bool Compare<T>(T[][] a, T[][] b)
         {
-            if (!CompareBase<T>(a, b)) return false;
+            if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
                 if (a[i].Length != b[i].Length) return false;
+
                 for (int j = 0; j < a[i].Length; j++)
                 {
-                    if (!a[i][j].Equals(b[i][j])) return false;
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -170,13 +171,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (bool* ap = a[i])
-                fixed (bool* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -189,13 +186,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (byte* ap = a[i])
-                fixed (byte* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -208,13 +201,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (sbyte* ap = a[i])
-                fixed (sbyte* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -227,13 +216,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (short* ap = a[i])
-                fixed (short* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -246,13 +231,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (ushort* ap = a[i])
-                fixed (ushort* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -265,13 +246,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (int* ap = a[i])
-                fixed (int* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -284,13 +261,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (uint* ap = a[i])
-                fixed (uint* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -303,13 +276,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (long* ap = a[i])
-                fixed (long* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -322,13 +291,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (ulong* ap = a[i])
-                fixed (ulong* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (ap[j] != bp[j]) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -341,13 +306,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (float* ap = a[i])
-                fixed (float* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (!Compare(ap[i], bp[i])) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -360,13 +321,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (double* ap = a[i])
-                fixed (double* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (!Compare(ap[i], bp[i])) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -379,13 +336,9 @@ namespace ColorManager.ICC
             {
                 if (a[i].Length != b[i].Length) return false;
 
-                fixed (decimal* ap = a[i])
-                fixed (decimal* bp = b[i])
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    for (int j = 0; j < a[i].Length; j++)
-                    {
-                        if (!Compare(ap[i], bp[i])) return false;
-                    }
+                    if (!Compare(a[i], b[i])) return false;
                 }
             }
             return true;
@@ -793,10 +746,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (bool* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -809,10 +759,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (byte* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -825,10 +772,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (sbyte* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -841,10 +785,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (short* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -857,10 +798,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (ushort* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -873,10 +811,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (int* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -889,10 +824,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (uint* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -905,10 +837,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (long* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -921,10 +850,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (ulong* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -937,10 +863,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (float* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -953,10 +876,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (double* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
@@ -969,10 +889,7 @@ namespace ColorManager.ICC
                 int hash = (int)2166136261;
                 for (int i = 0; i < a.Length; i++)
                 {
-                    fixed (decimal* ap = a[i])
-                    {
-                        for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ ap[i].GetHashCode();
-                    }
+                    for (int j = 0; j < a[i].Length; j++) hash *= 16777619 ^ a[i].GetHashCode();
                 }
                 return hash;
             }
