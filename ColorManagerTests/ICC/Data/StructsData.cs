@@ -219,5 +219,50 @@ namespace ColorManagerTests.ICC.Data
         }
 
         #endregion
+
+        #region ProfileDescription
+
+        public static readonly ProfileDescription ProfileDescription_ValRand1 = new ProfileDescription
+        (
+            1, 2,
+            DeviceAttribute_ValVar1,
+            TagSignature.ProfileDescription,
+            TagDataEntryData.MultiLocalizedUnicode_Val.Text,
+            TagDataEntryData.MultiLocalizedUnicode_Val.Text
+        );
+
+        public static readonly byte[] ProfileDescription_Rand1 = ArrayHelper.Concat
+        (
+            PrimitivesData.UInt32_1,
+            PrimitivesData.UInt32_2,
+            new byte[] { 0x64, 0x65, 0x73, 0x63 },
+            TagDataEntryData.MultiLocalizedUnicode_Arr,
+            TagDataEntryData.MultiLocalizedUnicode_Arr
+        );
+
+        #endregion
+
+        #region ColorantTableEntry
+
+        public static readonly ColorantTableEntry ColorantTableEntry_ValRand1 = new ColorantTableEntry(ArrayHelper.Fill('A', 32), 1, 2, 3);
+        public static readonly ColorantTableEntry ColorantTableEntry_ValRand2 = new ColorantTableEntry(ArrayHelper.Fill('4', 32), 4, 5, 6);
+
+        public static readonly byte[] ColorantTableEntry_Rand1 = ArrayHelper.Concat
+        (
+            ArrayHelper.Fill((byte)0x41, 32),
+            PrimitivesData.UInt16_1,
+            PrimitivesData.UInt16_2,
+            PrimitivesData.UInt16_3
+        );
+
+        public static readonly byte[] ColorantTableEntry_Rand2 = ArrayHelper.Concat
+        (
+            ArrayHelper.Fill((byte)0x34, 32),
+            PrimitivesData.UInt16_4,
+            PrimitivesData.UInt16_5,
+            PrimitivesData.UInt16_6
+        );
+
+        #endregion
     }
 }
