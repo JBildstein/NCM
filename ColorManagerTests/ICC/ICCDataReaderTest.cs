@@ -228,48 +228,23 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadASCIIString()
         {
-            var data = new byte[128];
-            var resultArr = new char[128];
-            for (int i = 0; i < 128; i++)
-            {
-                data[i] = (byte)i;
-                resultArr[i] = (char)i;
-            }
-            var result = new string(resultArr);
-
-            var reader = new ICCDataReader(data);
+            var reader = new ICCDataReader(PrimitivesData.ASCII_All);
             string value = reader.ReadASCIIString(128);
 
             Assert.IsFalse(value == null, "Read string is null");
-            Assert.IsTrue(value.Length == result.Length, "Read length does not match");
-            Assert.AreEqual(result, value, false);
+            Assert.IsTrue(value.Length == PrimitivesData.ASCII_ValAll.Length, "Read length does not match");
+            Assert.AreEqual(PrimitivesData.ASCII_ValAll, value, false);
         }
 
         [TestMethod]
         public void ReadUnicodeString()
         {
-            var data = new byte[]
-            {
-                0x00, 0x2e, //.
-                0x00, 0x36, //6
-                0x00, 0x41, //A
-                0x00, 0x62, //b
-                0x00, 0xe4, //ä
-                0x00, 0xf1, //ñ
-                0x00, 0x24, //$
-                0x20, 0xAC, //€
-                0x03, 0xb2, //β
-                0xD8, 0x01, 0xDC, 0x37, //𐐷
-                0xD8, 0x52, 0xDF, 0x62, //𤭢
-            };
-            var result = ".6Abäñ$€β𐐷𤭢";
-
-            var reader = new ICCDataReader(data);
-            string value = reader.ReadUnicodeString(data.Length);
+            var reader = new ICCDataReader(PrimitivesData.Unicode_Rand1);
+            string value = reader.ReadUnicodeString(PrimitivesData.Unicode_Rand1.Length);
 
             Assert.IsFalse(value == null, "Read string is null");
-            Assert.IsTrue(value.Length == result.Length, "Read length does not match");
-            Assert.AreEqual(result, value, false);
+            Assert.IsTrue(value.Length == PrimitivesData.Unicode_ValRand1.Length, "Read length does not match");
+            Assert.AreEqual(PrimitivesData.Unicode_ValRand1, value, false);
         }
 
         #endregion
@@ -447,197 +422,315 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadProfileDescription()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(StructsData.ProfileDescription_Rand1);
+            var value = reader.ReadProfileDescription();
+            Assert.AreEqual(StructsData.ProfileDescription_ValRand1, value);
+        }
+
+        [TestMethod]
+        public void ReadColorantTableEntry()
+        {
+            var reader = new ICCDataReader(StructsData.ColorantTableEntry_Rand1);
+            var value = reader.ReadColorantTableEntry();
+            Assert.AreEqual(StructsData.ColorantTableEntry_ValRand1, value);
+
+            reader = new ICCDataReader(StructsData.ColorantTableEntry_Rand2);
+            value = reader.ReadColorantTableEntry();
+            Assert.AreEqual(StructsData.ColorantTableEntry_ValRand2, value);
         }
 
         #endregion
 
         #region Read Tag Data Entries
-        
+
         [TestMethod]
         public void ReadTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr);
+            var value = reader.ReadTagDataEntry(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeTable);
+            Assert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeVal, value, "Read MultiLocalizedUnicode");
+
+            reader = new ICCDataReader(TagDataEntryData.TagDataEntry_CurveArr);
+            value = reader.ReadTagDataEntry(TagDataEntryData.TagDataEntry_CurveTable);
+            Assert.AreEqual(TagDataEntryData.TagDataEntry_CurveVal, value, "Read Curve");
         }
 
         [TestMethod]
         public void ReadTagDataEntryHeader()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.TagDataEntryHeader_MultiLocalizedUnicodeArr);
+            var value = reader.ReadTagDataEntryHeader();
+            Assert.AreEqual(TagDataEntryData.TagDataEntryHeader_MultiLocalizedUnicodeVal, value, "Read MultiLocalizedUnicode");
+
+            reader = new ICCDataReader(TagDataEntryData.TagDataEntryHeader_CurveArr);
+            value = reader.ReadTagDataEntryHeader();
+            Assert.AreEqual(TagDataEntryData.TagDataEntryHeader_CurveVal, value, "Read Curve");
         }
+
+
 
         [TestMethod]
         public void ReadUnknownTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Unknown_Arr);
+            var value = reader.ReadUnknownTagDataEntry((uint)TagDataEntryData.Unknown_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.Unknown_Val, value);
         }
 
         [TestMethod]
         public void ReadChromaticityTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Chromaticity_Arr1);
+            var value = reader.ReadChromaticityTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Chromaticity_Val1, value, "Read Var 1");
+
+            reader = new ICCDataReader(TagDataEntryData.Chromaticity_Arr2);
+            value = reader.ReadChromaticityTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Chromaticity_Val2, value, "Read Var 2");
+
+            try
+            {
+                reader = new ICCDataReader(TagDataEntryData.Chromaticity_ArrInvalid1);
+                value = reader.ReadChromaticityTagDataEntry();
+                Assert.Fail("Reading invalid Chromaticity TagDataEntry 1 did not throw exception");
+            }
+            catch (CorruptProfileException) { }
+
+            try
+            {
+                reader = new ICCDataReader(TagDataEntryData.Chromaticity_ArrInvalid2);
+                value = reader.ReadChromaticityTagDataEntry();
+                Assert.Fail("Reading invalid Chromaticity TagDataEntry 2 did not throw exception");
+            }
+            catch (CorruptProfileException) { }
         }
 
         [TestMethod]
         public void ReadColorantOrderTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ColorantOrder_Arr);
+            var value = reader.ReadColorantOrderTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ColorantOrder_Val, value);
         }
 
         [TestMethod]
         public void ReadColorantTableTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ColorantTable_Arr);
+            var value = reader.ReadColorantTableTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ColorantTable_Val, value);
         }
 
         [TestMethod]
         public void ReadCurveTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Curve_Arr_0);
+            var value = reader.ReadCurveTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Curve_Val_0, value, "Read Curve 0");
+
+            reader = new ICCDataReader(TagDataEntryData.Curve_Arr_1);
+            value = reader.ReadCurveTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Curve_Val_1, value, "Read Curve 1");
+
+            reader = new ICCDataReader(TagDataEntryData.Curve_Arr_2);
+            value = reader.ReadCurveTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Curve_Val_2, value, "Read Curve 2");
         }
 
         [TestMethod]
         public void ReadDataTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Data_ArrASCII);
+            var value = reader.ReadDataTagDataEntry((uint)TagDataEntryData.Data_ArrASCII.Length + 8);
+            Assert.AreEqual(TagDataEntryData.Data_ValASCII, value, "Read ASCII");
+
+            reader = new ICCDataReader(TagDataEntryData.Data_ArrNoASCII);
+            value = reader.ReadDataTagDataEntry((uint)TagDataEntryData.Data_ArrNoASCII.Length + 8);
+            Assert.AreEqual(TagDataEntryData.Data_ValNoASCII, value, "Read No ASCII");
         }
 
         [TestMethod]
         public void ReadDateTimeTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.DateTime_Arr);
+            var value = reader.ReadDateTimeTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.DateTime_Val, value);
         }
 
         [TestMethod]
         public void ReadLut16TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Lut16_Arr);
+            var value = reader.ReadLut16TagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Lut16_Val, value);
         }
 
         [TestMethod]
         public void ReadLut8TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Lut8_Arr);
+            var value = reader.ReadLut8TagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Lut8_Val, value);
         }
 
         [TestMethod]
         public void ReadLutAToBTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.LutAToB_Arr);
+            var value = reader.ReadLutAToBTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.LutAToB_Val, value);
         }
 
         [TestMethod]
         public void ReadLutBToATagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.LutBToA_Arr);
+            var value = reader.ReadLutBToATagDataEntry();
+            Assert.AreEqual(TagDataEntryData.LutBToA_Val, value);
         }
 
         [TestMethod]
         public void ReadMeasurementTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Measurement_Arr);
+            var value = reader.ReadMeasurementTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Measurement_Val, value);
         }
 
         [TestMethod]
         public void ReadMultiLocalizedUnicodeTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.MultiLocalizedUnicode_Arr);
+            var value = reader.ReadMultiLocalizedUnicodeTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.MultiLocalizedUnicode_Val, value);
         }
 
         [TestMethod]
         public void ReadMultiProcessElementsTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.MultiProcessElements_Arr);
+            var value = reader.ReadMultiProcessElementsTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.MultiProcessElements_Val, value);
         }
 
         [TestMethod]
         public void ReadNamedColor2TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.NamedColor2_Arr);
+            var value = reader.ReadNamedColor2TagDataEntry();
+            Assert.AreEqual(TagDataEntryData.NamedColor2_Val, value);
         }
 
         [TestMethod]
         public void ReadParametricCurveTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ParametricCurve_Arr);
+            var value = reader.ReadParametricCurveTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ParametricCurve_Val, value);
         }
 
         [TestMethod]
         public void ReadProfileSequenceDescTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ProfileSequenceDesc_Arr);
+            var value = reader.ReadProfileSequenceDescTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ProfileSequenceDesc_Val, value);
         }
 
         [TestMethod]
         public void ReadProfileSequenceIdentifierTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ProfileSequenceIdentifier_Arr);
+            var value = reader.ReadProfileSequenceIdentifierTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ProfileSequenceIdentifier_Val, value);
         }
 
         [TestMethod]
         public void ReadResponseCurveSet16TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ResponseCurveSet16_Arr);
+            var value = reader.ReadResponseCurveSet16TagDataEntry();
+            Assert.AreEqual(TagDataEntryData.ResponseCurveSet16_Val, value);
         }
 
         [TestMethod]
         public void ReadFix16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Fix16Array_Arr);
+            var value = reader.ReadFix16ArrayTagDataEntry((uint)TagDataEntryData.Fix16Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.Fix16Array_Val, value);
         }
 
         [TestMethod]
         public void ReadSignatureTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Signature_Arr);
+            var value = reader.ReadSignatureTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.Signature_Val, value);
         }
 
         [TestMethod]
         public void ReadTextTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.Text_Arr);
+            var value = reader.ReadTextTagDataEntry((uint)TagDataEntryData.Text_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.Text_Val, value);
         }
 
         [TestMethod]
         public void ReadUFix16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.UFix16Array_Arr);
+            var value = reader.ReadUFix16ArrayTagDataEntry((uint)TagDataEntryData.UFix16Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.UFix16Array_Val, value);
         }
 
         [TestMethod]
         public void ReadUInt16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.UInt16Array_Arr);
+            var value = reader.ReadUInt16ArrayTagDataEntry((uint)TagDataEntryData.UInt16Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.UInt16Array_Val, value);
         }
 
         [TestMethod]
         public void ReadUInt32ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.UInt32Array_Arr);
+            var value = reader.ReadUInt32ArrayTagDataEntry((uint)TagDataEntryData.UInt32Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.UInt32Array_Val, value);
         }
 
         [TestMethod]
         public void ReadUInt64ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.UInt64Array_Arr);
+            var value = reader.ReadUInt64ArrayTagDataEntry((uint)TagDataEntryData.UInt64Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.UInt64Array_Val, value);
         }
 
         [TestMethod]
         public void ReadUInt8ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.UInt8Array_Arr);
+            var value = reader.ReadUInt8ArrayTagDataEntry((uint)TagDataEntryData.UInt8Array_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.UInt8Array_Val, value);
         }
 
         [TestMethod]
         public void ReadViewingConditionsTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.ViewingConditions_Arr);
+            var value = reader.ReadViewingConditionsTagDataEntry((uint)TagDataEntryData.ViewingConditions_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.ViewingConditions_Val, value);
         }
 
         [TestMethod]
         public void ReadXYZTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            var reader = new ICCDataReader(TagDataEntryData.XYZ_Arr);
+            var value = reader.ReadXYZTagDataEntry((uint)TagDataEntryData.XYZ_Arr.Length + 8);
+            Assert.AreEqual(TagDataEntryData.XYZ_Val, value);
         }
 
         #endregion

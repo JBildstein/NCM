@@ -99,6 +99,7 @@
     <Compile Include="ICC\Data\MatrixData.cs" />
     <Compile Include="ICC\Data\PrimitivesData.cs" />
     <Compile Include="ICC\Data\StructsData.cs" />
+    <Compile Include="ICC\Data\TagDataEntryData.cs" />
     <Compile Include="ICC\ICCDataReaderTest.cs" />
     <Compile Include="ICC\ICCDataWriterTest.cs" />
     <Compile Include="ICC\ICCProfileReaderTest.cs" />
