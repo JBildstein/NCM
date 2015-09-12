@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ColorManager.ICC;
 
 namespace ColorManagerTests.ICC.Data
@@ -222,13 +223,46 @@ namespace ColorManagerTests.ICC.Data
 
         #region ProfileDescription
 
+        private static readonly LocalizedString LocalizedString_Rand1 = new LocalizedString(new CultureInfo("en-US"), PrimitivesData.Unicode_ValRand2);
+        private static readonly LocalizedString LocalizedString_Rand2 = new LocalizedString(new CultureInfo("de-DE"), PrimitivesData.Unicode_ValRand3);
+
+        private static readonly LocalizedString[] LocalizedString_RandArr1 = new LocalizedString[]
+        {
+            LocalizedString_Rand1,
+            LocalizedString_Rand2,
+        };
+        private static readonly LocalizedString[] LocalizedString_RandArr2 = new LocalizedString[]
+        {
+            LocalizedString_Rand2,
+            LocalizedString_Rand1,
+        };
+
+        private static readonly MultiLocalizedUnicodeTagDataEntry MultiLocalizedUnicode_Val = new MultiLocalizedUnicodeTagDataEntry(LocalizedString_RandArr1);
+        private static readonly byte[] MultiLocalizedUnicode_Arr = ArrayHelper.Concat
+        (
+            PrimitivesData.UInt32_2,
+            //Size: 8(header) + 8(count/size) + 2 * 12(culture/length/offset) + 12(record1) + 14(record2)
+            new byte[] { 0x00, 0x00, 0x00, 0x4A }, //66
+
+            new byte[] { (byte)'e', (byte)'n', (byte)'U', (byte)'S' },
+            new byte[] { 0x00, 0x00, 0x00, 0x0C },  //12
+            new byte[] { 0x00, 0x00, 0x00, 0x30 },  //48
+
+            new byte[] { (byte)'d', (byte)'e', (byte)'D', (byte)'E' },
+            new byte[] { 0x00, 0x00, 0x00, 0x0E },  //14
+            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //60
+
+            PrimitivesData.Unicode_Rand2,
+            PrimitivesData.Unicode_Rand3
+        );
+
         public static readonly ProfileDescription ProfileDescription_ValRand1 = new ProfileDescription
         (
             1, 2,
             DeviceAttribute_ValVar1,
             TagSignature.ProfileDescription,
-            TagDataEntryData.MultiLocalizedUnicode_Val.Text,
-            TagDataEntryData.MultiLocalizedUnicode_Val.Text
+            MultiLocalizedUnicode_Val.Text,
+            MultiLocalizedUnicode_Val.Text
         );
 
         public static readonly byte[] ProfileDescription_Rand1 = ArrayHelper.Concat
@@ -236,8 +270,8 @@ namespace ColorManagerTests.ICC.Data
             PrimitivesData.UInt32_1,
             PrimitivesData.UInt32_2,
             new byte[] { 0x64, 0x65, 0x73, 0x63 },
-            TagDataEntryData.MultiLocalizedUnicode_Arr,
-            TagDataEntryData.MultiLocalizedUnicode_Arr
+            MultiLocalizedUnicode_Arr,
+            MultiLocalizedUnicode_Arr
         );
 
         #endregion
