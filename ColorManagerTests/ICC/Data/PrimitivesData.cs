@@ -208,5 +208,68 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] UFix8_Max = { 0xFF, 0xFF };
 
         #endregion
+
+        #region ASCII String
+
+        public static readonly string ASCII_ValAll = CreateASCIIValue();
+        public static readonly byte[] ASCII_All = CreateASCIIArr();
+
+        private static string CreateASCIIValue()
+        {
+            var result = new char[128];
+            for (int i = 0; i < 128; i++) { result[i] = (char)i; }
+            return new string(result);
+        }
+
+        private static byte[] CreateASCIIArr()
+        {
+            var result = new byte[128];
+            for (int i = 0; i < 128; i++) { result[i] = (byte)i; }
+            return result;
+        }
+
+        #endregion
+
+        #region Unicode String
+
+        public static readonly string Unicode_ValRand1 = ".6Abäñ$€β𐐷𤭢";
+        public static readonly string Unicode_ValRand2 = ".6Abäñ";
+        public static readonly string Unicode_ValRand3 = ".$€β𐐷𤭢";
+
+        public static readonly byte[] Unicode_Rand1 =
+        {
+            0x00, 0x2e, //.
+            0x00, 0x36, //6
+            0x00, 0x41, //A
+            0x00, 0x62, //b
+            0x00, 0xe4, //ä
+            0x00, 0xf1, //ñ
+            0x00, 0x24, //$
+            0x20, 0xAC, //€
+            0x03, 0xb2, //β
+            0xD8, 0x01, 0xDC, 0x37, //𐐷
+            0xD8, 0x52, 0xDF, 0x62, //𤭢
+        };
+
+        public static readonly byte[] Unicode_Rand2 =
+        {
+            0x00, 0x2e, //.
+            0x00, 0x36, //6
+            0x00, 0x41, //A
+            0x00, 0x62, //b
+            0x00, 0xe4, //ä
+            0x00, 0xf1, //ñ
+        };
+
+        public static readonly byte[] Unicode_Rand3 =
+        {
+            0x00, 0x24, //$
+            0x20, 0xAC, //€
+            0x03, 0xb2, //β
+            0xD8, 0x01, 0xDC, 0x37, //𐐷
+            0xD8, 0x52, 0xDF, 0x62, //𤭢
+        };
+
+        #endregion
     }
 }
