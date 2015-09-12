@@ -311,6 +311,15 @@ namespace ColorManager.ICC
             return new ProfileDescription(manufacturer, model, attributes, technologyInfo, manufacturerInfo.Text, modelInfo.Text);
         }
 
+        /// <summary>
+        /// Reads a colorant table entry
+        /// </summary>
+        /// <returns>the profile description</returns>
+        public ColorantTableEntry ReadColorantTableEntry()
+        {
+            return new ColorantTableEntry(ReadASCIIString(32), ReadUInt16(), ReadUInt16(), ReadUInt16());
+        }
+
         #endregion
 
         //LTODO: Lut16TagDataEntry can have legacy Lab values. See page 51/52
@@ -420,8 +429,9 @@ namespace ColorManager.ICC
             ushort channelCount = ReadUInt16();
             ColorantEncoding colorant = (ColorantEncoding)ReadUInt16();
 
-            if (colorant != ColorantEncoding.Unknown && channelCount != 3) { throw new CorruptProfileException("ChromaticityTagDataEntry"); }
-            else if (colorant != ColorantEncoding.Unknown && Enum.IsDefined(typeof(ColorantEncoding), colorant)) { return new ChromaticityTagDataEntry(channelCount, colorant); }
+            if (!Enum.IsDefined(typeof(ColorantEncoding), colorant)) throw new CorruptProfileException("Invalid ColorantEncoding");
+            else if (colorant != ColorantEncoding.Unknown && channelCount != 3) { throw new CorruptProfileException("ChromaticityTagDataEntry"); }
+            else if (colorant != ColorantEncoding.Unknown) { return new ChromaticityTagDataEntry(channelCount, colorant); }
             else
             {
                 double[][] values = new double[channelCount][];
@@ -447,14 +457,7 @@ namespace ColorManager.ICC
         {
             var colorantCount = ReadUInt32();
             var cdata = new ColorantTableEntry[colorantCount];
-            for (int i = 0; i < colorantCount; i++)
-            {
-                string name = ReadASCIIString(32);
-                ushort pcs1 = ReadUInt16();
-                ushort pcs2 = ReadUInt16();
-                ushort pcs3 = ReadUInt16();
-                cdata[i] = new ColorantTableEntry(name, pcs1, pcs2, pcs3);
-            }
+            for (int i = 0; i < colorantCount; i++) { cdata[i] = ReadColorantTableEntry(); }
             return new ColorantTableTagDataEntry(colorantCount, cdata);
         }
 
@@ -506,11 +509,14 @@ namespace ColorManager.ICC
 
             //Input LUT
             var inValues = new LUT[inChCount];
-            for (int i = 0; i < inChCount; i++) { inValues[i] = ReadLUT16(inTableCount); }
+            byte[] gridPointCount = new byte[inChCount];
+            for (int i = 0; i < inChCount; i++)
+            {
+                inValues[i] = ReadLUT16(inTableCount);
+                gridPointCount[i] = CLUTPointCount;
+            }
 
             //CLUT
-            byte[] gridPointCount = new byte[16];
-            for (int i = 0; i < 16; i++) { gridPointCount[i] = CLUTPointCount; }
             var clut = ReadCLUT16(inChCount, outChCount, gridPointCount);
 
             //Output LUT
@@ -531,11 +537,14 @@ namespace ColorManager.ICC
 
             //Input LUT
             var inValues = new LUT[inChCount];
-            for (int i = 0; i < inChCount; i++) { inValues[i] = ReadLUT8(); }
+            byte[] gridPointCount = new byte[inChCount];
+            for (int i = 0; i < inChCount; i++)
+            {
+                inValues[i] = ReadLUT8();
+                gridPointCount[i] = CLUTPointCount;
+            }
 
             //CLUT
-            byte[] gridPointCount = new byte[16];
-            for (int i = 0; i < 16; i++) { gridPointCount[i] = CLUTPointCount; }
             var clut = ReadCLUT8(inChCount, outChCount, gridPointCount);
 
             //Output LUT
