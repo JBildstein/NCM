@@ -246,11 +246,11 @@ namespace ColorManagerTests.ICC.Data
 
             new byte[] { (byte)'e', (byte)'n', (byte)'U', (byte)'S' },
             new byte[] { 0x00, 0x00, 0x00, 0x0C },  //12
-            new byte[] { 0x00, 0x00, 0x00, 0x30 },  //48
+            new byte[] { 0x00, 0x00, 0x00, 0x28 },  //40
 
             new byte[] { (byte)'d', (byte)'e', (byte)'D', (byte)'E' },
             new byte[] { 0x00, 0x00, 0x00, 0x0E },  //14
-            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //60
+            new byte[] { 0x00, 0x00, 0x00, 0x34 },  //52
 
             PrimitivesData.Unicode_Rand2,
             PrimitivesData.Unicode_Rand3
@@ -269,8 +269,14 @@ namespace ColorManagerTests.ICC.Data
         (
             PrimitivesData.UInt32_1,
             PrimitivesData.UInt32_2,
+            DeviceAttribute_Var1,
             new byte[] { 0x64, 0x65, 0x73, 0x63 },
+
+            new byte[] { 0x6D, 0x6C, 0x75, 0x63 },
+            new byte[] { 0x00, 0x00, 0x00, 0x00 },
             MultiLocalizedUnicode_Arr,
+            new byte[] { 0x6D, 0x6C, 0x75, 0x63 },
+            new byte[] { 0x00, 0x00, 0x00, 0x00 },
             MultiLocalizedUnicode_Arr
         );
 
