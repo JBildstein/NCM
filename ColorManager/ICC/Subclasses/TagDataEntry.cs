@@ -173,8 +173,6 @@ namespace ColorManager.ICC
         public ChromaticityTagDataEntry(int ChannelCount, ColorantEncoding ColorantType)
             : base(TypeSignature.Chromaticity)
         {
-            if (ChannelValues == null) throw new ArgumentNullException(nameof(ChannelValues));
-
             _ChannelCount = ChannelCount;
             _ColorantType = ColorantType;
             _ChannelValues = GetColorantArray();
