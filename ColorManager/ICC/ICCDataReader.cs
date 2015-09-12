@@ -400,16 +400,26 @@ namespace ColorManager.ICC
                     return ReadUnknownTagDataEntry(info.DataSize);
             }
         }
+        
+        /// <summary>
+        /// Reads the header of a <see cref="TagDataEntry"/>
+        /// </summary>
+        /// <returns>The read signature</returns>
+        public TypeSignature ReadTagDataEntryHeader()
+        {
+            TypeSignature t = (TypeSignature)ReadUInt32();
+            AIndex(4);//4 bytes are not used
+            return t;
+        }
 
         /// <summary>
         /// Reads the header of a <see cref="TagDataEntry"/>
         /// </summary>
-        /// <param name="expected">Optional expected value to check against</param>
-        /// <returns></returns>
-        public TypeSignature ReadTagDataEntryHeader(TypeSignature expected = (TypeSignature)uint.MaxValue)
+        /// <param name="expected">expected value to check against</param>
+        /// <returns>The read signature</returns>
+        public TypeSignature ReadTagDataEntryHeader(TypeSignature expected)
         {
-            TypeSignature t = (TypeSignature)ReadUInt32();
-            AIndex(4);//4 bytes are not used
+            TypeSignature t = ReadTagDataEntryHeader();
             if (expected != (TypeSignature)uint.MaxValue && t != expected) throw new CorruptProfileException($"Signature {t} is not expected {expected}");
             return t;
         }
