@@ -1069,6 +1069,7 @@ namespace ColorManager.ICC
             {
                 c += WriteUInt16(0);
                 c += WriteByte(0);
+                c += WriteEmpty(67);
             }
             else
             {
