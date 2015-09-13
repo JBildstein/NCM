@@ -679,12 +679,12 @@ namespace ColorManagerTests.ICC.Data
 
         #region TextDescriptionTagDataEntry
 
-        public static readonly TextDescriptionTagDataEntry TextDescription_Val = new TextDescriptionTagDataEntry
+        public static readonly TextDescriptionTagDataEntry TextDescription_Val1 = new TextDescriptionTagDataEntry
         (
             PrimitivesData.ASCII_ValAll, PrimitivesData.Unicode_ValRand1, ArrayHelper.Fill('A', 66),
             9, 2
         );
-        public static readonly byte[] TextDescription_Arr = ArrayHelper.Concat
+        public static readonly byte[] TextDescription_Arr1 = ArrayHelper.Concat
         (
             new byte[] { 0x00, 0x00, 0x00, 0x81 },  //129
             PrimitivesData.ASCII_All,
@@ -698,6 +698,20 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x00, 0x02, 0x43 },        //2, 67
             ArrayHelper.Fill((byte)0x41, 66),
             new byte[] { 0x00 }                     //Null terminator
+        );
+
+        public static readonly TextDescriptionTagDataEntry TextDescription_Val2 = new TextDescriptionTagDataEntry(PrimitivesData.ASCII_ValAll, null, null, 0, 0);
+        public static readonly byte[] TextDescription_Arr2 = ArrayHelper.Concat
+        (
+            new byte[] { 0x00, 0x00, 0x00, 0x81 },  //129
+            PrimitivesData.ASCII_All,
+            new byte[] { 0x00 },                    //Null terminator
+
+            PrimitivesData.UInt32_0,
+            PrimitivesData.UInt32_0,
+
+            new byte[] { 0x00, 0x00, 0x00 },        //0, 0
+            ArrayHelper.Fill((byte)0x00, 67)
         );
 
         #endregion

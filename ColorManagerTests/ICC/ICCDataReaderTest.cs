@@ -736,9 +736,13 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void ReadTextDescriptionTagDataEntry()
         {
-            var reader = new ICCDataReader(TagDataEntryData.TextDescription_Arr);
+            var reader = new ICCDataReader(TagDataEntryData.TextDescription_Arr1);
             var value = reader.ReadTextDescriptionTagDataEntry();
-            Assert.AreEqual(TagDataEntryData.TextDescription_Val, value);
+            Assert.AreEqual(TagDataEntryData.TextDescription_Val1, value, "Read Var1");
+
+            reader = new ICCDataReader(TagDataEntryData.TextDescription_Arr2);
+            value = reader.ReadTextDescriptionTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.TextDescription_Val2, value, "Read Var2");
         }
 
         #endregion

@@ -1188,9 +1188,17 @@ namespace ColorManagerTests.ICC
             using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val);
-                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr.Length, "Write length incorrect");
-                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr, stream.ToArray(), "Written value is not the same");
+                int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val1);
+                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val2);
+                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr2, stream.ToArray(), "Written value is not the same Var2");
             }
         }
 
