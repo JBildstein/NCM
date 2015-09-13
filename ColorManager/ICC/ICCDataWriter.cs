@@ -14,9 +14,7 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly Stream DataStream;
         private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
-
-        //TODO: some TagDataEntries might need padding bytes (see documentation)
-
+        
         /// <summary>
         /// Creates a new instance of the <see cref="ICCDataWriter"/> class
         /// </summary>
@@ -362,17 +360,18 @@ namespace ColorManager.ICC
         /// <param name="data">The entry to write</param>
         /// <param name="signature">The signature of the table entry</param>
         /// <param name="table">The table entry for the written data entry</param>
-        /// <returns>the number of bytes written</returns>
+        /// <returns>the number of bytes written (excluding padding)</returns>
         public int WriteTagDataEntry(TagDataEntry data, out TagTableEntry table)
         {
             uint offset = (uint)DataStream.Position;
             int c = WriteTagDataEntry(data);
+            WritePadding();
             table = new TagTableEntry(data.TagSignature, offset, (uint)c);
             return c;
         }
 
         /// <summary>
-        /// Writes a tag data entry
+        /// Writes a tag data entry (without padding)
         /// </summary>
         /// <param name="entry">The entry to write</param>
         /// <returns>the number of bytes written</returns>
@@ -473,8 +472,7 @@ namespace ColorManager.ICC
                     c += WriteUnknownTagDataEntry(entry as UnknownTagDataEntry);
                     break;
             }
-
-            return c + WritePadding();
+            return c;
         }
 
         public int WriteTagDataEntryHeader(TypeSignature signature)
@@ -645,22 +643,7 @@ namespace ColorManager.ICC
             {
                 bCurveOffset = DataStream.Position;
                 c += WriteCurves(value.CurveB);
-            }
-            if (value.CurveM != null)
-            {
-                mCurveOffset = DataStream.Position;
-                c += WriteCurves(value.CurveM);
-            }
-            if (value.CurveA != null)
-            {
-                aCurveOffset = DataStream.Position;
-                c += WriteCurves(value.CurveA);
-            }
-
-            if (value.CLUTValues != null)
-            {
-                CLUTOffset = DataStream.Position;
-                c += WriteCLUT(value.CLUTValues);
+                c += WritePadding();
             }
 
             if (value.Matrix3x1 != null && value.Matrix3x3 != null)
@@ -668,6 +651,28 @@ namespace ColorManager.ICC
                 matrixOffset = DataStream.Position;
                 c += WriteMatrix(value.Matrix3x3, false);
                 c += WriteMatrix(value.Matrix3x1, false);
+                c += WritePadding();
+            }
+
+            if (value.CurveM != null)
+            {
+                mCurveOffset = DataStream.Position;
+                c += WriteCurves(value.CurveM);
+                c += WritePadding();
+            }
+
+            if (value.CLUTValues != null)
+            {
+                CLUTOffset = DataStream.Position;
+                c += WriteCLUT(value.CLUTValues);
+                c += WritePadding();
+            }
+
+            if (value.CurveA != null)
+            {
+                aCurveOffset = DataStream.Position;
+                c += WriteCurves(value.CurveA);
+                c += WritePadding();
             }
 
             //Set offset values
@@ -714,22 +719,7 @@ namespace ColorManager.ICC
             {
                 bCurveOffset = DataStream.Position;
                 c += WriteCurves(value.CurveB);
-            }
-            if (value.CurveM != null)
-            {
-                mCurveOffset = DataStream.Position;
-                c += WriteCurves(value.CurveM);
-            }
-            if (value.CurveA != null)
-            {
-                aCurveOffset = DataStream.Position;
-                c += WriteCurves(value.CurveA);
-            }
-
-            if (value.CLUTValues != null)
-            {
-                CLUTOffset = DataStream.Position;
-                c += WriteCLUT(value.CLUTValues);
+                c += WritePadding();
             }
 
             if (value.Matrix3x1 != null && value.Matrix3x3 != null)
@@ -737,6 +727,28 @@ namespace ColorManager.ICC
                 matrixOffset = DataStream.Position;
                 c += WriteMatrix(value.Matrix3x3, false);
                 c += WriteMatrix(value.Matrix3x1, false);
+                c += WritePadding();
+            }
+
+            if (value.CurveM != null)
+            {
+                mCurveOffset = DataStream.Position;
+                c += WriteCurves(value.CurveM);
+                c += WritePadding();
+            }
+
+            if (value.CLUTValues != null)
+            {
+                CLUTOffset = DataStream.Position;
+                c += WriteCLUT(value.CLUTValues);
+                c += WritePadding();
+            }
+
+            if (value.CurveA != null)
+            {
+                aCurveOffset = DataStream.Position;
+                c += WriteCurves(value.CurveA);
+                c += WritePadding();
             }
 
             //Set offset values
@@ -830,7 +842,7 @@ namespace ColorManager.ICC
             {
                 uint offset = (uint)(DataStream.Position - start);
                 int size = WriteMultiProcessElement(value.Data[i]);
-                size += WritePadding();
+                c += WritePadding();
                 posTable[i] = new PositionNumber(offset, (uint)size);
                 c += size;
             }
@@ -894,6 +906,7 @@ namespace ColorManager.ICC
                 uint offset = (uint)(DataStream.Position - start);
                 int size = WriteProfileID(value.Data[i].ID);
                 size += WriteTagDataEntry(new MultiLocalizedUnicodeTagDataEntry(value.Data[i].Description));
+                size += WritePadding();
                 table[i] = new PositionNumber(offset, (uint)size);
                 c += size;
             }
@@ -1384,6 +1397,7 @@ namespace ColorManager.ICC
                     throw new CorruptProfileException(msg);
                 }
                 c += WriteTagDataEntry(curve);
+                c += WritePadding();
             }
             return c;
         }
