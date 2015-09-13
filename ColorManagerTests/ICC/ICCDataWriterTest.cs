@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ColorManager.ICC;
+using ColorManagerTests.ICC.Data;
 
 namespace ColorManagerTests.ICC
 {
@@ -17,7 +17,7 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteByte(byte.MinValue);
-                Assert.IsTrue(c == 1, "Write length incorrect");
+                Assert.IsTrue(c == 1, "Write length incorrect Min");
 
                 var result = new byte[] { byte.MinValue };
                 CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
@@ -27,7 +27,7 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteByte(128);
-                Assert.IsTrue(c == 1, "Write length incorrect");
+                Assert.IsTrue(c == 1, "Write length incorrect Mid");
 
                 var result = new byte[] { 128 };
                 CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
@@ -37,7 +37,7 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteByte(byte.MaxValue);
-                Assert.IsTrue(c == 1, "Write length incorrect");
+                Assert.IsTrue(c == 1, "Write length incorrect Max");
 
                 var result = new byte[] { byte.MaxValue };
                 CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
@@ -47,510 +47,396 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteUInt16()
         {
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt16(ushort.MinValue);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.UInt16_0.Length, "Write length incorrect Min");                
+                CollectionAssert.AreEqual(PrimitivesData.UInt16_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUInt16(1 + ushort.MaxValue / 2);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                int c = writer.WriteUInt16(32768);
+                Assert.IsTrue(c == PrimitivesData.UInt16_32768.Length, "Write length incorrect Mid");
+                CollectionAssert.AreEqual(PrimitivesData.UInt16_32768, stream.ToArray(), "Write Mid");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt16(ushort.MaxValue);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.UInt16_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.UInt16_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteInt16()
         {
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt16(short.MinValue);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.Int16_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Int16_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt16(0);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                Assert.IsTrue(c == PrimitivesData.Int16_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Int16_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt16(short.MaxValue);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.Int16_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Int16_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteUInt32()
         {
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt32(uint.MinValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.UInt32_0.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.UInt32_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUInt32(1 + uint.MaxValue / 2);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                int c = writer.WriteUInt32(PrimitivesData.UInt32_ValRand1);
+                Assert.IsTrue(c == PrimitivesData.UInt32_Rand1.Length, "Write length incorrect Rand");
+                CollectionAssert.AreEqual(PrimitivesData.UInt32_Rand1, stream.ToArray(), "Write Rand");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt32(uint.MaxValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.UInt32_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.UInt32_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteInt32()
         {
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt32(int.MinValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.Int32_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Int32_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt32(0);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                Assert.IsTrue(c == PrimitivesData.Int32_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Int32_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt32(int.MaxValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.Int32_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Int32_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteUInt64()
         {
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt64(ulong.MinValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.UInt64_0.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.UInt64_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUInt64(1 + ulong.MaxValue / 2);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                int c = writer.WriteUInt64(9);
+                Assert.IsTrue(c == PrimitivesData.UInt64_9.Length, "Write length incorrect 9");
+                CollectionAssert.AreEqual(PrimitivesData.UInt64_9, stream.ToArray(), "Write 9");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUInt64(ulong.MaxValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.UInt64_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.UInt64_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteInt64()
         {
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt64(long.MinValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.Int64_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Int64_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt64(0);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Mid");
+                Assert.IsTrue(c == PrimitivesData.Int64_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Int64_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteInt64(long.MaxValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.Int64_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Int64_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteSingle()
         {
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteSingle(float.MinValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0x7F, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.Single_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Single_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteSingle(0f);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Zero");
+                Assert.IsTrue(c == PrimitivesData.Single_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Single_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteSingle(1f);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x3F, 0x80, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.Single_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.Single_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteSingle(float.MaxValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0x7F, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.Single_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Single_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteDouble()
         {
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteDouble(double.MinValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.Double_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Double_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteDouble(0d);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Zero");
+                Assert.IsTrue(c == PrimitivesData.Double_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Double_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteDouble(1d);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x3F, 0xF0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.Double_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.Double_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(8))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteDouble(double.MaxValue);
-                Assert.IsTrue(c == 8, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                Assert.IsTrue(c == PrimitivesData.Double_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Double_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteFix16()
         {
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteFix16(short.MinValue);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                int c = writer.WriteFix16(PrimitivesData.Fix16_ValMin);
+                Assert.IsTrue(c == PrimitivesData.Fix16_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.Fix16_Min, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteFix16(0d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Zero");
+                Assert.IsTrue(c == PrimitivesData.Fix16_0.Length, "Write length incorrect Zero");
+                CollectionAssert.AreEqual(PrimitivesData.Fix16_0, stream.ToArray(), "Write Zero");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteFix16(1d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x01, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.Fix16_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.Fix16_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteFix16(short.MaxValue + 65535d / 65536d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x7F, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                int c = writer.WriteFix16(PrimitivesData.Fix16_ValMax);
+                Assert.IsTrue(c == PrimitivesData.Fix16_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.Fix16_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteUFix16()
         {
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUFix16(0d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                int c = writer.WriteUFix16(PrimitivesData.UFix16_ValMin);
+                Assert.IsTrue(c == PrimitivesData.UFix16_0.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.UFix16_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUFix16(1d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x01, 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.UFix16_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.UFix16_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(4))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUFix16(ushort.MaxValue + 65535d / 65536d);
-                Assert.IsTrue(c == 4, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                int c = writer.WriteUFix16(PrimitivesData.UFix16_ValMax);
+                Assert.IsTrue(c == PrimitivesData.UFix16_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.UFix16_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteU1Fix15()
         {
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteU1Fix15(0d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.U1Fix15_0.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.U1Fix15_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteU1Fix15(1d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x80, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.U1Fix15_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.U1Fix15_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteU1Fix15(1d + 32767d / 32768d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                int c = writer.WriteU1Fix15(PrimitivesData.U1Fix15_ValMax);
+                Assert.IsTrue(c == PrimitivesData.U1Fix15_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.U1Fix15_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteUFix8()
         {
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUFix8(0d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x00, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Min");
+                Assert.IsTrue(c == PrimitivesData.UFix8_0.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(PrimitivesData.UFix8_0, stream.ToArray(), "Write Min");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteUFix8(1d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0x01, 0x00 };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write One");
+                Assert.IsTrue(c == PrimitivesData.UFix8_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(PrimitivesData.UFix8_1, stream.ToArray(), "Write One");
             }
 
-            using (var stream = new MemoryStream(2))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                int c = writer.WriteUFix8(byte.MaxValue + 255d / 256d);
-                Assert.IsTrue(c == 2, "Write length incorrect");
-
-                var result = new byte[] { 0xFF, 0xFF };
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Write Max");
+                int c = writer.WriteUFix8(PrimitivesData.UFix8_ValMax);
+                Assert.IsTrue(c == PrimitivesData.UFix8_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(PrimitivesData.UFix8_Max, stream.ToArray(), "Write Max");
             }
         }
 
         [TestMethod]
         public void WriteASCIIString()
         {
-            using (var stream = new MemoryStream(128))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-
-                var result = new byte[128];
-                var dataArr = new char[128];
-                for (int i = 0; i < 128; i++)
-                {
-                    result[i] = (byte)i;
-                    dataArr[i] = (char)i;
-                }
-                var data = new string(dataArr);
-                
-                int c = writer.WriteASCIIString(data);
-                Assert.IsTrue(c == 128, "Write length incorrect");
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Written string is not the same");
+                int c = writer.WriteASCIIString(PrimitivesData.ASCII_ValAll);
+                Assert.IsTrue(c == PrimitivesData.ASCII_All.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(PrimitivesData.ASCII_All, stream.ToArray(), "Written string is not the same");
             }
         }
 
         [TestMethod]
         public void WriteASCIIStringLength()
         {
-            using (var stream = new MemoryStream(128))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-
-                var result = new byte[128];
-                var dataArr = new char[132];
-                for (int i = 0; i < 132; i++)
-                {
-                    if (i < 128) result[i] = (byte)i;
-                    dataArr[i] = (char)i;
-                }
-                var data = new string(dataArr);
-
-                int c = writer.WriteASCIIString(data, 128);
-                Assert.IsTrue(c == 128, "Write length incorrect");
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Written string is not the same");
+                int c = writer.WriteASCIIString(PrimitivesData.ASCII_ValAll, PrimitivesData.ASCII_ValAll.Length);
+                Assert.IsTrue(c == PrimitivesData.ASCII_All.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(PrimitivesData.ASCII_All, stream.ToArray(), "Written string is not the same");
             }
         }
 
         [TestMethod]
         public void WriteUnicodeString()
         {
-            using (var stream = new MemoryStream(26))
+            using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
-                var data = ".6Abäñ$€β𐐷𤭢";
-                var result = new byte[]
-                {
-                    0x00, 0x2e, //.
-                    0x00, 0x36, //6
-                    0x00, 0x41, //A
-                    0x00, 0x62, //b
-                    0x00, 0xe4, //ä
-                    0x00, 0xf1, //ñ
-                    0x00, 0x24, //$
-                    0x20, 0xAC, //€
-                    0x03, 0xb2, //β
-                    0xD8, 0x01, 0xDC, 0x37, //𐐷
-                    0xD8, 0x52, 0xDF, 0x62, //𤭢
-                };
-
-                int c = writer.WriteUnicodeString(data);
-                Assert.IsTrue(c == 26, "Write length incorrect");
-                CollectionAssert.AreEqual(result, stream.ToArray(), "Written string is not the same");
+                int c = writer.WriteUnicodeString(PrimitivesData.Unicode_ValRand1);
+                Assert.IsTrue(c == PrimitivesData.Unicode_Rand1.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(PrimitivesData.Unicode_Rand1, stream.ToArray(), "Written string is not the same");
             }
         }
 
@@ -561,61 +447,291 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteDateTime()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDateTime(StructsData.DateTime_ValRand1);
+                Assert.IsTrue(c == StructsData.DateTime_Rand1.Length, "Write length incorrect Rand");
+                CollectionAssert.AreEqual(StructsData.DateTime_Rand1, stream.ToArray(), "Written value is not the same Rand");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDateTime(StructsData.DateTime_ValMin);
+                Assert.IsTrue(c == StructsData.DateTime_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.DateTime_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDateTime(StructsData.DateTime_ValMax);
+                Assert.IsTrue(c == StructsData.DateTime_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.DateTime_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteVersionNumber()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteVersionNumber(StructsData.VersionNumber_ValMin);
+                Assert.IsTrue(c == StructsData.VersionNumber_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.VersionNumber_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteVersionNumber(StructsData.VersionNumber_Val211);
+                Assert.IsTrue(c == StructsData.VersionNumber_211.Length, "Write length incorrect 2.1.1");
+                CollectionAssert.AreEqual(StructsData.VersionNumber_211, stream.ToArray(), "Written value is not the same 2.1.1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteVersionNumber(StructsData.VersionNumber_Val430);
+                Assert.IsTrue(c == StructsData.VersionNumber_430.Length, "Write length incorrect 4.3.0");
+                CollectionAssert.AreEqual(StructsData.VersionNumber_430, stream.ToArray(), "Written value is not the same 4.3.0");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteVersionNumber(StructsData.VersionNumber_ValMax);
+                Assert.IsTrue(c == StructsData.VersionNumber_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.VersionNumber_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteProfileFlag()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileFlag(StructsData.ProfileFlag_ValMin);
+                Assert.IsTrue(c == StructsData.ProfileFlag_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.ProfileFlag_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileFlag(StructsData.ProfileFlag_ValEmbedded);
+                Assert.IsTrue(c == StructsData.ProfileFlag_Embedded.Length, "Write length incorrect Embedded");
+                CollectionAssert.AreEqual(StructsData.ProfileFlag_Embedded, stream.ToArray(), "Written value is not the same Embedded");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileFlag(StructsData.ProfileFlag_ValNotIndependent);
+                Assert.IsTrue(c == StructsData.ProfileFlag_NotIndependent.Length, "Write length incorrect NotIndependent");
+                CollectionAssert.AreEqual(StructsData.ProfileFlag_NotIndependent, stream.ToArray(), "Written value is not the same NotIndependent");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileFlag(StructsData.ProfileFlag_ValMax);
+                Assert.IsTrue(c == StructsData.ProfileFlag_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.ProfileFlag_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteDeviceAttribute()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDeviceAttribute(StructsData.DeviceAttribute_ValMin);
+                Assert.IsTrue(c == StructsData.DeviceAttribute_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.DeviceAttribute_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDeviceAttribute(StructsData.DeviceAttribute_ValVar1);
+                Assert.IsTrue(c == StructsData.DeviceAttribute_Var1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(StructsData.DeviceAttribute_Var1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDeviceAttribute(StructsData.DeviceAttribute_ValVar2);
+                Assert.IsTrue(c == StructsData.DeviceAttribute_Var2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(StructsData.DeviceAttribute_Var2, stream.ToArray(), "Written value is not the same Var2");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDeviceAttribute(StructsData.DeviceAttribute_ValMax);
+                Assert.IsTrue(c == StructsData.DeviceAttribute_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.DeviceAttribute_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteXYZNumber()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteXYZNumber(StructsData.XYZNumber_ValMin);
+                Assert.IsTrue(c == StructsData.XYZNumber_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.XYZNumber_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteXYZNumber(StructsData.XYZNumber_Val1);
+                Assert.IsTrue(c == StructsData.XYZNumber_1.Length, "Write length incorrect One");
+                CollectionAssert.AreEqual(StructsData.XYZNumber_1, stream.ToArray(), "Written value is not the same One");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteXYZNumber(StructsData.XYZNumber_ValVar1);
+                Assert.IsTrue(c == StructsData.XYZNumber_Var1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(StructsData.XYZNumber_Var1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteXYZNumber(StructsData.XYZNumber_ValMax);
+                Assert.IsTrue(c == StructsData.XYZNumber_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.XYZNumber_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteProfileID()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileID(StructsData.ProfileID_ValMin);
+                Assert.IsTrue(c == StructsData.ProfileID_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.ProfileID_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileID(StructsData.ProfileID_ValRand);
+                Assert.IsTrue(c == StructsData.ProfileID_Rand.Length, "Write length incorrect Rand");
+                CollectionAssert.AreEqual(StructsData.ProfileID_Rand, stream.ToArray(), "Written value is not the same Rand");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileID(StructsData.ProfileID_ValMax);
+                Assert.IsTrue(c == StructsData.ProfileID_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.ProfileID_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WritePositionNumber()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WritePositionNumber(StructsData.PositionNumber_ValMin);
+                Assert.IsTrue(c == StructsData.PositionNumber_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.PositionNumber_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WritePositionNumber(StructsData.PositionNumber_ValRand);
+                Assert.IsTrue(c == StructsData.PositionNumber_Rand.Length, "Write length incorrect Rand");
+                CollectionAssert.AreEqual(StructsData.PositionNumber_Rand, stream.ToArray(), "Written value is not the same Rand");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WritePositionNumber(StructsData.PositionNumber_ValMax);
+                Assert.IsTrue(c == StructsData.PositionNumber_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.PositionNumber_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteResponseNumber()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteResponseNumber(StructsData.ResponseNumber_ValMin);
+                Assert.IsTrue(c == StructsData.ResponseNumber_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.ResponseNumber_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteResponseNumber(StructsData.ResponseNumber_Val3);
+                Assert.IsTrue(c == StructsData.ResponseNumber_3.Length, "Write length incorrect Three");
+                CollectionAssert.AreEqual(StructsData.ResponseNumber_3, stream.ToArray(), "Written value is not the same Three");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteResponseNumber(StructsData.ResponseNumber_ValMax);
+                Assert.IsTrue(c == StructsData.ResponseNumber_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.ResponseNumber_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteNamedColor()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteNamedColor(StructsData.NamedColor_ValMin);
+                Assert.IsTrue(c == StructsData.NamedColor_Min.Length, "Write length incorrect Min");
+                CollectionAssert.AreEqual(StructsData.NamedColor_Min, stream.ToArray(), "Written value is not the same Min");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteNamedColor(StructsData.NamedColor_ValMax);
+                Assert.IsTrue(c == StructsData.NamedColor_Max.Length, "Write length incorrect Max");
+                CollectionAssert.AreEqual(StructsData.NamedColor_Max, stream.ToArray(), "Written value is not the same Max");
+            }
         }
 
         [TestMethod]
         public void WriteProfileDescription()
         {
-            Assert.Inconclusive("Not implemented");
+            Assert.Inconclusive("MultiLocalizedUnicodeTagDataEntry is incorrect on which this relies");
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileDescription(StructsData.ProfileDescription_ValRand1);
+                Assert.IsTrue(c == StructsData.ProfileDescription_Rand1.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(StructsData.ProfileDescription_Rand1, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion
@@ -819,15 +935,43 @@ namespace ColorManagerTests.ICC
         #region Write Matrix
 
         [TestMethod]
-        public void WriteMatrixTest2D()
+        public void WriteMatrix2D()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMatrix(MatrixData.Fix16_2D_ValGrad, false);
+                Assert.IsTrue(c == MatrixData.Fix16_2D_Grad.Length, "Write length incorrect Fix16");
+                CollectionAssert.AreEqual(MatrixData.Fix16_2D_Grad, stream.ToArray(), "Written value is not the same Fix16");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMatrix(MatrixData.Single_2D_ValGrad, true);
+                Assert.IsTrue(c == MatrixData.Single_2D_Grad.Length, "Write length incorrect Single");
+                CollectionAssert.AreEqual(MatrixData.Single_2D_Grad, stream.ToArray(), "Written value is not the same Single");
+            }
         }
 
         [TestMethod]
         public void WriteMatrix1D()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMatrix(MatrixData.Fix16_1D_ValGrad, false);
+                Assert.IsTrue(c == MatrixData.Fix16_1D_Grad.Length, "Write length incorrect Fix16");
+                CollectionAssert.AreEqual(MatrixData.Fix16_1D_Grad, stream.ToArray(), "Written value is not the same Fix16");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMatrix(MatrixData.Single_1D_ValGrad, true);
+                Assert.IsTrue(c == MatrixData.Single_1D_Grad.Length, "Write length incorrect Single");
+                CollectionAssert.AreEqual(MatrixData.Single_1D_Grad, stream.ToArray(), "Written value is not the same Single");
+            }
         }
 
         #endregion
@@ -837,37 +981,89 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteLUT16()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLUT16(LUTData.LUT16_ValGrad);
+                Assert.IsTrue(c == LUTData.LUT16_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(LUTData.LUT16_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteLUT8()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLUT8(LUTData.LUT8_ValGrad);
+                Assert.IsTrue(c == LUTData.LUT8_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(LUTData.LUT8_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteCLUT()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUT(LUTData.CLUT_Val8);
+                Assert.IsTrue(c == LUTData.CLUT_8.Length, "Write length incorrect CLUT8");
+                CollectionAssert.AreEqual(LUTData.CLUT_8, stream.ToArray(), "Written value is not the same CLUT8");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUT(LUTData.CLUT_Val16);
+                Assert.IsTrue(c == LUTData.CLUT_16.Length, "Write length incorrect CLUT16");
+                CollectionAssert.AreEqual(LUTData.CLUT_16, stream.ToArray(), "Written value is not the same CLUT16");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUT(LUTData.CLUT_Valf32);
+                Assert.IsTrue(c == LUTData.CLUT_f32.Length, "Write length incorrect CLUTf32");
+                CollectionAssert.AreEqual(LUTData.CLUT_f32, stream.ToArray(), "Written value is not the same CLUTf32");
+            }
         }
 
         [TestMethod]
         public void WriteCLUT8()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUT8(LUTData.CLUT8_ValGrad);
+                Assert.IsTrue(c == LUTData.CLUT8_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(LUTData.CLUT8_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteCLUT16()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUT16(LUTData.CLUT16_ValGrad);
+                Assert.IsTrue(c == LUTData.CLUT16_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(LUTData.CLUT16_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteCLUTf32()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUTf32(LUTData.CLUTf32_ValGrad);
+                Assert.IsTrue(c == LUTData.CLUTf32_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(LUTData.CLUTf32_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion
@@ -877,25 +1073,81 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteMultiProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElement(MultiProcessElementData.MPE_ValCLUT);
+                Assert.IsTrue(c == MultiProcessElementData.MPE_CLUT.Length, "Write length incorrect CLUT");
+                CollectionAssert.AreEqual(MultiProcessElementData.MPE_CLUT, stream.ToArray(), "Written value is not the same CLUT");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElement(MultiProcessElementData.MPE_ValCurve);
+                Assert.IsTrue(c == MultiProcessElementData.MPE_Curve.Length, "Write length incorrect Curve");
+                CollectionAssert.AreEqual(MultiProcessElementData.MPE_Curve, stream.ToArray(), "Written value is not the same Curve");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElement(MultiProcessElementData.MPE_ValMatrix);
+                Assert.IsTrue(c == MultiProcessElementData.MPE_Matrix.Length, "Write length incorrect Matrix");
+                CollectionAssert.AreEqual(MultiProcessElementData.MPE_Matrix, stream.ToArray(), "Written value is not the same Matrix");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElement(MultiProcessElementData.MPE_ValbACS);
+                Assert.IsTrue(c == MultiProcessElementData.MPE_bACS.Length, "Write length incorrect bACS");
+                CollectionAssert.AreEqual(MultiProcessElementData.MPE_bACS, stream.ToArray(), "Written value is not the same bACS");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElement(MultiProcessElementData.MPE_ValeACS);
+                Assert.IsTrue(c == MultiProcessElementData.MPE_eACS.Length, "Write length incorrect eACS");
+                CollectionAssert.AreEqual(MultiProcessElementData.MPE_eACS, stream.ToArray(), "Written value is not the same eACS");
+            }
         }
 
         [TestMethod]
         public void WriteCurveSetProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSetProcessElement(MultiProcessElementData.CurvePE_ValGrad);
+                Assert.IsTrue(c == MultiProcessElementData.CurvePE_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(MultiProcessElementData.CurvePE_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteMatrixProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMatrixProcessElement(MultiProcessElementData.MatrixPE_ValGrad);
+                Assert.IsTrue(c == MultiProcessElementData.MatrixPE_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(MultiProcessElementData.MatrixPE_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteCLUTProcessElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCLUTProcessElement(MultiProcessElementData.CLUTPE_ValGrad);
+                Assert.IsTrue(c == MultiProcessElementData.CLUTPE_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(MultiProcessElementData.CLUTPE_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion
@@ -905,37 +1157,177 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteOneDimensionalCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteOneDimensionalCurve(CurveData.OneDimensional_ValFormula1);
+                Assert.IsTrue(c == CurveData.OneDimensional_Formula1.Length, "Write length incorrect Formula1");
+                CollectionAssert.AreEqual(CurveData.OneDimensional_Formula1, stream.ToArray(), "Written value is not the same Formula1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteOneDimensionalCurve(CurveData.OneDimensional_ValFormula2);
+                Assert.IsTrue(c == CurveData.OneDimensional_Formula2.Length, "Write length incorrect Formula2");
+                CollectionAssert.AreEqual(CurveData.OneDimensional_Formula2, stream.ToArray(), "Written value is not the same Formula2");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteOneDimensionalCurve(CurveData.OneDimensional_ValSampled);
+                Assert.IsTrue(c == CurveData.OneDimensional_Sampled.Length, "Write length incorrect Sampled");
+                CollectionAssert.AreEqual(CurveData.OneDimensional_Sampled, stream.ToArray(), "Written value is not the same Sampled");
+            }
         }
 
         [TestMethod]
         public void WriteResponseCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteResponseCurve(CurveData.Response_ValGrad);
+                Assert.IsTrue(c == CurveData.Response_Grad.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(CurveData.Response_Grad, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteParametricCurve()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurve(CurveData.Parametric_ValVar1);
+                Assert.IsTrue(c == CurveData.Parametric_Var1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(CurveData.Parametric_Var1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurve(CurveData.Parametric_ValVar2);
+                Assert.IsTrue(c == CurveData.Parametric_Var2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(CurveData.Parametric_Var2, stream.ToArray(), "Written value is not the same Var2");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurve(CurveData.Parametric_ValVar3);
+                Assert.IsTrue(c == CurveData.Parametric_Var3.Length, "Write length incorrect Var3");
+                CollectionAssert.AreEqual(CurveData.Parametric_Var3, stream.ToArray(), "Written value is not the same Var3");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurve(CurveData.Parametric_ValVar4);
+                Assert.IsTrue(c == CurveData.Parametric_Var4.Length, "Write length incorrect Var4");
+                CollectionAssert.AreEqual(CurveData.Parametric_Var4, stream.ToArray(), "Written value is not the same Var4");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurve(CurveData.Parametric_ValVar5);
+                Assert.IsTrue(c == CurveData.Parametric_Var5.Length, "Write length incorrect Var5");
+                CollectionAssert.AreEqual(CurveData.Parametric_Var5, stream.ToArray(), "Written value is not the same Var5");
+            }
         }
 
         [TestMethod]
         public void WriteCurveSegment()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSegment(CurveData.Segment_ValFormula1);
+                Assert.IsTrue(c == CurveData.Segment_Formula1.Length, "Write length incorrect Formula1");
+                CollectionAssert.AreEqual(CurveData.Segment_Formula1, stream.ToArray(), "Written value is not the same Formula1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSegment(CurveData.Segment_ValFormula2);
+                Assert.IsTrue(c == CurveData.Segment_Formula2.Length, "Write length incorrect Formula2");
+                CollectionAssert.AreEqual(CurveData.Segment_Formula2, stream.ToArray(), "Written value is not the same Formula2");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSegment(CurveData.Segment_ValFormula3);
+                Assert.IsTrue(c == CurveData.Segment_Formula3.Length, "Write length incorrect Formula3");
+                CollectionAssert.AreEqual(CurveData.Segment_Formula3, stream.ToArray(), "Written value is not the same Formula3");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSegment(CurveData.Segment_ValSampled1);
+                Assert.IsTrue(c == CurveData.Segment_Sampled1.Length, "Write length incorrect Sampled1");
+                CollectionAssert.AreEqual(CurveData.Segment_Sampled1, stream.ToArray(), "Written value is not the same Sampled1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveSegment(CurveData.Segment_ValSampled2);
+                Assert.IsTrue(c == CurveData.Segment_Sampled2.Length, "Write length incorrect Sampled2");
+                CollectionAssert.AreEqual(CurveData.Segment_Sampled2, stream.ToArray(), "Written value is not the same Sampled2");
+            }
         }
 
         [TestMethod]
         public void WriteFormulaCurveElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteFormulaCurveElement(CurveData.Formula_ValVar1);
+                Assert.IsTrue(c == CurveData.Formula_Var1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(CurveData.Formula_Var1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteFormulaCurveElement(CurveData.Formula_ValVar2);
+                Assert.IsTrue(c == CurveData.Formula_Var2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(CurveData.Formula_Var2, stream.ToArray(), "Written value is not the same Var2");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteFormulaCurveElement(CurveData.Formula_ValVar3);
+                Assert.IsTrue(c == CurveData.Formula_Var3.Length, "Write length incorrect Var3");
+                CollectionAssert.AreEqual(CurveData.Formula_Var3, stream.ToArray(), "Written value is not the same Var3");
+            }
         }
 
         [TestMethod]
         public void WriteSampledCurveElement()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteSampledCurveElement(CurveData.Sampled_ValGrad1);
+                Assert.IsTrue(c == CurveData.Sampled_Grad1.Length, "Write length incorrect Grad1");
+                CollectionAssert.AreEqual(CurveData.Sampled_Grad1, stream.ToArray(), "Written value is not the same Grad1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteSampledCurveElement(CurveData.Sampled_ValGrad2);
+                Assert.IsTrue(c == CurveData.Sampled_Grad2.Length, "Write length incorrect Grad2");
+                CollectionAssert.AreEqual(CurveData.Sampled_Grad2, stream.ToArray(), "Written value is not the same Grad2");
+            }
         }
 
         #endregion
@@ -945,37 +1337,73 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteArrayByte()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.UInt8);
+                Assert.IsTrue(c == ArrayData.UInt8.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.UInt8, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteArrayUInt16()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.UInt16_Val);
+                Assert.IsTrue(c == ArrayData.UInt16_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.UInt16_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteArrayInt16()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.Int16_Val);
+                Assert.IsTrue(c == ArrayData.Int16_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.Int16_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteArrayUInt32()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.UInt32_Val);
+                Assert.IsTrue(c == ArrayData.UInt32_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.UInt32_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteArrayInt32()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.Int32_Val);
+                Assert.IsTrue(c == ArrayData.Int32_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.Int32_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteArrayUInt64()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteArray(ArrayData.UInt64_Val);
+                Assert.IsTrue(c == ArrayData.UInt64_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(ArrayData.UInt64_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion
@@ -985,13 +1413,26 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteEmpty()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteEmpty(3);
+                Assert.IsTrue(c == 3, "Write length incorrect");
+                CollectionAssert.AreEqual(new byte[] { 0x00, 0x00, 0x00 }, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WritePadding()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                stream.Write(new byte[] { 0x00, 0x00, 0x00 }, 0, 3);
+                int c = writer.WritePadding();
+                Assert.IsTrue(c == 1, "Write length incorrect");
+                CollectionAssert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00 }, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion

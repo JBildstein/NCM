@@ -93,6 +93,7 @@
     <Compile Include="ClassImplementations\TestChromaticAdaption.cs" />
     <Compile Include="ClassImplementations\TestConversionPath.cs" />
     <Compile Include="ClassImplementations\TestWhitepoint.cs" />
+    <Compile Include="ICC\Data\ArrayData.cs" />
     <Compile Include="ICC\Data\CurveData.cs" />
     <Compile Include="ICC\Data\MultiProcessElementData.cs" />
     <Compile Include="ICC\Data\LUTData.cs" />
