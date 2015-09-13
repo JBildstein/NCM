@@ -270,31 +270,38 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x02, 0x03, 0x00, 0x00 },
 
             new byte[] { 0x00, 0x00, 0x00, 0x20 },  //b:        32
-            new byte[] { 0x00, 0x00, 0x00, 0xEE },  //matrix:   238
-            new byte[] { 0x00, 0x00, 0x00, 0x50 },  //m:        80
-            new byte[] { 0x00, 0x00, 0x00, 0xA4 },  //clut:     164
-            new byte[] { 0x00, 0x00, 0x00, 0x80 },  //a:        128
-
+            new byte[] { 0x00, 0x00, 0x00, 0x50 },  //matrix:   80
+            new byte[] { 0x00, 0x00, 0x00, 0x80 },  //m:        128
+            new byte[] { 0x00, 0x00, 0x00, 0xB0 },  //clut:     176
+            new byte[] { 0x00, 0x00, 0x00, 0xFC },  //a:        252
+            
+            //B
             CurveFull_0,    //12 bytes
             CurveFull_1,    //14 bytes
             new byte[] { 0x00, 0x00 }, // Padding
             CurveFull_2,    //18 bytes
             new byte[] { 0x00, 0x00 }, // Padding
 
-            CurveFull_1,    //14 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_2,    //18 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_0,    //12 bytes
-
-            CurveFull_2,    //18 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_1,    //14 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-
-            LUTData.CLUT_16,            //74 bytes
+            //Matrix
             MatrixData.Fix16_2D_Grad,   //36 bytes
-            MatrixData.Fix16_1D_Grad    //12 bytes
+            MatrixData.Fix16_1D_Grad,   //12 bytes
+            
+            //M
+            CurveFull_1,    //14 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_2,    //18 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_0,    //12 bytes
+
+            //CLUT
+            LUTData.CLUT_16,           //74 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+
+            //A
+            CurveFull_2,    //18 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_1,    //14 bytes
+            new byte[] { 0x00, 0x00 }  // Padding
         );
 
         #endregion
@@ -329,29 +336,36 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x02, 0x03, 0x00, 0x00 },
 
             new byte[] { 0x00, 0x00, 0x00, 0x20 },  //b:        32
-            new byte[] { 0x00, 0x00, 0x00, 0xDA },  //matrix:   218
-            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //m:        60
+            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //matrix:   60
+            new byte[] { 0x00, 0x00, 0x00, 0x6C },  //m:        108
             new byte[] { 0x00, 0x00, 0x00, 0x90 },  //clut:     144
-            new byte[] { 0x00, 0x00, 0x00, 0x60 },  //a:        96
+            new byte[] { 0x00, 0x00, 0x00, 0xDC },  //a:        220
 
+            //B
             CurveFull_0,    //12 bytes
             CurveFull_1,    //14 bytes
             new byte[] { 0x00, 0x00 }, // Padding
 
-            CurveFull_1,    //14 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_2,    //18 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-
-            CurveFull_2,    //18 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_1,    //14 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_0,    //12 bytes
-
-            LUTData.CLUT_16,            //74 bytes
+            //Matrix
             MatrixData.Fix16_2D_Grad,   //36 bytes
-            MatrixData.Fix16_1D_Grad    //12 bytes
+            MatrixData.Fix16_1D_Grad,    //12 bytes
+
+            //M
+            CurveFull_1,    //14 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_2,    //18 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            
+            //CLUT
+            LUTData.CLUT_16,           //74 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+
+            //A
+            CurveFull_2,    //18 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_1,    //14 bytes
+            new byte[] { 0x00, 0x00 }, // Padding
+            CurveFull_0     //12 bytes
         );
 
         #endregion
@@ -684,13 +698,13 @@ namespace ColorManagerTests.ICC.Data
         public static readonly TagTableEntry TagDataEntry_MultiLocalizedUnicodeTable = new TagTableEntry
         (
             TagSignature.Unknown, 0,
-            (uint)TagDataEntry_MultiLocalizedUnicodeArr.Length
+            (uint)TagDataEntry_MultiLocalizedUnicodeArr.Length - 2
         );
 
         public static readonly TagTableEntry TagDataEntry_CurveTable = new TagTableEntry
         (
             TagSignature.Unknown, 0,
-            (uint)TagDataEntry_CurveArr.Length
+            (uint)TagDataEntry_CurveArr.Length - 2
         );
 
         #endregion

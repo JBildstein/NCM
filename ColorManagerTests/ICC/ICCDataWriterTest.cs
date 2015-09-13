@@ -743,6 +743,7 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_CurveVal);
+                c += writer.WritePadding();
                 Assert.IsTrue(c == TagDataEntryData.TagDataEntry_CurveArr.Length, "Write length incorrect Curve");
                 CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_CurveArr, stream.ToArray(), "Written value is not the same Curve");
             }
@@ -751,6 +752,7 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeVal);
+                c += writer.WritePadding();
                 Assert.IsTrue(c == TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr.Length, "Write length incorrect MultiLocalizedUnicode");
                 CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr, stream.ToArray(), "Written value is not the same MultiLocalizedUnicode");
             }
@@ -763,9 +765,8 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 TagTableEntry table;
-                TagTableEntry tableResult = new TagTableEntry(TagSignature.Unknown, 0, 20);
                 int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_CurveVal, out table);
-                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_CurveArr.Length, "Write length incorrect");
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_CurveArr.Length - 2, "Write length incorrect");
                 Assert.AreEqual(TagDataEntryData.TagDataEntry_CurveTable, table, "TagTableEntry incorrect");
                 CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_CurveArr, stream.ToArray(), "Written value is not the same");
             }
@@ -774,9 +775,8 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 TagTableEntry table;
-                TagTableEntry tableResult = new TagTableEntry(TagSignature.Unknown, 0, 68);
                 int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeVal, out table);
-                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr.Length, "Write length incorrect");
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr.Length - 2, "Write length incorrect");
                 Assert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeTable, table, "TagTableEntry incorrect");
                 CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr, stream.ToArray(), "Written value is not the same");
             }
