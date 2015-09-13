@@ -1180,7 +1180,7 @@ namespace ColorManager.ICC
 
         public MeasurementTagDataEntry(StandardObserver Observer, XYZNumber XYZBacking,
             MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant)
-            : base(TypeSignature.Data)
+            : base(TypeSignature.Measurement)
         {
             _Observer = Observer;
             _XYZBacking = XYZBacking;
