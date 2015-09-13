@@ -241,8 +241,7 @@ namespace ColorManagerTests.ICC.Data
         private static readonly byte[] MultiLocalizedUnicode_Arr = ArrayHelper.Concat
         (
             PrimitivesData.UInt32_2,
-            //Size: 8(header) + 8(count/size) + 2 * 12(culture/length/offset) + 12(record1) + 14(record2)
-            new byte[] { 0x00, 0x00, 0x00, 0x4A }, //66
+            new byte[] { 0x00, 0x00, 0x00, 0x0c }, //12
 
             new byte[] { (byte)'e', (byte)'n', (byte)'U', (byte)'S' },
             new byte[] { 0x00, 0x00, 0x00, 0x0C },  //12
