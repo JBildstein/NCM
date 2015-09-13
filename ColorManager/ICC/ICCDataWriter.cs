@@ -365,8 +365,9 @@ namespace ColorManager.ICC
         /// <returns>the number of bytes written</returns>
         public int WriteTagDataEntry(TagDataEntry data, out TagTableEntry table)
         {
+            uint offset = (uint)DataStream.Position;
             int c = WriteTagDataEntry(data);
-            table = new TagTableEntry(data.TagSignature, (uint)DataStream.Position, (uint)c);
+            table = new TagTableEntry(data.TagSignature, offset, (uint)c);
             return c;
         }
 
@@ -495,12 +496,15 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = WriteUInt16((ushort)value.ChannelCount);
-            c += WriteUInt16((ushort)value.ChannelCount);
+            c += WriteUInt16((ushort)value.ColorantType);
 
-            for (int i = 0; i < value.ChannelCount; i++)
+            if (value.ColorantType == ColorantEncoding.Unknown)
             {
-                c += WriteUFix16(value.ChannelValues[i][0]);
-                c += WriteUFix16(value.ChannelValues[i][1]);
+                for (int i = 0; i < value.ChannelCount; i++)
+                {
+                    c += WriteUFix16(value.ChannelValues[i][0]);
+                    c += WriteUFix16(value.ChannelValues[i][1]);
+                }
             }
             return c;
         }
@@ -563,7 +567,7 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             return WriteEmpty(3)
-                 + WriteByte((byte)(value.IsASCII ? 0x80 : 0x00))
+                 + WriteByte((byte)(value.IsASCII ? 0x01 : 0x00))
                  + WriteArray(value.Data);
         }
 
@@ -584,6 +588,9 @@ namespace ColorManager.ICC
             c += WriteEmpty(1);
 
             c += WriteMatrix(value.Matrix, false);
+
+            c += WriteUInt16((ushort)value.InputValues[0].Values.Length);
+            c += WriteUInt16((ushort)value.OutputValues[0].Values.Length);
 
             foreach (var lut in value.InputValues) { c += WriteLUT16(lut); }
 
@@ -664,6 +671,7 @@ namespace ColorManager.ICC
             }
 
             //Set offset values
+            long lpos = DataStream.Position;
             DataStream.Position = offsetpos;
 
             if (bCurveOffset != 0) bCurveOffset -= start;
@@ -678,6 +686,7 @@ namespace ColorManager.ICC
             c += WriteUInt32((uint)CLUTOffset);
             c += WriteUInt32((uint)aCurveOffset);
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -731,6 +740,7 @@ namespace ColorManager.ICC
             }
 
             //Set offset values
+            long lpos = DataStream.Position;
             DataStream.Position = offsetpos;
 
             if (bCurveOffset != 0) bCurveOffset -= start;
@@ -745,6 +755,7 @@ namespace ColorManager.ICC
             c += WriteUInt32((uint)CLUTOffset);
             c += WriteUInt32((uint)aCurveOffset);
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -755,7 +766,7 @@ namespace ColorManager.ICC
             return WriteUInt32((uint)value.Observer)
                  + WriteXYZNumber(value.XYZBacking)
                  + WriteUInt32((uint)value.Geometry)
-                 + WriteUFix8(value.Flare)
+                 + WriteUFix16(value.Flare)
                  + WriteUInt32((uint)value.Illuminant);
         }
 
@@ -784,6 +795,7 @@ namespace ColorManager.ICC
             }
 
             //Write position table
+            long lpos = DataStream.Position;
             DataStream.Position = tpos;
             for (int i = 0; i < count; i++)
             {
@@ -795,6 +807,7 @@ namespace ColorManager.ICC
                 c += WriteUInt32(offset[i]);
             }
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -823,9 +836,11 @@ namespace ColorManager.ICC
             }
 
             //Write position table
+            long lpos = DataStream.Position;
             DataStream.Position = tpos;
             foreach (var pos in posTable) { c += WritePositionNumber(pos); }
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -856,10 +871,7 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = WriteUInt32((uint)value.Descriptions.Length);
-            foreach (var desc in value.Descriptions)
-            {
-                c += WriteProfileDescription(desc);
-            }
+            foreach (var desc in value.Descriptions) { c += WriteProfileDescription(desc); }
             return c;
         }
 
@@ -870,7 +882,7 @@ namespace ColorManager.ICC
             long start = DataStream.Position - 8;
             int count = value.Data.Length;
 
-            int c = WriteUInt16((ushort)count);
+            int c = WriteUInt32((uint)count);
 
             //Jump over position table
             long tpos = DataStream.Position;
@@ -887,9 +899,11 @@ namespace ColorManager.ICC
             }
 
             //Write position table
+            long lpos = DataStream.Position;
             DataStream.Position = tpos;
             foreach (var pos in table) { c += WritePositionNumber(pos); }
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -910,15 +924,17 @@ namespace ColorManager.ICC
 
             for (int i = 0; i < value.Curves.Length; i++)
             {
-                offset[i] = (uint)DataStream.Position;
+                offset[i] = (uint)(DataStream.Position - start);
                 c += WriteResponseCurve(value.Curves[i]);
                 c += WritePadding();
             }
 
             //Write position table
+            long lpos = DataStream.Position;
             DataStream.Position = tpos;
             c += WriteArray(offset);
 
+            DataStream.Position = lpos;
             return c;
         }
 
@@ -927,11 +943,7 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = 0;
-            for (int i = 0; i < value.Data.Length; i++)
-            {
-                c += WriteFix16(value.Data[i] * 256d);
-            }
-
+            for (int i = 0; i < value.Data.Length; i++) { c += WriteFix16(value.Data[i] * 256d); }
             return c;
         }
 
@@ -954,11 +966,7 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = 0;
-            for (int i = 0; i < value.Data.Length; i++)
-            {
-                c += WriteUFix16(value.Data[i]);
-            }
-
+            for (int i = 0; i < value.Data.Length; i++) { c += WriteUFix16(value.Data[i]); }
             return c;
         }
 
@@ -1004,10 +1012,7 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = 0;
-            for (int i = 0; i < value.Data.Length; i++)
-            {
-                c += WriteXYZNumber(value.Data[i]);
-            }
+            for (int i = 0; i < value.Data.Length; i++) { c += WriteXYZNumber(value.Data[i]); }
             return c;
         }
 
