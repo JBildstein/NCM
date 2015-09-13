@@ -244,7 +244,7 @@ namespace ColorManager.ICC
         {
             byte major = SetRangeUInt8(value.Major);
             byte minor = (byte)SetRange(value.Minor, 0, 15);
-            byte bugfix = (byte)SetRange(value.Minor, 0, 15);
+            byte bugfix = (byte)SetRange(value.BugFix, 0, 15);
             byte mb = (byte)((minor << 4) | bugfix);
 
             return WriteByte(major)
@@ -275,10 +275,10 @@ namespace ColorManager.ICC
         public int WriteDeviceAttribute(DeviceAttribute value)
         {
             int flags = 0;
-            flags |= (int)value.Opacity;
-            flags |= (int)value.Reflectivity << 1;
-            flags |= (int)value.Polarity << 2;
-            flags |= (int)value.Chroma << 3;
+            flags |= (int)value.Opacity << 7;
+            flags |= (int)value.Reflectivity << 6;
+            flags |= (int)value.Polarity << 5;
+            flags |= (int)value.Chroma << 4;
 
             return WriteByte((byte)flags)
                  + WriteEmpty(3)
@@ -346,7 +346,9 @@ namespace ColorManager.ICC
                  + WriteUInt32(value.DeviceModel)
                  + WriteDeviceAttribute(value.DeviceAttributes)
                  + WriteUInt32((uint)value.TechnologyInformation)
+                 + WriteTagDataEntryHeader(TypeSignature.MultiLocalizedUnicode)
                  + WriteMultiLocalizedUnicodeTagDataEntry(new MultiLocalizedUnicodeTagDataEntry(value.DeviceManufacturerInfo))
+                 + WriteTagDataEntryHeader(TypeSignature.MultiLocalizedUnicode)
                  + WriteMultiLocalizedUnicodeTagDataEntry(new MultiLocalizedUnicodeTagDataEntry(value.DeviceModelInfo));
         }
 
@@ -1069,18 +1071,19 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = WriteArray(value.GridPointCount);
+            c += WriteEmpty(16 - value.GridPointCount.Length);
 
             switch (value.DataType)
             {
                 case CLUTDataType.Float:
                     return c + WriteCLUTf32(value);
                 case CLUTDataType.UInt8:
-                    WriteByte(1);
-                    WriteEmpty(3);
+                    c += WriteByte(1);
+                    c += WriteEmpty(3);
                     return c + WriteCLUT8(value);
                 case CLUTDataType.UInt16:
-                    WriteByte(2);
-                    WriteEmpty(3);
+                    c += WriteByte(2);
+                    c += WriteEmpty(3);
                     return c + WriteCLUT16(value);
 
                 default:
@@ -1220,7 +1223,7 @@ namespace ColorManager.ICC
         public int WriteParametricCurve(ParametricCurve value)
         {
             int c = WriteUInt16(value.type);
-            WriteEmpty(2);
+            c += WriteEmpty(2);
 
             if (value.type >= 0 && value.type <= 4) c += WriteFix16(value.g);
             if (value.type > 0 && value.type <= 4)
@@ -1247,9 +1250,9 @@ namespace ColorManager.ICC
             switch (value.Signature)
             {
                 case CurveSegmentSignature.FormulaCurve:
-                    return WriteFormulaCurveElement(value as FormulaCurveElement);
+                    return c + WriteFormulaCurveElement(value as FormulaCurveElement);
                 case CurveSegmentSignature.SampledCurve:
-                    return WriteSampledCurveElement(value as SampledCurveElement);
+                    return c + WriteSampledCurveElement(value as SampledCurveElement);
                 default:
                     throw new CorruptProfileException("CurveSegment");
             }
@@ -1260,9 +1263,9 @@ namespace ColorManager.ICC
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = WriteUInt16(value.type);
-            WriteEmpty(2);
+            c += WriteEmpty(2);
 
-            if (value.type == 0 || value.type == 1) c += WriteFix16(value.gamma);
+            if (value.type == 0 || value.type == 1) c += WriteSingle((float)value.gamma);
             if (value.type >= 0 && value.type <= 2)
             {
                 c += WriteSingle((float)value.a);
@@ -1345,7 +1348,8 @@ namespace ColorManager.ICC
 
         public int WritePadding()
         {
-            return WriteEmpty((int)DataStream.Position % 4);
+            int p = 4 - (int)DataStream.Position % 4;
+            return WriteEmpty(p >= 4 ? 0 : p);
         }
 
         private unsafe int WriteBytes(byte* data, int length)
