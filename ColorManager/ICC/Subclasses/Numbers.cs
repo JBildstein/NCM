@@ -86,10 +86,11 @@
             this.X = X;
             this.Y = Y;
             this.Z = Z;
-
-            if (X > 2) this.X /= 256d;
-            if (Y > 2) this.Y /= 256d;
-            if (Z > 2) this.Z /= 256d;
+            
+            //TODO: not sure why this X/Y/Z > 2 check was here
+            //if (X > 2) this.X /= 256d;
+            //if (Y > 2) this.Y /= 256d;
+            //if (Z > 2) this.Z /= 256d;
         }
 
         /// <summary>
