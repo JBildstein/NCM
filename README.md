@@ -4,8 +4,8 @@ A .Net color conversion/managment library
 ## Status
 
 - [x] Standard color conversion
-- [x] Reading ICC profiles (needs testing with more profiles)
-- [x] Writing ICC profiles (needs lots of testing)
+- [x] Reading ICC profiles
+- [x] Writing ICC profiles
 - [x] XML comments documentation (not for ICC yet)
 - [ ] ICC color conversion (partially implemented)
 - [ ] Documentation (code and usage)
