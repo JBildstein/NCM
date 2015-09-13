@@ -8,6 +8,7 @@ namespace ColorManager.ICC
 
         public static bool Compare<T>(T[] a, T[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase<T>(a, b)) return false;
             for (int i = 0; i < a.Length; i++) { if (!a[i].Equals(b[i])) return false; }
             return true;
@@ -15,6 +16,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[] a, bool[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (bool* ap = a)
             fixed (bool* bp = b)
@@ -26,6 +28,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[] a, byte[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (byte* ap = a)
             fixed (byte* bp = b)
@@ -37,6 +40,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[] a, sbyte[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (sbyte* ap = a)
             fixed (sbyte* bp = b)
@@ -48,6 +52,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[] a, short[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (short* ap = a)
             fixed (short* bp = b)
@@ -59,6 +64,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[] a, ushort[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (ushort* ap = a)
             fixed (ushort* bp = b)
@@ -70,6 +76,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[] a, int[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (int* ap = a)
             fixed (int* bp = b)
@@ -81,6 +88,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[] a, uint[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (uint* ap = a)
             fixed (uint* bp = b)
@@ -92,6 +100,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[] a, long[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (long* ap = a)
             fixed (long* bp = b)
@@ -103,6 +112,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[] a, ulong[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (ulong* ap = a)
             fixed (ulong* bp = b)
@@ -114,6 +124,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[] a, float[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (float* ap = a)
             fixed (float* bp = b)
@@ -125,6 +136,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[] a, double[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (double* ap = a)
             fixed (double* bp = b)
@@ -136,6 +148,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[] a, decimal[] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (decimal* ap = a)
             fixed (decimal* bp = b)
@@ -151,6 +164,7 @@ namespace ColorManager.ICC
 
         public static bool Compare<T>(T[][] a, T[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -166,6 +180,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[][] a, bool[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -181,6 +196,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[][] a, byte[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -196,6 +212,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[][] a, sbyte[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -211,6 +228,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[][] a, short[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -226,6 +244,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[][] a, ushort[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -241,6 +260,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[][] a, int[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -256,6 +276,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[][] a, uint[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -271,6 +292,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[][] a, long[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -286,6 +308,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[][] a, ulong[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -301,6 +324,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[][] a, float[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -316,6 +340,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[][] a, double[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -331,6 +356,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[][] a, decimal[][] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             for (int i = 0; i < a.Length; i++)
             {
@@ -350,6 +376,7 @@ namespace ColorManager.ICC
 
         public static bool Compare<T>(T[,] a, T[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase<T>(a, b)) return false;
             for (int i = 0; i < a.GetLength(0); i++)
             {
@@ -360,6 +387,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(bool[,] a, bool[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (bool* ap = a)
             fixed (bool* bp = b)
@@ -371,6 +399,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(byte[,] a, byte[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (byte* ap = a)
             fixed (byte* bp = b)
@@ -382,6 +411,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(sbyte[,] a, sbyte[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (sbyte* ap = a)
             fixed (sbyte* bp = b)
@@ -393,6 +423,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(short[,] a, short[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (short* ap = a)
             fixed (short* bp = b)
@@ -404,6 +435,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ushort[,] a, ushort[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (ushort* ap = a)
             fixed (ushort* bp = b)
@@ -415,6 +447,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(int[,] a, int[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (int* ap = a)
             fixed (int* bp = b)
@@ -426,6 +459,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(uint[,] a, uint[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (uint* ap = a)
             fixed (uint* bp = b)
@@ -437,6 +471,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(long[,] a, long[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (long* ap = a)
             fixed (long* bp = b)
@@ -448,6 +483,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(ulong[,] a, ulong[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (ulong* ap = a)
             fixed (ulong* bp = b)
@@ -459,6 +495,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(float[,] a, float[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (float* ap = a)
             fixed (float* bp = b)
@@ -470,6 +507,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(double[,] a, double[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (double* ap = a)
             fixed (double* bp = b)
@@ -481,6 +519,7 @@ namespace ColorManager.ICC
 
         public static bool Compare(decimal[,] a, decimal[,] b)
         {
+            if (a == null && b == null) return true;
             if (!CompareBase(a, b)) return false;
             fixed (decimal* ap = a)
             fixed (decimal* bp = b)
@@ -558,6 +597,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode<T>(T[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -568,6 +608,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(bool[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -581,6 +622,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(byte[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -594,6 +636,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(sbyte[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -607,6 +650,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(short[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -620,6 +664,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ushort[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -633,6 +678,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(int[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -646,6 +692,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(uint[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -659,6 +706,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(long[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -672,6 +720,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ulong[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -685,6 +734,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(float[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -698,6 +748,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(double[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -711,6 +762,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(decimal[] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -728,6 +780,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode<T>(T[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -741,6 +794,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(bool[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -754,6 +808,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(byte[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -767,6 +822,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(sbyte[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -780,6 +836,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(short[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -793,6 +850,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ushort[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -806,6 +864,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(int[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -819,6 +878,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(uint[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -832,6 +892,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(long[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -845,6 +906,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ulong[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -858,6 +920,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(float[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -871,6 +934,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(double[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -884,6 +948,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(decimal[][] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -901,6 +966,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode<T>(T[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -911,6 +977,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(bool[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -924,6 +991,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(byte[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -937,6 +1005,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(sbyte[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -950,6 +1019,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(short[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -963,6 +1033,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ushort[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -976,6 +1047,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(int[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -989,6 +1061,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(uint[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -1002,6 +1075,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(long[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -1015,6 +1089,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(ulong[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -1028,6 +1103,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(float[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -1041,6 +1117,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(double[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;
@@ -1054,6 +1131,7 @@ namespace ColorManager.ICC
 
         public static int GetHashCode(decimal[,] a)
         {
+            if (a == null) return 0;
             unchecked
             {
                 int hash = (int)2166136261;

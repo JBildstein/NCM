@@ -499,9 +499,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-
-            if (a.CurveData == null && b.CurveData == null) return a.Signature == b.Signature;
-            else return a.Signature == b.Signature && CMP.Compare(a.CurveData, b.CurveData);
+            return a.Signature == b.Signature && CMP.Compare(a.CurveData, b.CurveData);
         }
 
         /// <summary>
