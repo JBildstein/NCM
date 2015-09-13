@@ -140,7 +140,7 @@ namespace ColorManagerTests.ICC.Data
                 0x00, 0x00,
                 0x00, 0x00,
             },
-            PrimitivesData.Fix16_1,
+            PrimitivesData.Single_1,
             PrimitivesData.Single_2,
             PrimitivesData.Single_3,
             PrimitivesData.Single_4
@@ -153,7 +153,7 @@ namespace ColorManagerTests.ICC.Data
                 0x00, 0x01,
                 0x00, 0x00,
             },
-            PrimitivesData.Fix16_1,
+            PrimitivesData.Single_1,
             PrimitivesData.Single_2,
             PrimitivesData.Single_3,
             PrimitivesData.Single_4,
