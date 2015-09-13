@@ -758,6 +758,8 @@ namespace ColorManager.ICC
 
         public ProfileSequenceIdentifierTagDataEntry ReadProfileSequenceIdentifierTagDataEntry()
         {
+            //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
+            var start = Index - 8;
             var count = ReadUInt32();
             var table = new PositionNumber[count];
             for (int i = 0; i < count; i++) table[i] = ReadPositionNumber();
@@ -765,6 +767,7 @@ namespace ColorManager.ICC
             var entries = new ProfileSequenceIdentifier[count];
             for (int i = 0; i < count; i++)
             {
+                Index = (int)(start + table[i].Offset);
                 var id = ReadProfileID();
                 ReadTagDataEntryHeader(TypeSignature.MultiLocalizedUnicode);
                 var description = ReadMultiLocalizedUnicodeTagDataEntry();
