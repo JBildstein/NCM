@@ -114,6 +114,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
+
             return a.InputChannelCount == b.InputChannelCount && a.OutputChannelCount == b.OutputChannelCount
                 && CMP.Compare(a.GridPointCount, b.GridPointCount) && CMP.Compare(a.Values, b.Values);
         }
@@ -214,6 +215,9 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="LUT"/>s are equal; otherwise, false</returns>
         public static bool operator ==(LUT a, LUT b)
         {
+            if (ReferenceEquals(a, b)) return true;
+            if ((object)a == null || (object)b == null) return false;
+
             return CMP.Compare(a.Values, b.Values);
         }
 
@@ -235,7 +239,9 @@ namespace ColorManager.ICC
         /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="LUT"/>; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is LUT && this == (LUT)obj;
+            LUT c = obj as LUT;
+            if ((object)c == null) return false;
+            return c == this;
         }
 
         /// <summary>
