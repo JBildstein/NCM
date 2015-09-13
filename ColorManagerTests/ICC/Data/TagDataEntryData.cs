@@ -394,8 +394,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] MultiLocalizedUnicode_Arr = ArrayHelper.Concat
         (
             PrimitivesData.UInt32_2,
-            //Size: 8(header) + 8(count/size) + 2 * 12(culture/length/offset) + 12(record1) + 14(record2)
-            new byte[] { 0x00, 0x00, 0x00, 0x4A }, //66
+            new byte[] { 0x00, 0x00, 0x00, 0x0C }, //12
 
             new byte[] { (byte)'e', (byte)'n', (byte)'U', (byte)'S' },
             new byte[] { 0x00, 0x00, 0x00, 0x0C },  //12
@@ -431,8 +430,8 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x00, 0x00, 0x00, 0x20 },  //32
             new byte[] { 0x00, 0x00, 0x00, 0x84 },  //132
 
-            new byte[] { 0x00, 0x00, 0x00, 0x20 },  //32
-            new byte[] { 0x00, 0x00, 0x00, 0x84 },  //164
+            new byte[] { 0x00, 0x00, 0x00, 0xA4 },  //164
+            new byte[] { 0x00, 0x00, 0x00, 0x84 },  //132
 
             MultiProcessElementData.MPE_CLUT,
             MultiProcessElementData.MPE_CLUT
@@ -505,19 +504,21 @@ namespace ColorManagerTests.ICC.Data
         (
             PrimitivesData.UInt32_2,
 
-            new byte[] { 0x00, 0x00, 0x00, 0x1E },  //30
-            new byte[] { 0x00, 0x00, 0x00, 0x62 },  //98
+            new byte[] { 0x00, 0x00, 0x00, 0x1C },  //28
+            new byte[] { 0x00, 0x00, 0x00, 0x54 },  //84
 
-            new byte[] { 0x00, 0x00, 0x00, 0x80 },  //128
-            new byte[] { 0x00, 0x00, 0x00, 0x62 },  //98
+            new byte[] { 0x00, 0x00, 0x00, 0x70 },  //112
+            new byte[] { 0x00, 0x00, 0x00, 0x54 },  //84
 
-            StructsData.ProfileID_Rand,                 //24 bytes
+            StructsData.ProfileID_Rand,                 //16 bytes
             TagDataEntryHeader_MultiLocalizedUnicodeArr,//8  bytes
-            MultiLocalizedUnicode_Arr,                  //66 bytes
+            MultiLocalizedUnicode_Arr,                  //58 bytes
+            new byte[] { 0x00, 0x00 },                  //2  bytes (padding)
 
             StructsData.ProfileID_Rand,
             TagDataEntryHeader_MultiLocalizedUnicodeArr,
-            MultiLocalizedUnicode_Arr
+            MultiLocalizedUnicode_Arr,
+            new byte[] { 0x00, 0x00 }
         );
 
         #endregion
@@ -668,25 +669,27 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] TagDataEntry_CurveArr = ArrayHelper.Concat
         (
             TagDataEntryHeader_CurveArr,
-            Curve_Arr_2
+            Curve_Arr_2,
+            new byte[] { 0x00, 0x00 }//padding
         );
 
         public static readonly TagDataEntry TagDataEntry_MultiLocalizedUnicodeVal = MultiLocalizedUnicode_Val;
         public static readonly byte[] TagDataEntry_MultiLocalizedUnicodeArr = ArrayHelper.Concat
         (
             TagDataEntryHeader_MultiLocalizedUnicodeArr,
-            MultiLocalizedUnicode_Arr
+            MultiLocalizedUnicode_Arr,
+            new byte[] { 0x00, 0x00 }//padding
         );
 
         public static readonly TagTableEntry TagDataEntry_MultiLocalizedUnicodeTable = new TagTableEntry
         (
-            TagSignature.Copyright, 0,
-            (uint)TagDataEntryHeader_MultiLocalizedUnicodeArr.Length
+            TagSignature.Unknown, 0,
+            (uint)TagDataEntry_MultiLocalizedUnicodeArr.Length
         );
 
         public static readonly TagTableEntry TagDataEntry_CurveTable = new TagTableEntry
         (
-            TagSignature.OutputResponse, 0,
+            TagSignature.Unknown, 0,
             (uint)TagDataEntry_CurveArr.Length
         );
 
