@@ -1190,7 +1190,7 @@ namespace ColorManager.ICC
             double gamma, a, b, c, d, e;
             gamma = a = b = c = d = e = 0;
 
-            if (type == 0 || type == 1) gamma = ReadFix16();
+            if (type == 0 || type == 1) gamma = ReadSingle();
             if (type >= 0 && type <= 2)
             {
                 a = ReadSingle();
@@ -1233,7 +1233,8 @@ namespace ColorManager.ICC
         /// </summary>
         private void APadding()
         {
-            Index += Index % 4;
+            int p = 4 - Index % 4;
+            Index += p >= 4 ? 0 : p;
         }
 
         /// <summary>
