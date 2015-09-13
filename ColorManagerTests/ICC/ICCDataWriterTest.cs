@@ -723,8 +723,6 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteProfileDescription()
         {
-            Assert.Inconclusive("MultiLocalizedUnicodeTagDataEntry is incorrect on which this relies");
-
             using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
@@ -741,193 +739,447 @@ namespace ColorManagerTests.ICC
         [TestMethod]
         public void WriteTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_CurveVal);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_CurveArr.Length, "Write length incorrect Curve");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_CurveArr, stream.ToArray(), "Written value is not the same Curve");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeVal);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr.Length, "Write length incorrect MultiLocalizedUnicode");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr, stream.ToArray(), "Written value is not the same MultiLocalizedUnicode");
+            }
         }
 
         [TestMethod]
-        public void WriteTagDataEntryTest1()
+        public void WriteTagDataEntryOutTable()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                TagTableEntry table;
+                TagTableEntry tableResult = new TagTableEntry(TagSignature.Unknown, 0, 20);
+                int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_CurveVal, out table);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_CurveArr.Length, "Write length incorrect");
+                Assert.AreEqual(TagDataEntryData.TagDataEntry_CurveTable, table, "TagTableEntry incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_CurveArr, stream.ToArray(), "Written value is not the same");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                TagTableEntry table;
+                TagTableEntry tableResult = new TagTableEntry(TagSignature.Unknown, 0, 68);
+                int c = writer.WriteTagDataEntry(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeVal, out table);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr.Length, "Write length incorrect");
+                Assert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeTable, table, "TagTableEntry incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntry_MultiLocalizedUnicodeArr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteTagDataEntryHeader()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTagDataEntryHeader(TagDataEntryData.TagDataEntryHeader_UnknownVal);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntryHeader_UnknownArr.Length, "Write length incorrect Unknown");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntryHeader_UnknownArr, stream.ToArray(), "Written value is not the same Unknown");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTagDataEntryHeader(TagDataEntryData.TagDataEntryHeader_CurveVal);
+                Assert.IsTrue(c == TagDataEntryData.TagDataEntryHeader_CurveArr.Length, "Write length incorrect Curve");
+                CollectionAssert.AreEqual(TagDataEntryData.TagDataEntryHeader_CurveArr, stream.ToArray(), "Written value is not the same Curve");
+            }
         }
 
         [TestMethod]
         public void WriteUnknownTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUnknownTagDataEntry(TagDataEntryData.Unknown_Val);
+                Assert.IsTrue(c == TagDataEntryData.Unknown_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Unknown_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteChromaticityTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteChromaticityTagDataEntry(TagDataEntryData.Chromaticity_Val1);
+                Assert.IsTrue(c == TagDataEntryData.Chromaticity_Arr1.Length, "Write length incorrect Arr1");
+                CollectionAssert.AreEqual(TagDataEntryData.Chromaticity_Arr1, stream.ToArray(), "Written value is not the same Arr1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteChromaticityTagDataEntry(TagDataEntryData.Chromaticity_Val2);
+                Assert.IsTrue(c == TagDataEntryData.Chromaticity_Arr2.Length, "Write length incorrect Arr2");
+                CollectionAssert.AreEqual(TagDataEntryData.Chromaticity_Arr2, stream.ToArray(), "Written value is not the same Arr2");
+            }
         }
 
         [TestMethod]
         public void WriteColorantOrderTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteColorantOrderTagDataEntry(TagDataEntryData.ColorantOrder_Val);
+                Assert.IsTrue(c == TagDataEntryData.ColorantOrder_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ColorantOrder_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteColorantTableTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteColorantTableTagDataEntry(TagDataEntryData.ColorantTable_Val);
+                Assert.IsTrue(c == TagDataEntryData.ColorantTable_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ColorantTable_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteCurveTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveTagDataEntry(TagDataEntryData.Curve_Val_0);
+                Assert.IsTrue(c == TagDataEntryData.Curve_Arr_0.Length, "Write length incorrect Var0");
+                CollectionAssert.AreEqual(TagDataEntryData.Curve_Arr_0, stream.ToArray(), "Written value is not the same Var0");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveTagDataEntry(TagDataEntryData.Curve_Val_1);
+                Assert.IsTrue(c == TagDataEntryData.Curve_Arr_1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(TagDataEntryData.Curve_Arr_1, stream.ToArray(), "Written value is not the same Var1");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteCurveTagDataEntry(TagDataEntryData.Curve_Val_2);
+                Assert.IsTrue(c == TagDataEntryData.Curve_Arr_2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(TagDataEntryData.Curve_Arr_2, stream.ToArray(), "Written value is not the same Var2");
+            }
         }
 
         [TestMethod]
         public void WriteDataTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDataTagDataEntry(TagDataEntryData.Data_ValASCII);
+                Assert.IsTrue(c == TagDataEntryData.Data_ArrASCII.Length, "Write length incorrect ASCII");
+                CollectionAssert.AreEqual(TagDataEntryData.Data_ArrASCII, stream.ToArray(), "Written value is not the same ASCII");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDataTagDataEntry(TagDataEntryData.Data_ValNoASCII);
+                Assert.IsTrue(c == TagDataEntryData.Data_ArrNoASCII.Length, "Write length incorrect NoASCII");
+                CollectionAssert.AreEqual(TagDataEntryData.Data_ArrNoASCII, stream.ToArray(), "Written value is not the same NoASCII");
+            }
         }
 
         [TestMethod]
         public void WriteDateTimeTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteDateTimeTagDataEntry(TagDataEntryData.DateTime_Val);
+                Assert.IsTrue(c == TagDataEntryData.DateTime_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.DateTime_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteLut16TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLut16TagDataEntry(TagDataEntryData.Lut16_Val);
+                Assert.IsTrue(c == TagDataEntryData.Lut16_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Lut16_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteLut8TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLut8TagDataEntry(TagDataEntryData.Lut8_Val);
+                Assert.IsTrue(c == TagDataEntryData.Lut8_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Lut8_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteLutAToBTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLutAToBTagDataEntry(TagDataEntryData.LutAToB_Val);
+                Assert.IsTrue(c == TagDataEntryData.LutAToB_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.LutAToB_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteLutBToATagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteLutBToATagDataEntry(TagDataEntryData.LutBToA_Val);
+                Assert.IsTrue(c == TagDataEntryData.LutBToA_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.LutBToA_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteMeasurementTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMeasurementTagDataEntry(TagDataEntryData.Measurement_Val);
+                Assert.IsTrue(c == TagDataEntryData.Measurement_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Measurement_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteMultiLocalizedUnicodeTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiLocalizedUnicodeTagDataEntry(TagDataEntryData.MultiLocalizedUnicode_Val);
+                Assert.IsTrue(c == TagDataEntryData.MultiLocalizedUnicode_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.MultiLocalizedUnicode_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteMultiProcessElementsTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteMultiProcessElementsTagDataEntry(TagDataEntryData.MultiProcessElements_Val);
+                Assert.IsTrue(c == TagDataEntryData.MultiProcessElements_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.MultiProcessElements_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteNamedColor2TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteNamedColor2TagDataEntry(TagDataEntryData.NamedColor2_Val);
+                Assert.IsTrue(c == TagDataEntryData.NamedColor2_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.NamedColor2_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteParametricCurveTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteParametricCurveTagDataEntry(TagDataEntryData.ParametricCurve_Val);
+                Assert.IsTrue(c == TagDataEntryData.ParametricCurve_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ParametricCurve_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteProfileSequenceDescTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileSequenceDescTagDataEntry(TagDataEntryData.ProfileSequenceDesc_Val);
+                Assert.IsTrue(c == TagDataEntryData.ProfileSequenceDesc_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ProfileSequenceDesc_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteProfileSequenceIdentifierTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteProfileSequenceIdentifierTagDataEntry(TagDataEntryData.ProfileSequenceIdentifier_Val);
+                Assert.IsTrue(c == TagDataEntryData.ProfileSequenceIdentifier_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ProfileSequenceIdentifier_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteResponseCurveSet16TagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteResponseCurveSet16TagDataEntry(TagDataEntryData.ResponseCurveSet16_Val);
+                Assert.IsTrue(c == TagDataEntryData.ResponseCurveSet16_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ResponseCurveSet16_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteFix16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteFix16ArrayTagDataEntry(TagDataEntryData.Fix16Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.Fix16Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Fix16Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteSignatureTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteSignatureTagDataEntry(TagDataEntryData.Signature_Val);
+                Assert.IsTrue(c == TagDataEntryData.Signature_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Signature_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteTextTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTextTagDataEntry(TagDataEntryData.Text_Val);
+                Assert.IsTrue(c == TagDataEntryData.Text_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.Text_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteUFix16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUFix16ArrayTagDataEntry(TagDataEntryData.UFix16Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.UFix16Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.UFix16Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteUInt16ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUInt16ArrayTagDataEntry(TagDataEntryData.UInt16Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.UInt16Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.UInt16Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteUInt32ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUInt32ArrayTagDataEntry(TagDataEntryData.UInt32Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.UInt32Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.UInt32Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteUInt64ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUInt64ArrayTagDataEntry(TagDataEntryData.UInt64Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.UInt64Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.UInt64Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteUInt8ArrayTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteUInt8ArrayTagDataEntry(TagDataEntryData.UInt8Array_Val);
+                Assert.IsTrue(c == TagDataEntryData.UInt8Array_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.UInt8Array_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteViewingConditionsTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteViewingConditionsTagDataEntry(TagDataEntryData.ViewingConditions_Val);
+                Assert.IsTrue(c == TagDataEntryData.ViewingConditions_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.ViewingConditions_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         [TestMethod]
         public void WriteXYZTagDataEntry()
         {
-            Assert.Inconclusive("Not implemented");
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteXYZTagDataEntry(TagDataEntryData.XYZ_Val);
+                Assert.IsTrue(c == TagDataEntryData.XYZ_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.XYZ_Arr, stream.ToArray(), "Written value is not the same");
+            }
         }
 
         #endregion
