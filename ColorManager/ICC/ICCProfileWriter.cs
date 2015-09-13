@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ColorManager.ICC
 {
@@ -57,8 +58,6 @@ namespace ColorManager.ICC
         }
         
 
-        //TODO: some TagDataEntries might reuse information by setting the same offset value
-
         private void WriteHeader(ICCDataWriter writer, ICCProfile profile)
         {
             writer.DataStream.Position = 0;
@@ -97,15 +96,28 @@ namespace ColorManager.ICC
 
         private TagTableEntry[] WriteTagData(ICCDataWriter writer, ICCProfile profile)
         {
+            List<TagDataEntry> InData = new List<TagDataEntry>(profile.Data);
+            List<TagDataEntry[]> DupData = new List<TagDataEntry[]>();
+
+            while(InData.Count > 0)
+            {
+                var items = InData.Where(t => InData[0].Equals(t)).ToArray();
+                DupData.Add(items);
+                foreach (var item in items) { InData.Remove(item); }
+            }
+            
             List<TagTableEntry> Table = new List<TagTableEntry>();
             //(Header size) + (entry count) + (nr of entries) * (size of table entry)
             writer.DataStream.Position = 128 + 4 + profile.Data.Count * 12; ;
 
-            foreach (var entry in profile.Data)
+            foreach (var entry in DupData)
             {
                 TagTableEntry tentry;
-                writer.WriteTagDataEntry(entry, out tentry);
-                Table.Add(tentry);
+                writer.WriteTagDataEntry(entry[0], out tentry);
+                foreach (var item in entry)
+                {
+                    Table.Add(new TagTableEntry(item.TagSignature, tentry.Offset, tentry.DataSize));
+                }
             }
             return Table.ToArray();
         }
