@@ -53,3 +53,19 @@ using (ColorConverter conv = new ColorConverter(col1, col2))
 ```
 
 In general, keep in mind that creating a ColorConverter is expensive while the Convert method is cheap.
+
+## Using the Source Code
+
+You need a C# coding environment with C#6 support. e.g. Visual Studio 2015 (any version is fine).
+The building process is like any other C# project and has no external dependencies.
+
+## Contributions
+
+First off, thank you for any contribution!
+
+If you found a bug, please report it and I will try to fix it as soon as possible.
+
+I accept pull requests for bugfixes or new features but please first
+ - check formatting and style
+ - run the unit tests and see if they pass
+ - add unit test(s) for the fix/feature (if possible)
