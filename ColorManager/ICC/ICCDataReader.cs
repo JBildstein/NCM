@@ -395,6 +395,10 @@ namespace ColorManager.ICC
                 case TypeSignature.XYZ:
                     return ReadXYZTagDataEntry(info.DataSize);
 
+                //V2 Type:
+                case TypeSignature.TextDescription:
+                    return ReadTextDescriptionTagDataEntry();
+
                 case TypeSignature.Unknown:
                 default:
                     return ReadUnknownTagDataEntry(info.DataSize);
@@ -875,6 +879,38 @@ namespace ColorManager.ICC
             return new XYZTagDataEntry(adata);
         }
 
+        public TextDescriptionTagDataEntry ReadTextDescriptionTagDataEntry()
+        {
+            string asciiValue, unicodeValue, scriptcodeValue;
+            asciiValue = unicodeValue = scriptcodeValue = null;
+
+            int asciiCount = (int)ReadUInt32();
+            if (asciiCount > 0)
+            {
+                asciiValue = ReadASCIIString(asciiCount - 1);
+                AIndex(1);  //Null terminator
+            }
+
+            uint unicodeLangCode = ReadUInt32();
+            int unicodeCount = (int)ReadUInt32();
+            if (unicodeCount > 0)
+            {
+                unicodeValue = ReadUnicodeString(unicodeCount * 2 - 2);
+                AIndex(2);  //Null terminator
+            }
+
+            ushort scriptcodeCode = ReadUInt16();
+            int scriptcodeCount = Math.Min(Data[AIndex(1)], (byte)67);
+            if (scriptcodeCount > 0)
+            {
+                scriptcodeValue = ReadASCIIString(scriptcodeCount - 1);
+                AIndex(1);  //Null terminator
+            }
+
+            return new TextDescriptionTagDataEntry(asciiValue, unicodeValue,
+                scriptcodeValue, unicodeLangCode, scriptcodeCode);
+        }
+
         #endregion
 
         #region Read Matrix
@@ -1236,8 +1272,17 @@ namespace ColorManager.ICC
         /// </summary>
         private void APadding()
         {
+            Index += CalcPadding();
+        }
+
+        /// <summary>
+        /// Calculates the 4 byte padding
+        /// </summary>
+        /// <returns>the number of bytes to pad</returns>
+        private int CalcPadding()
+        {
             int p = 4 - Index % 4;
-            Index += p >= 4 ? 0 : p;
+            return p >= 4 ? 0 : p;
         }
 
         /// <summary>
@@ -1260,6 +1305,25 @@ namespace ColorManager.ICC
         private bool GetBit(ushort value, int position)
         {
             return ((value >> (15 - position)) & 1) == 1;
+        }
+
+        /// <summary>
+        /// Checks if padding bytes are ignored
+        /// </summary>
+        /// <returns>True if there is data in the padding bytes, false otherwise</returns>
+        private bool IsMisaligned()
+        {
+            int pad = CalcPadding();
+            bool misaligned = false;
+            for (int i = 0; i < pad; i++)
+            {
+                if (Data[Index + i] != 0x00)
+                {
+                    misaligned = true;
+                    break;
+                }
+            }
+            return misaligned;
         }
 
         #endregion

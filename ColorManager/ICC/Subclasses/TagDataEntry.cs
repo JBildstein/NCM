@@ -2518,4 +2518,107 @@ namespace ColorManager.ICC
             }
         }
     }
+
+    /// <summary>
+    /// The TextDescriptionType contains three types of text description.
+    /// </summary>
+    public sealed class TextDescriptionTagDataEntry : TagDataEntry
+    {
+        public string ASCII
+        {
+            get { return _ASCII; }
+        }
+        public string Unicode
+        {
+            get { return _Unicode; }
+        }
+        public string ScriptCode
+        {
+            get { return _ScriptCode; }
+        }
+
+        public uint UnicodeLanguageCode
+        {
+            get { return _UnicodeLanguageCode; }
+        }
+        public ushort ScriptCodeCode
+        {
+            get { return _ScriptCodeCode; }
+        }
+
+        private string _ASCII;
+        private string _Unicode;
+        private string _ScriptCode;
+
+        private uint _UnicodeLanguageCode;
+        private ushort _ScriptCodeCode;
+
+        public TextDescriptionTagDataEntry(string ASCII, string Unicode, string ScriptCode, uint UnicodeLanguageCode, ushort ScriptCodeCode)
+            : base(TypeSignature.TextDescription)
+        {
+            _ASCII = ASCII;
+            _Unicode = Unicode;
+            _ScriptCode = ScriptCode;
+            _UnicodeLanguageCode = UnicodeLanguageCode;
+            _ScriptCodeCode = ScriptCodeCode;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="TextDescriptionTagDataEntry"/>s are equal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="TextDescriptionTagDataEntry"/></param>
+        /// <param name="b">The second <see cref="TextDescriptionTagDataEntry"/></param>
+        /// <returns>True if the <see cref="TextDescriptionTagDataEntry"/>s are equal; otherwise, false</returns>
+        public static bool operator ==(TextDescriptionTagDataEntry a, TextDescriptionTagDataEntry b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if ((object)a == null || (object)b == null) return false;
+            return a.Signature == b.Signature && a.ASCII == b.ASCII
+                && a.Unicode == b.Unicode && a.ScriptCode == b.ScriptCode
+                && a.UnicodeLanguageCode == b.UnicodeLanguageCode
+                && a.ScriptCodeCode == b.ScriptCodeCode;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="TextDescriptionTagDataEntry"/>s are unequal to each other.
+        /// </summary>
+        /// <param name="a">The first <see cref="TextDescriptionTagDataEntry"/></param>
+        /// <param name="b">The second <see cref="TextDescriptionTagDataEntry"/></param>
+        /// <returns>True if the <see cref="TextDescriptionTagDataEntry"/>s are unequal; otherwise, false</returns>
+        public static bool operator !=(TextDescriptionTagDataEntry a, TextDescriptionTagDataEntry b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="TextDescriptionTagDataEntry"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="TextDescriptionTagDataEntry"/></param>
+        /// <returns>true if the specified <see cref="object"/> is equal to the current <see cref="TextDescriptionTagDataEntry"/>; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            TextDescriptionTagDataEntry c = obj as TextDescriptionTagDataEntry;
+            if ((object)c == null) return false;
+            return c == this;
+        }
+
+        /// <summary>
+        /// Serves as a hash function for a <see cref="TextDescriptionTagDataEntry"/>.
+        /// </summary>
+        /// <returns>A hash code for the current <see cref="TextDescriptionTagDataEntry"/></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash *= 16777619 ^ Signature.GetHashCode();
+                hash *= 16777619 ^ ASCII.GetHashCode();
+                hash *= 16777619 ^ Unicode.GetHashCode();
+                hash *= 16777619 ^ ScriptCode.GetHashCode();
+                hash *= 16777619 ^ UnicodeLanguageCode.GetHashCode();
+                hash *= 16777619 ^ ScriptCodeCode.GetHashCode();
+                return hash;
+            }
+        }
+    }
 }

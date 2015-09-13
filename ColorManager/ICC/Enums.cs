@@ -200,6 +200,9 @@ namespace ColorManager.ICC
         UInt8Array = 0x75693038,
         ViewingConditions = 0x76696577,
         XYZ = 0x58595A20,
+
+        //V2 Type:
+        TextDescription = 0x64657363,
     }
 
     /// <summary>

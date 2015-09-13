@@ -733,6 +733,14 @@ namespace ColorManagerTests.ICC
             Assert.AreEqual(TagDataEntryData.XYZ_Val, value);
         }
 
+        [TestMethod]
+        public void ReadTextDescriptionTagDataEntry()
+        {
+            var reader = new ICCDataReader(TagDataEntryData.TextDescription_Arr);
+            var value = reader.ReadTextDescriptionTagDataEntry();
+            Assert.AreEqual(TagDataEntryData.TextDescription_Val, value);
+        }
+
         #endregion
 
         #region Read Matrix

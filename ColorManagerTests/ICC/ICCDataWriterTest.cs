@@ -1182,6 +1182,18 @@ namespace ColorManagerTests.ICC
             }
         }
 
+        [TestMethod]
+        public void WriteTextDescriptionTagDataEntry()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var writer = new ICCDataWriter(stream);
+                int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val);
+                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr, stream.ToArray(), "Written value is not the same");
+            }
+        }
+
         #endregion
 
         #region Write Matrix

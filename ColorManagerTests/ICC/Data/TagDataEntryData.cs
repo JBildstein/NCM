@@ -29,7 +29,7 @@ namespace ColorManagerTests.ICC.Data
         };
 
         #endregion
-        
+
         #region UnknownTagDataEntry
 
         public static readonly UnknownTagDataEntry Unknown_Val = new UnknownTagDataEntry(new byte[] { 0x00, 0x01, 0x02, 0x03 });
@@ -175,7 +175,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly Lut16TagDataEntry Lut16_Val = new Lut16TagDataEntry
         (
             MatrixData.Fix16_2D_ValGrad,
-            new LUT[] {LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad },
+            new LUT[] { LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad },
             LUTData.CLUT16_ValGrad,
             new LUT[] { LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad }
         );
@@ -274,7 +274,7 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x00, 0x00, 0x00, 0x80 },  //m:        128
             new byte[] { 0x00, 0x00, 0x00, 0xB0 },  //clut:     176
             new byte[] { 0x00, 0x00, 0x00, 0xFC },  //a:        252
-            
+
             //B
             CurveFull_0,    //12 bytes
             CurveFull_1,    //14 bytes
@@ -285,7 +285,7 @@ namespace ColorManagerTests.ICC.Data
             //Matrix
             MatrixData.Fix16_2D_Grad,   //36 bytes
             MatrixData.Fix16_1D_Grad,   //12 bytes
-            
+
             //M
             CurveFull_1,    //14 bytes
             new byte[] { 0x00, 0x00 }, // Padding
@@ -355,7 +355,7 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x00, 0x00 }, // Padding
             CurveFull_2,    //18 bytes
             new byte[] { 0x00, 0x00 }, // Padding
-            
+
             //CLUT
             LUTData.CLUT_16,           //74 bytes
             new byte[] { 0x00, 0x00 }, // Padding
@@ -440,7 +440,7 @@ namespace ColorManagerTests.ICC.Data
             PrimitivesData.UInt16_2,
             PrimitivesData.UInt16_3,
             PrimitivesData.UInt32_2,
-            
+
             new byte[] { 0x00, 0x00, 0x00, 0x20 },  //32
             new byte[] { 0x00, 0x00, 0x00, 0x84 },  //132
 
@@ -512,7 +512,7 @@ namespace ColorManagerTests.ICC.Data
             {
                 new ProfileSequenceIdentifier(StructsData.ProfileID_ValRand, LocalizedString_RandArr1),
                 new ProfileSequenceIdentifier(StructsData.ProfileID_ValRand, LocalizedString_RandArr1),
-            } 
+            }
         );
         public static readonly byte[] ProfileSequenceIdentifier_Arr = ArrayHelper.Concat
         (
@@ -542,7 +542,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly ResponseCurveSet16TagDataEntry ResponseCurveSet16_Val = new ResponseCurveSet16TagDataEntry
         (
             3,
-            new ResponseCurve[] 
+            new ResponseCurve[]
             {
                 CurveData.Response_ValGrad,
                 CurveData.Response_ValGrad,
@@ -673,6 +673,31 @@ namespace ColorManagerTests.ICC.Data
             StructsData.XYZNumber_Var1,
             StructsData.XYZNumber_Var2,
             StructsData.XYZNumber_Var3
+        );
+
+        #endregion
+
+        #region TextDescriptionTagDataEntry
+
+        public static readonly TextDescriptionTagDataEntry TextDescription_Val = new TextDescriptionTagDataEntry
+        (
+            PrimitivesData.ASCII_ValAll, PrimitivesData.Unicode_ValRand1, ArrayHelper.Fill('A', 66),
+            9, 2
+        );
+        public static readonly byte[] TextDescription_Arr = ArrayHelper.Concat
+        (
+            new byte[] { 0x00, 0x00, 0x00, 0x81 },  //129
+            PrimitivesData.ASCII_All,
+            new byte[] { 0x00 },                    //Null terminator
+
+            PrimitivesData.UInt32_9,
+            new byte[] { 0x00, 0x00, 0x00, 0x0E },  //14
+            PrimitivesData.Unicode_Rand1,
+            new byte[] { 0x00, 0x00 },              //Null terminator
+
+            new byte[] { 0x00, 0x02, 0x43 },        //2, 67
+            ArrayHelper.Fill((byte)0x41, 66),
+            new byte[] { 0x00 }                     //Null terminator
         );
 
         #endregion

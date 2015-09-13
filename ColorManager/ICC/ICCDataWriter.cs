@@ -467,6 +467,11 @@ namespace ColorManager.ICC
                     c += WriteXYZTagDataEntry(entry as XYZTagDataEntry);
                     break;
 
+                //V2 Type:
+                case TypeSignature.TextDescription:
+                    c += WriteTextDescriptionTagDataEntry(entry as TextDescriptionTagDataEntry);
+                    break;
+
                 case TypeSignature.Unknown:
                 default:
                     c += WriteUnknownTagDataEntry(entry as UnknownTagDataEntry);
@@ -1026,6 +1031,55 @@ namespace ColorManager.ICC
 
             int c = 0;
             for (int i = 0; i < value.Data.Length; i++) { c += WriteXYZNumber(value.Data[i]); }
+            return c;
+        }
+
+        public int WriteTextDescriptionTagDataEntry(TextDescriptionTagDataEntry value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            int size, c = 0;
+
+            if (value.ASCII == null) c += WriteUInt32(0);
+            else
+            {
+                DataStream.Position += 4;
+                c += size = WriteASCIIString(value.ASCII + '\0');
+                DataStream.Position -= size + 4;
+                c += WriteUInt32((uint)size);
+                DataStream.Position += size;
+            }
+
+            if (value.Unicode == null)
+            {
+                c += WriteUInt32(0);
+                c += WriteUInt32(0);
+            }
+            else
+            {
+                DataStream.Position += 8;
+                c += size = WriteUnicodeString(value.Unicode + '\0');
+                DataStream.Position -= size + 8;
+                c += WriteUInt32(value.UnicodeLanguageCode);
+                c += WriteUInt32((uint)value.Unicode.Length + 1);
+                DataStream.Position += size;
+            }
+
+            if (value.ScriptCode == null)
+            {
+                c += WriteUInt16(0);
+                c += WriteByte(0);
+            }
+            else
+            {
+                DataStream.Position += 3;
+                c += size = WriteASCIIString(SetRange(value.ScriptCode, 66) + '\0');
+                DataStream.Position -= size + 3;
+                c += WriteUInt16(value.ScriptCodeCode);
+                c += WriteByte((byte)(value.ScriptCode.Length > 66 ? 67 : value.ScriptCode.Length + 1));
+                DataStream.Position += size;
+            }
+
             return c;
         }
 
