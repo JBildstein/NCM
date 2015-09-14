@@ -281,9 +281,23 @@ namespace ColorManager.ICC.Conversion
                 && Profile.HasTag(TagSignature.BlueTRC);
         }
 
+        private bool IsMultiProcess()
+        {
+            //TODO: IsMultiProcess is not quite correct yet
+            return Profile.HasTag(TagSignature.DToB0)
+                || Profile.HasTag(TagSignature.DToB1)
+                || Profile.HasTag(TagSignature.DToB2)
+                || Profile.HasTag(TagSignature.DToB3)
+                || Profile.HasTag(TagSignature.BToD0)
+                || Profile.HasTag(TagSignature.BToD1)
+                || Profile.HasTag(TagSignature.BToD2)
+                || Profile.HasTag(TagSignature.BToD3);
+        }
+
         #endregion
 
-        //LTODO: add multiprocess element conversion
+        //TODO: add choice of rendering intent and method
+        //LTODO: test multiprocess element conversion
         //LTODO: include chromatic adaption if CATag is existing
         //LTODO: check for media white/black point tag and use it if existing and appropriate
 
@@ -299,6 +313,7 @@ namespace ColorManager.ICC.Conversion
 
             if (IsNComponentLUT()) ConvertICC_PCSData_LUT(entries[0], Profile.PCSType);
             else if (IsThreeComponentMatrix()) ConvertICC_PCSData_Matrix(entries);
+            else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
             else if (IsMonochrome()) ConvertICC_PCSData_Monochrome(entries);
             else throw new InvalidProfileException();
         }
@@ -353,6 +368,17 @@ namespace ColorManager.ICC.Conversion
             WriteGrayTRC(entries, true);
         }
 
+        /// <summary>
+        /// Writes the IL code for a multiprocess ICC conversion from PCS to Data
+        /// </summary>
+        /// <param name="entry">The entry with the multiprocess data</param>
+        private void ConcvertICC_PCSData_Multiprocess(TagDataEntry entry)
+        {
+            var m = entry as MultiProcessElementsTagDataEntry;
+            if (m != null) WriteMultiProcessElement(m);
+            else throw new Exception("Entry is not a MultiProcessElementsTagDataEntry");
+        }
+
         #endregion
 
         #region Data -> PCS
@@ -367,6 +393,7 @@ namespace ColorManager.ICC.Conversion
 
             if (IsNComponentLUT()) ConvertICC_DataPCS_LUT(entries[0], Profile.DataColorspaceType);
             else if (IsThreeComponentMatrix()) ConvertICC_DataPCS_Matrix(entries);
+            else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
             else if (IsMonochrome()) ConvertICC_DataPCS_Monochrome(entries);
             else throw new InvalidProfileException();
         }
@@ -421,6 +448,17 @@ namespace ColorManager.ICC.Conversion
         {
             IsLast = true;
             WriteGrayTRC(entries, false);
+        }
+
+        /// <summary>
+        /// Writes the IL code for a multiprocess ICC conversion from Data to PCS
+        /// </summary>
+        /// <param name="entry">The entry with the multiprocess data</param>
+        private void ConvertICC_DataPCS_Multiprocess(TagDataEntry entry)
+        {
+            var m = entry as MultiProcessElementsTagDataEntry;
+            if (m != null) WriteMultiProcessElement(m);
+            else throw new Exception("Entry is not a MultiProcessElementsTagDataEntry");
         }
 
         #endregion
@@ -1540,6 +1578,68 @@ namespace ColorManager.ICC.Conversion
 
         #endregion
 
+        #region Write MultiProcessElement IL Code
+
+        private void WriteMultiProcessElement(MultiProcessElementsTagDataEntry entry)
+        {
+            for (int i = 0; i < entry.Data.Length; i++)
+            {
+                var element = entry.Data[i];
+                IsFirst = i > 0;
+                bool last = i == entry.Data.Length - 1;
+
+                switch (element.Signature)
+                {
+                    case MultiProcessElementSignature.CurveSet:
+                        IsLast = last;
+                        WriteMPE_CurveSet(element as CurveSetProcessElement);
+                        break;
+
+                    case MultiProcessElementSignature.Matrix:
+                        WriteMPE_Matrix(element as MatrixProcessElement, last);
+                        break;
+
+                    case MultiProcessElementSignature.CLUT:
+                        IsLast = last;
+                        WriteMPE_CLUT(element as CLUTProcessElement);
+                        break;
+
+                    case MultiProcessElementSignature.bACS:
+                    case MultiProcessElementSignature.eACS:
+                    default:
+                        throw new InvalidProfileException();
+                }
+            }
+        }
+
+        private void WriteMPE_CurveSet(CurveSetProcessElement element)
+        {
+            for (int i = 0; i < element.Curves.Length; i++) { WriteOneDimensionalCurve(element.Curves[i], i); }
+        }
+
+        private void WriteMPE_Matrix(MatrixProcessElement element, bool last)
+        {
+            WriteLdICCData(DataPos);    //Load Matrix IxO
+            WriteLdArg();               //Load in and output values
+            WriteCallMultiplyMatrix_3x3_3x1();
+            SwitchTempVar();
+            IsLast = last;
+            WriteLdInput();             //Load input value (previous output)
+            WriteLdICCData(DataPos + 1);//Load Matrix Ox1
+            WriteLdOutput();            //Load output value
+            WriteCallAddMatrix_3x1();
+
+            ICCData.Add(GetMatrix(element.MatrixIxO));
+            ICCData.Add(element.MatrixOx1);
+        }
+
+        private void WriteMPE_CLUT(CLUTProcessElement element)
+        {
+            WriteCLUT(element.CLUTValue);
+        }
+
+        #endregion
+
         #region Subroutines
 
         /// <summary>
@@ -1587,6 +1687,22 @@ namespace ColorManager.ICC.Conversion
                 }
                 return matrixInv;
             }
+        }
+
+        /// <summary>
+        /// Converts the multi-dimensional matrix array to a one dimensional array
+        /// </summary>
+        /// <param name="matrix">the matrix array to convert</param>
+        /// <returns>the matrix as a one dimensional array</returns>
+        private double[] GetMatrix(double[,] matrix)
+        {
+            double[] result = new double[matrix.Length];
+            fixed(double* rp = result)
+            fixed(double* mp = matrix)
+            {
+                for (int i = 0; i < result.Length; i++) { rp[i] = mp[i]; }
+            }
+            return result;
         }
 
         /// <summary>

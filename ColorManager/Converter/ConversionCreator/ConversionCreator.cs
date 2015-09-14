@@ -480,11 +480,20 @@ namespace ColorManager.Conversion
         }
 
         /// <summary>
-        /// Writes the IL code to call the UMath.MultiplyMatrix_3x3_3x1(double*, double*, double*) method
+        /// Writes the IL code to call the <see cref="UMath.MultiplyMatrix_3x3_3x1(double*, double*, double*)"/> method
         /// </summary>
         protected void WriteCallMultiplyMatrix_3x3_3x1()
         {
             var mm = typeof(UMath).GetMethod(nameof(UMath.MultiplyMatrix_3x3_3x1));
+            WriteMethodCall(mm, false);
+        }
+
+        /// <summary>
+        /// Writes the IL code to call the <see cref="UMath.AddMatrix_3x1"/> method
+        /// </summary>
+        protected void WriteCallAddMatrix_3x1()
+        {
+            var mm = typeof(UMath).GetMethod(nameof(UMath.AddMatrix_3x1));
             WriteMethodCall(mm, false);
         }
 
