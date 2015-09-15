@@ -489,11 +489,41 @@ namespace ColorManager.Conversion
         }
 
         /// <summary>
+        /// Writes the IL code to call the <see cref="UMath.MultiplyMatrix"/> method
+        /// </summary>
+        /// <param name="ax">X-Length of first matrix</param>
+        /// <param name="ay">Y-Length of first matrix</param>
+        /// <param name="bx">X-Length of second matrix</param>
+        /// <param name="by">Y-Length of second matrix</param>
+        protected void WriteCallMultiplyMatrix(int ax, int ay, int bx, int by)
+        {
+            CMIL.Emit(OpCodes.Ldind_I4, ax);
+            CMIL.Emit(OpCodes.Ldind_I4, ay);
+            CMIL.Emit(OpCodes.Ldind_I4, bx);
+            CMIL.Emit(OpCodes.Ldind_I4, by);
+            var mm = typeof(UMath).GetMethod(nameof(UMath.MultiplyMatrix));
+            WriteMethodCall(mm, false);
+        }
+
+        /// <summary>
         /// Writes the IL code to call the <see cref="UMath.AddMatrix_3x1"/> method
         /// </summary>
         protected void WriteCallAddMatrix_3x1()
         {
             var mm = typeof(UMath).GetMethod(nameof(UMath.AddMatrix_3x1));
+            WriteMethodCall(mm, false);
+        }
+
+        /// <summary>
+        /// Writes the IL code to call the <see cref="UMath.AddMatrix"/> method
+        /// </summary>
+        /// <param name="la">Length of first matrix</param>
+        /// <param name="lb">Length of second matrix</param>
+        protected void WriteCallAddMatrix(int la, int lb)
+        {
+            CMIL.Emit(OpCodes.Ldind_I4, la);
+            CMIL.Emit(OpCodes.Ldind_I4, lb);
+            var mm = typeof(UMath).GetMethod(nameof(UMath.AddMatrix));
             WriteMethodCall(mm, false);
         }
 
