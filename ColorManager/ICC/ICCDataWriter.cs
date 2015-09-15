@@ -501,13 +501,10 @@ namespace ColorManager.ICC
             int c = WriteUInt16((ushort)value.ChannelCount);
             c += WriteUInt16((ushort)value.ColorantType);
 
-            if (value.ColorantType == ColorantEncoding.Unknown)
+            for (int i = 0; i < value.ChannelCount; i++)
             {
-                for (int i = 0; i < value.ChannelCount; i++)
-                {
-                    c += WriteUFix16(value.ChannelValues[i][0]);
-                    c += WriteUFix16(value.ChannelValues[i][1]);
-                }
+                c += WriteUFix16(value.ChannelValues[i][0]);
+                c += WriteUFix16(value.ChannelValues[i][1]);
             }
             return c;
         }
@@ -556,7 +553,7 @@ namespace ColorManager.ICC
                 c += WriteUInt32((uint)value.CurveData.Length);
                 for (int i = 0; i < value.CurveData.Length; i++)
                 {
-                    c += WriteUInt16(SetRangeUInt16(value.CurveData[i]));
+                    c += WriteUInt16(SetRangeUInt16(value.CurveData[i] * 65535));
                 }
             }
 
