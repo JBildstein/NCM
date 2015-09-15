@@ -1621,14 +1621,16 @@ namespace ColorManager.ICC.Conversion
         {
             WriteLdICCData(DataPos);    //Load Matrix IxO
             WriteLdArg();               //Load in and output values
-            WriteCallMultiplyMatrix_3x3_3x1();
+            if (element.InputChannelCount == 3 && element.OutputChannelCount == 3) WriteCallMultiplyMatrix_3x3_3x1();
+            else WriteCallMultiplyMatrix(element.InputChannelCount, element.OutputChannelCount, element.OutputChannelCount, 1);
             SwitchTempVar();
             IsLast = last;
             WriteLdInput();             //Load input value (previous output)
             WriteLdICCData(DataPos + 1);//Load Matrix Ox1
             WriteLdOutput();            //Load output value
-            WriteCallAddMatrix_3x1();
-
+            if (element.OutputChannelCount == 3) WriteCallAddMatrix_3x1();
+            else WriteCallAddMatrix(element.OutputChannelCount, element.OutputChannelCount);
+            
             ICCData.Add(GetMatrix(element.MatrixIxO));
             ICCData.Add(element.MatrixOx1);
         }
