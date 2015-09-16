@@ -497,10 +497,11 @@ namespace ColorManager.Conversion
         /// <param name="by">Y-Length of second matrix</param>
         protected void WriteCallMultiplyMatrix(int ax, int ay, int bx, int by)
         {
-            CMIL.Emit(OpCodes.Ldind_I4, ax);
-            CMIL.Emit(OpCodes.Ldind_I4, ay);
-            CMIL.Emit(OpCodes.Ldind_I4, bx);
-            CMIL.Emit(OpCodes.Ldind_I4, by);
+            CMIL.Emit(OpCodes.Ldind_I4);
+            CMIL.Emit(OpCodes.Ldc_I4, ax);
+            CMIL.Emit(OpCodes.Ldc_I4, ay);
+            CMIL.Emit(OpCodes.Ldc_I4, bx);
+            CMIL.Emit(OpCodes.Ldc_I4, by);
             var mm = typeof(UMath).GetMethod(nameof(UMath.MultiplyMatrix));
             WriteMethodCall(mm, false);
         }
@@ -521,8 +522,9 @@ namespace ColorManager.Conversion
         /// <param name="lb">Length of second matrix</param>
         protected void WriteCallAddMatrix(int la, int lb)
         {
-            CMIL.Emit(OpCodes.Ldind_I4, la);
-            CMIL.Emit(OpCodes.Ldind_I4, lb);
+            CMIL.Emit(OpCodes.Ldind_I4);
+            CMIL.Emit(OpCodes.Ldc_I4, la);
+            CMIL.Emit(OpCodes.Ldc_I4, lb);
             var mm = typeof(UMath).GetMethod(nameof(UMath.AddMatrix));
             WriteMethodCall(mm, false);
         }
