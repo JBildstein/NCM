@@ -1307,16 +1307,16 @@ namespace ColorManager.ICC.Conversion
         /// </summary>
         private void WriteLUT(LUT[] InCurve, LUT[] OutCurve, CLUT clut, double[,] matrix, ColorSpaceType inColor)
         {
-            double[] Matrix = new double[9]
+            //Matrix
+            if (inColor == ColorSpaceType.CIEXYZ && matrix != null)
+            {
+                double[] Matrix = new double[9]
                 {
                     matrix[0, 0], matrix[0, 1], matrix[0, 2],
                     matrix[1, 0], matrix[1, 1], matrix[1, 2],
                     matrix[2, 0], matrix[2, 1], matrix[2, 2],
                 };
 
-            //Matrix
-            if (inColor == ColorSpaceType.CIEXYZ)
-            {
                 WriteLdICCData(DataPos);
                 WriteLdArg();
                 WriteCallMultiplyMatrix_3x3_3x1();
