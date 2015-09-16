@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Globalization;
 
 namespace ColorManager.ICC
 {
@@ -39,7 +38,7 @@ namespace ColorManager.ICC
         }
 
         #region Read Primitives
-        
+
         /// <summary>
         /// Reads an ushort
         /// </summary>
@@ -134,7 +133,8 @@ namespace ColorManager.ICC
         /// <returns>The value as a string</returns>
         public string ReadASCIIString(int length)
         {
-            return Encoding.ASCII.GetString(Data, AIndex(length), length);
+            string value = Encoding.ASCII.GetString(Data, AIndex(length), length);
+            return value.Replace("\0", string.Empty);
         }
 
         /// <summary>
@@ -404,7 +404,7 @@ namespace ColorManager.ICC
                     return ReadUnknownTagDataEntry(info.DataSize);
             }
         }
-        
+
         /// <summary>
         /// Reads the header of a <see cref="TagDataEntry"/>
         /// </summary>
@@ -445,7 +445,7 @@ namespace ColorManager.ICC
 
             if (!Enum.IsDefined(typeof(ColorantEncoding), colorant)) throw new CorruptProfileException("Invalid ColorantEncoding");
             else if (colorant != ColorantEncoding.Unknown && channelCount != 3) { throw new CorruptProfileException("ChromaticityTagDataEntry"); }
-            else if (colorant != ColorantEncoding.Unknown) { return new ChromaticityTagDataEntry(channelCount, colorant); }
+            else if (colorant != ColorantEncoding.Unknown) { return new ChromaticityTagDataEntry(colorant); }
             else
             {
                 double[][] values = new double[channelCount][];
@@ -455,7 +455,7 @@ namespace ColorManager.ICC
                     values[i][0] = ReadUFix16();
                     values[i][1] = ReadUFix16();
                 }
-                return new ChromaticityTagDataEntry(channelCount, colorant, values);
+                return new ChromaticityTagDataEntry(values);
             }
         }
 
@@ -464,7 +464,7 @@ namespace ColorManager.ICC
             var colorantCount = ReadUInt32();
             var number = new byte[colorantCount];
             Buffer.BlockCopy(Data, AIndex((int)colorantCount), number, 0, (int)colorantCount);
-            return new ColorantOrderTagDataEntry(colorantCount, number);
+            return new ColorantOrderTagDataEntry(number);
         }
 
         public ColorantTableTagDataEntry ReadColorantTableTagDataEntry()
@@ -472,7 +472,7 @@ namespace ColorManager.ICC
             var colorantCount = ReadUInt32();
             var cdata = new ColorantTableEntry[colorantCount];
             for (int i = 0; i < colorantCount; i++) { cdata[i] = ReadColorantTableEntry(); }
-            return new ColorantTableTagDataEntry(colorantCount, cdata);
+            return new ColorantTableTagDataEntry(cdata);
         }
 
         public CurveTagDataEntry ReadCurveTagDataEntry()
@@ -517,6 +517,7 @@ namespace ColorManager.ICC
             AIndex(1);//1 byte reserved
 
             var matrix = ReadMatrix(3, 3, false);
+            if (IsIdentityMatrix(matrix)) matrix = null;
 
             var inTableCount = ReadUInt16();
             var outTableCount = ReadUInt16();
@@ -548,6 +549,7 @@ namespace ColorManager.ICC
             AIndex(1);//1 byte reserved
 
             var matrix = ReadMatrix(3, 3, false);
+            if (IsIdentityMatrix(matrix)) matrix = null;
 
             //Input LUT
             var inValues = new LUT[inChCount];
@@ -619,7 +621,18 @@ namespace ColorManager.ICC
                 Matrix3x1 = ReadMatrix(3, false);
             }
 
-            return new LutAToBTagDataEntry(inChCount, outChCount, Matrix3x3, Matrix3x1, clut, bCurve, mCurve, aCurve);
+            bool acn = aCurve != null;
+            bool bcn = bCurve != null;
+            bool mcn = mCurve != null;
+            bool m1n = Matrix3x1 != null;
+            bool m2n = Matrix3x3 != null;
+            bool cln = clut != null;
+
+            if (acn && cln && mcn && m2n && m1n && bcn) return new LutAToBTagDataEntry(aCurve, clut, mCurve, Matrix3x3, Matrix3x1, bCurve);
+            else if (acn && cln && bcn) return new LutAToBTagDataEntry(aCurve, clut, bCurve);
+            else if (mcn && m1n && m2n && bcn) return new LutAToBTagDataEntry(mCurve, Matrix3x3, Matrix3x1, bCurve);
+            else if (bcn) return new LutAToBTagDataEntry(bCurve);
+            else throw new CorruptProfileException();
         }
 
         public LutBToATagDataEntry ReadLutBToATagDataEntry()
@@ -673,7 +686,18 @@ namespace ColorManager.ICC
                 Matrix3x1 = ReadMatrix(3, false);
             }
 
-            return new LutBToATagDataEntry(inChCount, outChCount, Matrix3x3, Matrix3x1, clut, bCurve, mCurve, aCurve);
+            bool acn = aCurve != null;
+            bool bcn = bCurve != null;
+            bool mcn = mCurve != null;
+            bool m1n = Matrix3x1 != null;
+            bool m2n = Matrix3x3 != null;
+            bool cln = clut != null;
+
+            if (bcn && m1n && m2n && mcn && cln && acn) return new LutBToATagDataEntry(bCurve, Matrix3x3, Matrix3x1, mCurve, clut, aCurve);
+            else if (bcn && cln && acn) return new LutBToATagDataEntry(bCurve, clut, aCurve);
+            else if (bcn && m1n && m2n && acn) return new LutBToATagDataEntry(bCurve, Matrix3x3, Matrix3x1, aCurve);
+            else if (bcn) return new LutBToATagDataEntry(bCurve);
+            else throw new CorruptProfileException();
         }
 
         public MeasurementTagDataEntry ReadMeasurementTagDataEntry()
@@ -690,13 +714,13 @@ namespace ColorManager.ICC
             var RecordSize = ReadUInt32();
             var Text = new LocalizedString[RecordCount];
 
-            var culture = new CultureInfo[RecordCount];
+            var culture = new string[RecordCount];
             var length = new uint[RecordCount];
             var offset = new uint[RecordCount];
 
             for (int i = 0; i < RecordCount; i++)
             {
-                culture[i] = new CultureInfo($"{ReadASCIIString(2)}-{ReadASCIIString(2)}");
+                culture[i] = $"{ReadASCIIString(2)}-{ReadASCIIString(2)}";
                 length[i] = ReadUInt32();
                 offset[i] = ReadUInt32();
             }
@@ -728,7 +752,7 @@ namespace ColorManager.ICC
                 mdata[i] = ReadMultiProcessElement();
             }
 
-            return new MultiProcessElementsTagDataEntry(inChCount, outChCount, mdata);
+            return new MultiProcessElementsTagDataEntry(mdata);
         }
 
         public NamedColor2TagDataEntry ReadNamedColor2TagDataEntry()
@@ -743,7 +767,7 @@ namespace ColorManager.ICC
             var colors = new NamedColor[colorCount];
             for (int i = 0; i < colorCount; i++) colors[i] = ReadNamedColor(coordCount);
 
-            return new NamedColor2TagDataEntry(vendorFlag, coordCount, prefix, suffix, colors);
+            return new NamedColor2TagDataEntry(vendorFlag, prefix, suffix, coordCount, colors);
         }
 
         public ParametricCurveTagDataEntry ReadParametricCurveTagDataEntry()
@@ -798,7 +822,7 @@ namespace ColorManager.ICC
                 curves[i] = ReadResponseCurve(channelCount);
             }
 
-            return new ResponseCurveSet16TagDataEntry(channelCount, curves);
+            return new ResponseCurveSet16TagDataEntry(curves);
         }
 
         public Fix16ArrayTagDataEntry ReadFix16ArrayTagDataEntry(uint size)
@@ -1006,7 +1030,7 @@ namespace ColorManager.ICC
             length /= inChCount;
 
             const double max = byte.MaxValue;
-            
+
             var values = new double[length][];
             for (int i = 0; i < length; i++)
             {
@@ -1015,7 +1039,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount;
-            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.UInt8);
+            return new CLUT(values, gridPointCount, CLUTDataType.UInt8);
         }
 
         /// <summary>
@@ -1042,7 +1066,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount * 2;
-            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.UInt16);
+            return new CLUT(values, gridPointCount, CLUTDataType.UInt16);
         }
 
         /// <summary>
@@ -1067,7 +1091,7 @@ namespace ColorManager.ICC
             }
 
             Index = start + length * outChCount * 4;
-            return new CLUT(values, inChCount, outChCount, gridPointCount, CLUTDataType.Float);
+            return new CLUT(values, gridPointCount, CLUTDataType.Float);
         }
 
         #endregion
@@ -1110,17 +1134,17 @@ namespace ColorManager.ICC
                 curves[i] = ReadOneDimensionalCurve();
                 APadding();
             }
-            return new CurveSetProcessElement(inChCount, outChCount, curves);
+            return new CurveSetProcessElement(curves);
         }
 
         public MatrixProcessElement ReadMatrixProcessElement(int inChCount, int outChCount)
         {
-            return new MatrixProcessElement(inChCount, outChCount, ReadMatrix(inChCount, outChCount, true), ReadMatrix(outChCount, true));
+            return new MatrixProcessElement(ReadMatrix(inChCount, outChCount, true), ReadMatrix(outChCount, true));
         }
 
         public CLUTProcessElement ReadCLUTProcessElement(int inChCount, int outChCount)
         {
-            return new CLUTProcessElement(inChCount, outChCount, ReadCLUT(inChCount, outChCount, true));
+            return new CLUTProcessElement(ReadCLUT(inChCount, outChCount, true));
         }
 
         #endregion
@@ -1203,7 +1227,15 @@ namespace ColorManager.ICC
                 f = ReadFix16();
             }
 
-            return new ParametricCurve(type, gamma, a, b, c, d, e, f);
+            switch (type)
+            {
+                case 0: return new ParametricCurve(gamma);
+                case 1: return new ParametricCurve(gamma, a, b);
+                case 2: return new ParametricCurve(gamma, a, b, c);
+                case 3: return new ParametricCurve(gamma, a, b, c, d);
+                case 4: return new ParametricCurve(gamma, a, b, c, d, e, f);
+                default: throw new CorruptProfileException();
+            }
         }
 
         public CurveSegment ReadCurveSegment()
@@ -1324,6 +1356,30 @@ namespace ColorManager.ICC
                 }
             }
             return misaligned;
+        }
+
+        /// <summary>
+        /// Checks if a 3x3 matrix is an identity matrix (i.e. doesn't change the value if multiplied)
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        private unsafe bool IsIdentityMatrix(double[,] matrix)
+        {
+            if (matrix == null) return false;
+            if (matrix.GetLength(0) != 3 || matrix.GetLength(1) != 3) return false;
+
+            fixed(double* mp = matrix)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    if (i == 0 || i == 4 || i == 8)
+                    {
+                        if (mp[i] != 1.0) return false;
+                    }
+                    else if (mp[i] != 0.0) return false;
+                }
+            }
+            return true;
         }
 
         #endregion

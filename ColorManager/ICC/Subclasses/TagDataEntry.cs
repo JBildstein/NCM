@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace ColorManager.ICC
@@ -21,10 +22,16 @@ namespace ColorManager.ICC
         private TypeSignature _Signature = TypeSignature.Unknown;
         private TagSignature _TagSignature = TagSignature.Unknown;
 
-        protected TagDataEntry(TypeSignature signature)
+        protected TagDataEntry(TypeSignature Signature)
+            : this(Signature, TagSignature.Unknown)
+        { }
+
+        protected TagDataEntry(TypeSignature Signature, TagSignature TagSignature)
         {
-            _Signature = signature;
+            _Signature = Signature;
+            _TagSignature = TagSignature;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="TagDataEntry"/>s are equal to each other.
@@ -82,17 +89,17 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UnknownTagDataEntry : TagDataEntry
     {
-        public byte[] Data
-        {
-            get { return _Data; }
-        }
-        private byte[] _Data;
+        public readonly byte[] Data;
 
         public UnknownTagDataEntry(byte[] Data)
-            : base(TypeSignature.Unknown)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UnknownTagDataEntry(byte[] Data, TagSignature TagSignature)
+            : base(TypeSignature.Unknown, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
 
         /// <summary>
@@ -153,42 +160,39 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ChromaticityTagDataEntry : TagDataEntry
     {
-        public int ChannelCount
-        {
-            get { return _ChannelCount; }
-        }
-        public ColorantEncoding ColorantType
-        {
-            get { return _ColorantType; }
-        }
-        public double[][] ChannelValues
-        {
-            get { return _ChannelValues; }
-        }
+        public readonly int ChannelCount;
+        public readonly ColorantEncoding ColorantType;
+        public readonly double[][] ChannelValues;
 
-        private int _ChannelCount;
-        private ColorantEncoding _ColorantType;
-        private double[][] _ChannelValues;
+        public ChromaticityTagDataEntry(ColorantEncoding ColorantType)
+            : this(ColorantType, GetColorantArray(ColorantType), TagSignature.Unknown)
+        { }
 
-        public ChromaticityTagDataEntry(int ChannelCount, ColorantEncoding ColorantType)
-            : base(TypeSignature.Chromaticity)
-        {
-            _ChannelCount = ChannelCount;
-            _ColorantType = ColorantType;
-            _ChannelValues = GetColorantArray();
-        }
+        public ChromaticityTagDataEntry(double[][] ChannelValues)
+            : this(ColorantEncoding.Unknown, ChannelValues, TagSignature.Unknown)
+        { }
 
-        public ChromaticityTagDataEntry(int ChannelCount, ColorantEncoding ColorantType, double[][] ChannelValues)
-            : base(TypeSignature.Chromaticity)
+        public ChromaticityTagDataEntry(ColorantEncoding ColorantType, TagSignature TagSignature)
+            : this(ColorantType, GetColorantArray(ColorantType), TagSignature)
+        { }
+
+        public ChromaticityTagDataEntry(double[][] ChannelValues, TagSignature TagSignature)
+            : this(ColorantEncoding.Unknown, ChannelValues, TagSignature)
+        { }
+
+        private ChromaticityTagDataEntry(ColorantEncoding ColorantType, double[][] ChannelValues, TagSignature TagSignature)
+            : base(TypeSignature.Chromaticity, TagSignature)
         {
             if (ChannelValues == null) throw new ArgumentNullException(nameof(ChannelValues));
+            if (ChannelValues.Length < 1 || ChannelValues.Length > 15)
+                throw new ArgumentOutOfRangeException("Channel count must be in the range of 1-15");
 
-            _ChannelCount = ChannelCount;
-            _ColorantType = ColorantType;
-            _ChannelValues = ChannelValues;
+            ChannelCount = ChannelValues.Length;
+            this.ColorantType = ColorantType;
+            this.ChannelValues = ChannelValues;
         }
 
-        private double[][] GetColorantArray()
+        private static double[][] GetColorantArray(ColorantEncoding ColorantType)
         {
             switch (ColorantType)
             {
@@ -224,6 +228,7 @@ namespace ColorManager.ICC
                     throw new ArgumentException("Unrecognized colorant encoding");
             }
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ChromaticityTagDataEntry"/>s are equal to each other.
@@ -286,25 +291,22 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ColorantOrderTagDataEntry : TagDataEntry
     {
-        public uint ColorantCount
-        {
-            get { return _ColorantCount; }
-        }
-        public byte[] ColorantNumber
-        {
-            get { return _ColorantNumber; }
-        }
+        public readonly byte[] ColorantNumber;
 
-        private uint _ColorantCount;
-        private byte[] _ColorantNumber;
+        public ColorantOrderTagDataEntry(byte[] ColorantNumber)
+            : this(ColorantNumber, TagSignature.Unknown)
+        { }
 
-        public ColorantOrderTagDataEntry(uint ColorantCount, byte[] ColorantNumber)
-            : base(TypeSignature.ColorantOrder)
+        public ColorantOrderTagDataEntry(byte[] ColorantNumber, TagSignature TagSignature)
+            : base(TypeSignature.ColorantOrder, TagSignature)
         {
             if (ColorantNumber == null) throw new ArgumentNullException(nameof(ColorantNumber));
-            _ColorantCount = ColorantCount;
-            _ColorantNumber = ColorantNumber;
+            if (ColorantNumber.Length < 1 || ColorantNumber.Length > 15)
+                throw new ArgumentOutOfRangeException("Channel count must be in the range of 1-15");
+
+            this.ColorantNumber = ColorantNumber;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ColorantOrderTagDataEntry"/>s are equal to each other.
@@ -316,8 +318,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-            return a.Signature == b.Signature && a.ColorantCount == b.ColorantCount
-                && CMP.Compare(a.ColorantNumber, b.ColorantNumber);
+            return a.Signature == b.Signature && CMP.Compare(a.ColorantNumber, b.ColorantNumber);
         }
 
         /// <summary>
@@ -353,7 +354,6 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Signature.GetHashCode();
-                hash *= 16777619 ^ ColorantCount.GetHashCode();
                 hash *= CMP.GetHashCode(ColorantNumber);
                 return hash;
             }
@@ -367,25 +367,22 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ColorantTableTagDataEntry : TagDataEntry
     {
-        public uint ColorantCount
-        {
-            get { return _ColorantCount; }
-        }
-        public ColorantTableEntry[] ColorantData
-        {
-            get { return _ColorantData; }
-        }
+        public readonly ColorantTableEntry[] ColorantData;
 
-        private uint _ColorantCount;
-        private ColorantTableEntry[] _ColorantData;
+        public ColorantTableTagDataEntry(ColorantTableEntry[] ColorantData)
+            : this(ColorantData, TagSignature.Unknown)
+        { }
 
-        public ColorantTableTagDataEntry(uint ColorantCount, ColorantTableEntry[] ColorantData)
-            : base(TypeSignature.ColorantTable)
+        public ColorantTableTagDataEntry(ColorantTableEntry[] ColorantData, TagSignature TagSignature)
+            : base(TypeSignature.ColorantTable, TagSignature)
         {
             if (ColorantData == null) throw new ArgumentNullException(nameof(ColorantData));
-            _ColorantCount = ColorantCount;
-            _ColorantData = ColorantData;
+            if (ColorantData.Length < 1 || ColorantData.Length > 15)
+                throw new ArgumentOutOfRangeException("Channel count must be in the range of 1-15");
+
+            this.ColorantData = ColorantData;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ColorantTableTagDataEntry"/>s are equal to each other.
@@ -397,8 +394,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
-            return a.Signature == b.Signature && a.ColorantCount == b.ColorantCount
-                && CMP.Compare(a.ColorantData, b.ColorantData);
+            return a.Signature == b.Signature && CMP.Compare(a.ColorantData, b.ColorantData);
         }
 
         /// <summary>
@@ -434,7 +430,6 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Signature.GetHashCode();
-                hash *= 16777619 ^ ColorantCount.GetHashCode();
                 hash *= CMP.GetHashCode(ColorantData);
                 return hash;
             }
@@ -446,48 +441,47 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class CurveTagDataEntry : TagDataEntry
     {
-        public double[] CurveData
+        public readonly double[] CurveData;
+        public double Gamma
         {
-            get { return _CurveData; }
+            get { return CurveData[0]; }
         }
         public bool IsIdentityResponse
         {
-            get { return _IsIdentityResponse; }
+            get { return CurveData.Length == 0; }
         }
         public bool IsGamma
         {
-            get { return _IsGamma; }
+            get { return CurveData.Length == 1; }
         }
-        public double Gamma
-        {
-            get { return _Gamma; }
-        }
-
-        private double[] _CurveData;
-        private bool _IsIdentityResponse;
-        private bool _IsGamma;
-        private double _Gamma;
 
         public CurveTagDataEntry()
-            : base(TypeSignature.Curve)
-        {
-            _IsIdentityResponse = true;
-        }
-
-        public CurveTagDataEntry(double[] CurveData)
-            : base(TypeSignature.Curve)
-        {
-            if (CurveData == null) throw new ArgumentNullException(nameof(CurveData));
-            _CurveData = CurveData;
-        }
+            : this(new double[0], TagSignature.Unknown)
+        { }
 
         public CurveTagDataEntry(double Gamma)
-            : base(TypeSignature.Curve)
+            : this(new double[] { Gamma }, TagSignature.Unknown)
+        { }
+
+        public CurveTagDataEntry(double[] CurveData)
+            : this(CurveData, TagSignature.Unknown)
+        { }
+
+        public CurveTagDataEntry(TagSignature TagSignature)
+            : this(new double[0], TagSignature)
+        { }
+
+        public CurveTagDataEntry(double Gamma, TagSignature TagSignature)
+            : this(new double[] { Gamma }, TagSignature)
+        { }
+
+        public CurveTagDataEntry(double[] CurveData, TagSignature TagSignature)
+            : base(TypeSignature.Curve, TagSignature)
         {
-            _IsGamma = true;
-            _Gamma = Gamma;
-            _CurveData = new double[] { Gamma };
+            if (CurveData == null) throw new ArgumentNullException(nameof(CurveData));
+            this.CurveData = CurveData;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="CurveTagDataEntry"/>s are equal to each other.
@@ -547,14 +541,8 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class DataTagDataEntry : TagDataEntry
     {
-        public byte[] Data
-        {
-            get { return _Data; }
-        }
-        public bool IsASCII
-        {
-            get { return _IsASCII; }
-        }
+        public readonly byte[] Data;
+        public readonly bool IsASCII;
         public string ASCIIString
         {
             get
@@ -564,16 +552,23 @@ namespace ColorManager.ICC
             }
         }
 
-        private byte[] _Data;
-        private bool _IsASCII;
+        public DataTagDataEntry(byte[] Data)
+            : this(Data, false, TagSignature.Unknown)
+        { }
 
         public DataTagDataEntry(byte[] Data, bool IsASCII)
-            : base(TypeSignature.Data)
+            : this(Data, IsASCII, TagSignature.Unknown)
+        { }
+
+        public DataTagDataEntry(byte[] Data, bool IsASCII, TagSignature TagSignature)
+            : base(TypeSignature.Data, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
-            _IsASCII = IsASCII;
+
+            this.Data = Data;
+            this.IsASCII = IsASCII;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="DataTagDataEntry"/>s are equal to each other.
@@ -634,17 +629,18 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class DateTimeTagDataEntry : TagDataEntry
     {
-        public DateTime Value
-        {
-            get { return _Value; }
-        }
-        private DateTime _Value;
+        public readonly DateTime Value;
 
-        public DateTimeTagDataEntry(DateTime value)
-            : base(TypeSignature.DateTime)
+        public DateTimeTagDataEntry(DateTime Value)
+            : this(Value, TagSignature.Unknown)
+        { }
+
+        public DateTimeTagDataEntry(DateTime Value, TagSignature TagSignature)
+            : base(TypeSignature.DateTime, TagSignature)
         {
-            _Value = value;
+            this.Value = Value;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="DateTimeTagDataEntry"/>s are equal to each other.
@@ -704,41 +700,51 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Lut16TagDataEntry : TagDataEntry
     {
-        public double[,] Matrix
-        {
-            get { return _Matrix; }
-        }
-        public LUT[] InputValues
-        {
-            get { return _InputValues; }
-        }
-        public CLUT CLUTValues
-        {
-            get { return _CLUTValues; }
-        }
-        public LUT[] OutputValues
-        {
-            get { return _OutputValues; }
-        }
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly double[,] Matrix;
+        public LUT[] InputValues;
+        public readonly CLUT CLUTValues;
+        public readonly LUT[] OutputValues;
 
-        private double[,] _Matrix;
-        private LUT[] _InputValues;
-        private CLUT _CLUTValues;
-        private LUT[] _OutputValues;
+        public Lut16TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
+            : this(null, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
+        { }
+
+        public Lut16TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
+            : this(null, InputValues, CLUTValues, OutputValues, TagSignature)
+        { }
 
         public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
-            : base(TypeSignature.Lut16)
+            : this(Matrix, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
+        { }
+
+        public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
+            : base(TypeSignature.Lut16, TagSignature)
         {
-            if (Matrix == null) throw new ArgumentNullException(nameof(Matrix));
             if (InputValues == null) throw new ArgumentNullException(nameof(InputValues));
             if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
             if (OutputValues == null) throw new ArgumentNullException(nameof(OutputValues));
 
-            _Matrix = Matrix;
-            _InputValues = InputValues;
-            _CLUTValues = CLUTValues;
-            _OutputValues = OutputValues;
+            InputChannelCount = InputValues.Length;
+            OutputChannelCount = OutputValues.Length;
+
+            if (Matrix != null)
+            {
+                InputChannelCount = 3;
+                if (Matrix.GetLength(0) != 3 || Matrix.GetLength(1) != 3)
+                    throw new ArgumentOutOfRangeException(nameof(Matrix), "Matrix must have a length of three by three");
+            }
+
+            if (InputChannelCount != CLUTValues.InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (OutputChannelCount != CLUTValues.OutputChannelCount) throw new ArgumentException("Input channel count does not match");
+
+            this.Matrix = Matrix;
+            this.InputValues = InputValues;
+            this.CLUTValues = CLUTValues;
+            this.OutputValues = OutputValues;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="Lut16TagDataEntry"/>s are equal to each other.
@@ -803,41 +809,54 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Lut8TagDataEntry : TagDataEntry
     {
-        public double[,] Matrix
-        {
-            get { return _Matrix; }
-        }
-        public LUT[] InputValues
-        {
-            get { return _InputValues; }
-        }
-        public CLUT CLUTValues
-        {
-            get { return _CLUTValues; }
-        }
-        public LUT[] OutputValues
-        {
-            get { return _OutputValues; }
-        }
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly double[,] Matrix;
+        public readonly LUT[] InputValues;
+        public readonly CLUT CLUTValues;
+        public readonly LUT[] OutputValues;
 
-        private double[,] _Matrix;
-        private LUT[] _InputValues;
-        private CLUT _CLUTValues;
-        private LUT[] _OutputValues;
+        public Lut8TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
+            : this(null, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
+        { }
+
+        public Lut8TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
+            : this(null, InputValues, CLUTValues, OutputValues, TagSignature)
+        { }
 
         public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
-            : base(TypeSignature.Lut8)
+            : this(Matrix, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
+        { }
+
+        public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
+            : base(TypeSignature.Lut8, TagSignature)
         {
-            if (Matrix == null) throw new ArgumentNullException(nameof(Matrix));
             if (InputValues == null) throw new ArgumentNullException(nameof(InputValues));
             if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
             if (OutputValues == null) throw new ArgumentNullException(nameof(OutputValues));
 
-            _Matrix = Matrix;
-            _InputValues = InputValues;
-            _CLUTValues = CLUTValues;
-            _OutputValues = OutputValues;
+            InputChannelCount = InputValues.Length;
+            OutputChannelCount = OutputValues.Length;
+
+            if (Matrix != null)
+            {
+                InputChannelCount = 3;
+                if (Matrix.GetLength(0) != 3 || Matrix.GetLength(1) != 3)
+                    throw new ArgumentOutOfRangeException(nameof(Matrix), "Matrix must have a length of three by three");
+            }
+
+            if (InputChannelCount != CLUTValues.InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (OutputChannelCount != CLUTValues.OutputChannelCount) throw new ArgumentException("Input channel count does not match");
+
+            if (InputValues.Any(t => t.Values.Length != 256)) throw new ArgumentException("Lookup table has to have a length of 256");
+            if (OutputValues.Any(t => t.Values.Length != 256)) throw new ArgumentException("Lookup table has to have a length of 256");
+
+            this.Matrix = Matrix;
+            this.InputValues = InputValues;
+            this.CLUTValues = CLUTValues;
+            this.OutputValues = OutputValues;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="Lut8TagDataEntry"/>s are equal to each other.
@@ -901,61 +920,372 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class LutAToBTagDataEntry : TagDataEntry
     {
-        public int InputChannelCount
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly double[,] Matrix3x3;
+        public readonly double[] Matrix3x1;
+        public readonly CLUT CLUTValues;
+        public readonly TagDataEntry[] CurveB;
+        public readonly TagDataEntry[] CurveM;
+        public readonly TagDataEntry[] CurveA;
+
+        #region B
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
         {
-            get { return _InputChannelCount; }
-        }
-        public int OutputChannelCount
-        {
-            get { return _OutputChannelCount; }
-        }
-        public double[,] Matrix3x3
-        {
-            get { return _Matrix3x3; }
-        }
-        public double[] Matrix3x1
-        {
-            get { return _Matrix3x1; }
-        }
-        public CLUT CLUTValues
-        {
-            get { return _CLUTValues; }
-        }
-        public TagDataEntry[] CurveB
-        {
-            get { return _CurveB; }
-        }
-        public TagDataEntry[] CurveM
-        {
-            get { return _CurveM; }
-        }
-        public TagDataEntry[] CurveA
-        {
-            get { return _CurveA; }
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
-        private int _InputChannelCount;
-        private int _OutputChannelCount;
-        private double[,] _Matrix3x3;
-        private double[] _Matrix3x1;
-        private CLUT _CLUTValues;
-        private TagDataEntry[] _CurveB;
-        private TagDataEntry[] _CurveM;
-        private TagDataEntry[] _CurveA;
-
-        public LutAToBTagDataEntry(int inChCount, int outChCount, double[,] Matrix3x3, double[] Matrix3x1,
-            CLUT CLUTValues, TagDataEntry[] CurveB, TagDataEntry[] CurveM, TagDataEntry[] CurveA)
-            : base(TypeSignature.LutAToB)
+        public LutAToBTagDataEntry(TagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
         {
-            _InputChannelCount = inChCount;
-            _OutputChannelCount = outChCount;
-            _Matrix3x3 = Matrix3x3;
-            _Matrix3x1 = Matrix3x1;
-            _CLUTValues = CLUTValues;
-            _CurveB = CurveB;
-            _CurveM = CurveM;
-            _CurveA = CurveA;
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
+
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
+        { }
+
+        #endregion
+
+        #region M, Matrix, B
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveM, double[,] Matrix3x3,
+            double[] Matrix3x1, TagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveM, double[,] Matrix3x3,
+            double[] Matrix3x1, TagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM, double[,] Matrix3x3,
+            double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM, double[,] Matrix3x3,
+            double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM, double[,] Matrix3x3,
+            double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        #endregion
+
+        #region A, CLUT, B
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
+        { }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues,
+            ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues,
+            CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues,
+            ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues,
+            CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveB)
+        { }
+
+        #endregion
+
+        #region A, CLUT, M, Matrix, B
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
+        { }
+
+        #endregion
+
+        #region Base
+
+        private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB)
+            : this(TagSignature, CurveB, new TagDataEntry[0], null, null, null, null)
+        {
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            CurveM = null;//This was just a helper to uniquely identify the correct constructor
+            InputChannelCount = OutputChannelCount = CurveB.Length;
+        }
+
+        private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB)
+            : this(TagSignature, CurveB, CurveM, null, Matrix3x3, Matrix3x1, null)
+        {
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (Matrix3x3 == null) throw new ArgumentNullException(nameof(Matrix3x3));
+            if (Matrix3x1 == null) throw new ArgumentNullException(nameof(Matrix3x1));
+            if (CurveM == null) throw new ArgumentNullException(nameof(CurveM));
+
+            if (CurveB.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveB), "Curve B must have a length of three");
+            if (CurveM.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveM), "Curve M must have a length of three");
+
+            InputChannelCount = OutputChannelCount = 3;
+        }
+
+        private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveA,
+            CLUT CLUTValues, TagDataEntry[] CurveB)
+            : this(TagSignature, CurveB, null, CurveA, null, null, CLUTValues)
+        {
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (CurveA == null) throw new ArgumentNullException(nameof(CurveA));
+            if (CurveA.Length < 1 || CurveA.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of A curves must be in the range of 1-15");
+            if (CurveB.Length < 1 || CurveB.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of B curves must be in the range of 1-15");
+
+            InputChannelCount = CurveA.Length;
+            OutputChannelCount = CurveB.Length;
+
+            if (CLUTValues.InputChannelCount != InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (CLUTValues.OutputChannelCount != OutputChannelCount) throw new ArgumentException("Output channel count does not match");
+        }
+
+        private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveM,
+            double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB)
+            : this(TagSignature, CurveB, CurveM, CurveA, Matrix3x3, Matrix3x1, CLUTValues)
+        {
+            if (Matrix3x1 == null) throw new ArgumentNullException(nameof(Matrix3x1));
+            if (Matrix3x3 == null) throw new ArgumentNullException(nameof(Matrix3x3));
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (CurveM == null) throw new ArgumentNullException(nameof(CurveM));
+            if (CurveA == null) throw new ArgumentNullException(nameof(CurveA));
+            if (CurveB.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveB), "Curve B must have a length of three");
+            if (CurveM.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveM), "Curve M must have a length of three");
+            if (CurveA.Length < 1 || CurveA.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of A curves must be in the range of 1-15");
+
+            InputChannelCount = CurveA.Length;
+            OutputChannelCount = 3;
+
+            if (CLUTValues.InputChannelCount != InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (CLUTValues.OutputChannelCount != OutputChannelCount) throw new ArgumentException("Output channel count does not match");
+        }
+
+
+        private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB, TagDataEntry[] CurveM,
+            TagDataEntry[] CurveA, double[,] Matrix3x3, double[] Matrix3x1, CLUT CLUTValues)
+            : base(TypeSignature.LutBToA, TagSignature)
+        {
+            if (Matrix3x1 != null && Matrix3x1.Length != 3)
+                throw new ArgumentOutOfRangeException(nameof(Matrix3x1), "Matrix must have a length of three");
+            if (Matrix3x3 != null && (Matrix3x3.GetLength(0) != 3 || Matrix3x3.GetLength(1) != 3))
+                throw new ArgumentOutOfRangeException(nameof(Matrix3x3), "Matrix must have a length of three by three");
+
+            this.Matrix3x3 = Matrix3x3;
+            this.Matrix3x1 = Matrix3x1;
+            this.CLUTValues = CLUTValues;
+            this.CurveB = CurveB;
+            this.CurveM = CurveM;
+            this.CurveA = CurveA;
+        }
+
+        #endregion
+
 
         /// <summary>
         /// Determines whether the specified <see cref="LutAToBTagDataEntry"/>s are equal to each other.
@@ -1025,61 +1355,373 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class LutBToATagDataEntry : TagDataEntry
     {
-        public int InputChannelCount
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly double[,] Matrix3x3;
+        public readonly double[] Matrix3x1;
+        public readonly CLUT CLUTValues;
+        public readonly TagDataEntry[] CurveB;
+        public readonly TagDataEntry[] CurveM;
+        public readonly TagDataEntry[] CurveA;
+
+        #region B
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
         {
-            get { return _InputChannelCount; }
-        }
-        public int OutputChannelCount
-        {
-            get { return _OutputChannelCount; }
-        }
-        public double[,] Matrix3x3
-        {
-            get { return _Matrix3x3; }
-        }
-        public double[] Matrix3x1
-        {
-            get { return _Matrix3x1; }
-        }
-        public CLUT CLUTValues
-        {
-            get { return _CLUTValues; }
-        }
-        public TagDataEntry[] CurveB
-        {
-            get { return _CurveB; }
-        }
-        public TagDataEntry[] CurveM
-        {
-            get { return _CurveM; }
-        }
-        public TagDataEntry[] CurveA
-        {
-            get { return _CurveA; }
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
-        private int _InputChannelCount;
-        private int _OutputChannelCount;
-        private double[,] _Matrix3x3;
-        private double[] _Matrix3x1;
-        private CLUT _CLUTValues;
-        private TagDataEntry[] _CurveB;
-        private TagDataEntry[] _CurveM;
-        private TagDataEntry[] _CurveA;
-
-        public LutBToATagDataEntry(int inChCount, int outChCount, double[,] Matrix3x3, double[] Matrix3x1,
-            CLUT CLUTValues, TagDataEntry[] CurveB, TagDataEntry[] CurveM, TagDataEntry[] CurveA)
-            : base(TypeSignature.LutBToA)
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
         {
-            _InputChannelCount = inChCount;
-            _OutputChannelCount = outChCount;
-            _Matrix3x3 = Matrix3x3;
-            _Matrix3x1 = Matrix3x1;
-            _CLUTValues = CLUTValues;
-            _CurveB = CurveB;
-            _CurveM = CurveM;
-            _CurveA = CurveA;
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
+
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB)
+            : this(TagSignature.Unknown, CurveB)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
+            : this(TagSignature, CurveB)
+        { }
+
+        #endregion
+
+        #region B, Matrix, M
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, TagDataEntry[] CurveM)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, TagDataEntry[] CurveM, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveM)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB,
+            double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB,
+            double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveM)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, CurveTagDataEntry[] CurveM, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
+        { }
+
+        #endregion
+
+        #region B, CLUT, A
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, CLUT CLUTValues, TagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, CLUT CLUTValues, TagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, CLUTValues, CurveA)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) || !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) || !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
+        { }
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues,
+            ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues,
+            CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues,
+            ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues,
+            CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, CLUTValues, CurveA)
+        { }
+
+        #endregion
+
+        #region B, Matrix, M, CLUT, A
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            TagDataEntry[] CurveM, CLUT CLUTValues, TagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+        public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            TagDataEntry[] CurveM, CLUT CLUTValues, TagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        {
+            if (CurveB.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveM.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+            if (CurveA.Any(t => !(t is ParametricCurveTagDataEntry) && !(t is CurveTagDataEntry)))
+                throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
+        }
+
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
+            : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
+            ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
+            : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
+        { }
+
+        #endregion
+
+        #region Base
+
+        private LutBToATagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB)
+            : this(TagSignature, CurveB, new TagDataEntry[0], null, null, null, null)
+        {
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            CurveM = null;//This was just a helper to uniquely identify the correct constructor
+            InputChannelCount = OutputChannelCount = CurveB.Length;
+        }
+
+        private LutBToATagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB,
+            double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveM)
+            : this(TagSignature, CurveB, CurveM, null, Matrix3x3, Matrix3x1, null)
+        {
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (Matrix3x3 == null) throw new ArgumentNullException(nameof(Matrix3x3));
+            if (Matrix3x1 == null) throw new ArgumentNullException(nameof(Matrix3x1));
+            if (CurveM == null) throw new ArgumentNullException(nameof(CurveM));
+
+            if (CurveB.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveB), "Curve B must have a length of three");
+            if (CurveM.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveM), "Curve M must have a length of three");
+
+            InputChannelCount = OutputChannelCount = 3;
+        }
+
+        private LutBToATagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB,
+            CLUT CLUTValues, TagDataEntry[] CurveA)
+            : this(TagSignature, CurveB, null, CurveA, null, null, CLUTValues)
+        {
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (CurveA == null) throw new ArgumentNullException(nameof(CurveA));
+            if (CurveA.Length < 1 || CurveA.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of A curves must be in the range of 1-15");
+            if (CurveB.Length < 1 || CurveB.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of B curves must be in the range of 1-15");
+
+            InputChannelCount = CurveB.Length;
+            OutputChannelCount = CurveA.Length;
+
+            if (CLUTValues.InputChannelCount != InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (CLUTValues.OutputChannelCount != OutputChannelCount) throw new ArgumentException("Output channel count does not match");
+        }
+
+        private LutBToATagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB, double[,] Matrix3x3,
+            double[] Matrix3x1, TagDataEntry[] CurveM, CLUT CLUTValues, TagDataEntry[] CurveA)
+            : this(TagSignature, CurveB, CurveM, CurveA, Matrix3x3, Matrix3x1, CLUTValues)
+        {
+            if (Matrix3x1 == null) throw new ArgumentNullException(nameof(Matrix3x1));
+            if (Matrix3x3 == null) throw new ArgumentNullException(nameof(Matrix3x3));
+            if (CLUTValues == null) throw new ArgumentNullException(nameof(CLUTValues));
+            if (CurveB == null) throw new ArgumentNullException(nameof(CurveB));
+            if (CurveM == null) throw new ArgumentNullException(nameof(CurveM));
+            if (CurveA == null) throw new ArgumentNullException(nameof(CurveA));
+            if (CurveB.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveB), "Curve B must have a length of three");
+            if (CurveM.Length != 3) throw new ArgumentOutOfRangeException(nameof(CurveM), "Curve M must have a length of three");
+            if (CurveA.Length < 1 || CurveA.Length > 15)
+                throw new ArgumentOutOfRangeException("Number of A curves must be in the range of 1-15");
+
+            InputChannelCount = 3;
+            OutputChannelCount = CurveA.Length;
+
+            if (CLUTValues.InputChannelCount != InputChannelCount) throw new ArgumentException("Input channel count does not match");
+            if (CLUTValues.OutputChannelCount != OutputChannelCount) throw new ArgumentException("Output channel count does not match");
+        }
+
+
+        private LutBToATagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB, TagDataEntry[] CurveM,
+            TagDataEntry[] CurveA, double[,] Matrix3x3, double[] Matrix3x1, CLUT CLUTValues)
+            : base(TypeSignature.LutBToA, TagSignature)
+        {
+            if (Matrix3x1 != null && Matrix3x1.Length != 3)
+                throw new ArgumentOutOfRangeException(nameof(Matrix3x1), "Matrix must have a length of three");
+            if (Matrix3x3 != null && (Matrix3x3.GetLength(0) != 3 || Matrix3x3.GetLength(1) != 3))
+                throw new ArgumentOutOfRangeException(nameof(Matrix3x3), "Matrix must have a length of three by three");
+
+            this.Matrix3x3 = Matrix3x3;
+            this.Matrix3x1 = Matrix3x1;
+            this.CLUTValues = CLUTValues;
+            this.CurveB = CurveB;
+            this.CurveM = CurveM;
+            this.CurveA = CurveA;
+        }
+
+        #endregion
+
 
         /// <summary>
         /// Determines whether the specified <see cref="LutBToATagDataEntry"/>s are equal to each other.
@@ -1151,43 +1793,36 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MeasurementTagDataEntry : TagDataEntry
     {
-        public StandardObserver Observer
-        {
-            get { return _Observer; }
-        }
-        public XYZNumber XYZBacking
-        {
-            get { return _XYZBacking; }
-        }
-        public MeasurementGeometry Geometry
-        {
-            get { return _Geometry; }
-        }
-        public double Flare
-        {
-            get { return _Flare; }
-        }
-        public StandardIlluminant Illuminant
-        {
-            get { return _Illuminant; }
-        }
-
-        private StandardObserver _Observer;
-        private XYZNumber _XYZBacking;
-        private MeasurementGeometry _Geometry;
-        private double _Flare;
-        private StandardIlluminant _Illuminant;
+        public readonly StandardObserver Observer;
+        public readonly XYZNumber XYZBacking;
+        public readonly MeasurementGeometry Geometry;
+        public readonly double Flare;
+        public readonly StandardIlluminant Illuminant;
 
         public MeasurementTagDataEntry(StandardObserver Observer, XYZNumber XYZBacking,
             MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant)
-            : base(TypeSignature.Measurement)
+            : this(Observer, XYZBacking, Geometry, Flare, Illuminant, TagSignature.Unknown)
+        { }
+
+        public MeasurementTagDataEntry(StandardObserver Observer, XYZNumber XYZBacking,
+            MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant, TagSignature TagSignature)
+            : base(TypeSignature.Measurement, TagSignature)
         {
-            _Observer = Observer;
-            _XYZBacking = XYZBacking;
-            _Geometry = Geometry;
-            _Flare = Flare;
-            _Illuminant = Illuminant;
+            if (double.IsNaN(Flare) || double.IsInfinity(Flare)) throw new ArgumentException($"{nameof(Flare)} is not a number");
+            if (!Enum.IsDefined(typeof(StandardObserver), Observer))
+                throw new ArgumentException($"{nameof(Observer)} value is not of a defined Enum value");
+            if (!Enum.IsDefined(typeof(MeasurementGeometry), Geometry))
+                throw new ArgumentException($"{nameof(Geometry)} value is not of a defined Enum value");
+            if (!Enum.IsDefined(typeof(StandardIlluminant), Illuminant))
+                throw new ArgumentException($"{nameof(Illuminant)} value is not of a defined Enum value");
+
+            this.Observer = Observer;
+            this.XYZBacking = XYZBacking;
+            this.Geometry = Geometry;
+            this.Flare = Flare;
+            this.Illuminant = Illuminant;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="MeasurementTagDataEntry"/>s are equal to each other.
@@ -1253,18 +1888,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MultiLocalizedUnicodeTagDataEntry : TagDataEntry
     {
-        public LocalizedString[] Text
-        {
-            get { return _Text; }
-        }
-        private LocalizedString[] _Text;
+        public readonly LocalizedString[] Text;
 
         public MultiLocalizedUnicodeTagDataEntry(LocalizedString[] Text)
-            : base(TypeSignature.MultiLocalizedUnicode)
+            : this(Text, TagSignature.Unknown)
+        { }
+
+        public MultiLocalizedUnicodeTagDataEntry(LocalizedString[] Text, TagSignature TagSignature)
+            : base(TypeSignature.MultiLocalizedUnicode, TagSignature)
         {
             if (Text == null) throw new ArgumentNullException(nameof(Text));
-            _Text = Text;
+            this.Text = Text;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="MultiLocalizedUnicodeTagDataEntry"/>s are equal to each other.
@@ -1324,31 +1960,31 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MultiProcessElementsTagDataEntry : TagDataEntry
     {
-        public int InputChannelCount
-        {
-            get { return _InputChannelCount; }
-        }
-        public int OutputChannelCount
-        {
-            get { return _OutputChannelCount; }
-        }
-        public MultiProcessElement[] Data
-        {
-            get { return _Data; }
-        }
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly MultiProcessElement[] Data;
 
-        private int _InputChannelCount;
-        private int _OutputChannelCount;
-        private MultiProcessElement[] _Data;
+        public MultiProcessElementsTagDataEntry(MultiProcessElement[] Data)
+            : this(Data, TagSignature.Unknown)
+        { }
 
-        public MultiProcessElementsTagDataEntry(int inChCount, int outChCount, MultiProcessElement[] Data)
-            : base(TypeSignature.MultiProcessElements)
+        public MultiProcessElementsTagDataEntry(MultiProcessElement[] Data, TagSignature TagSignature)
+            : base(TypeSignature.MultiProcessElements, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _InputChannelCount = inChCount;
-            _OutputChannelCount = outChCount;
-            _Data = Data;
+            if (Data.Length < 1) throw new ArgumentException($"{nameof(Data)} must have at least one element");
+
+            InputChannelCount = Data[0].InputChannelCount;
+            OutputChannelCount = Data[0].OutputChannelCount;
+
+            if (Data.Any(t => t.InputChannelCount != InputChannelCount))
+                throw new ArgumentException("Number of input channels do not match throughout the whole dataset");
+            if (Data.Any(t => t.OutputChannelCount != OutputChannelCount))
+                throw new ArgumentException("Number of output channels do not match throughout the whole dataset");
+
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="MultiProcessElementsTagDataEntry"/>s are equal to each other.
@@ -1411,45 +2047,48 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class NamedColor2TagDataEntry : TagDataEntry
     {
-        public byte[] VendorFlag
-        {
-            get { return _VendorFlag; }
-        }
-        public int CoordCount
-        {
-            get { return _CoordCount; }
-        }
-        public string Prefix
-        {
-            get { return _Prefix; }
-        }
-        public string Suffix
-        {
-            get { return _Suffix; }
-        }
-        public NamedColor[] Colors
-        {
-            get { return _Colors; }
-        }
+        public readonly int CoordCount;
+        public readonly string Prefix;
+        public readonly string Suffix;
+        public readonly byte[] VendorFlags;
+        public readonly NamedColor[] Colors;
 
-        private byte[] _VendorFlag;
-        private int _CoordCount;
-        private string _Prefix;
-        private string _Suffix;
-        private NamedColor[] _Colors;
+        public NamedColor2TagDataEntry(int CoordCount, NamedColor[] Colors)
+            : this(new byte[4], null, null, CoordCount, Colors, TagSignature.Unknown)
+        { }
 
-        public NamedColor2TagDataEntry(byte[] VendorFlag, int CoordCount, string Prefix, string Suffix, NamedColor[] Colors)
-            : base(TypeSignature.NamedColor2)
+        public NamedColor2TagDataEntry(string Prefix, string Suffix, int CoordCount, NamedColor[] Colors)
+            : this(new byte[4], Prefix, Suffix, CoordCount, Colors, TagSignature.Unknown)
+        { }
+
+        public NamedColor2TagDataEntry(byte[] VendorFlags, string Prefix, string Suffix, int CoordCount, NamedColor[] Colors)
+            : this(VendorFlags, Prefix, Suffix, CoordCount, Colors, TagSignature.Unknown)
+        { }
+
+        public NamedColor2TagDataEntry(int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
+            : this(new byte[4], null, null, CoordCount, Colors, TagSignature)
+        { }
+
+        public NamedColor2TagDataEntry(string Prefix, string Suffix, int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
+            : this(new byte[4], Prefix, Suffix, CoordCount, Colors, TagSignature)
+        { }
+
+        public NamedColor2TagDataEntry(byte[] VendorFlags, string Prefix, string Suffix, int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
+            : base(TypeSignature.NamedColor2, TagSignature)
         {
-            if (VendorFlag == null) throw new ArgumentNullException(nameof(VendorFlag));
             if (Colors == null) throw new ArgumentNullException(nameof(Colors));
+            if (VendorFlags == null) throw new ArgumentNullException(nameof(VendorFlags));
+            if (VendorFlags.Length != 4) throw new ArgumentException($"{nameof(VendorFlags)} must have a length of four");
+            if (Colors.Any(t => t.DeviceCoordinates?.Length != CoordCount))
+                throw new ArgumentException($"Number of device coordinates of {nameof(Colors)} don't match with {nameof(CoordCount)}");
 
-            _VendorFlag = VendorFlag;
-            _CoordCount = CoordCount;
-            _Prefix = Prefix;
-            _Suffix = Suffix;
-            _Colors = Colors;
+            this.VendorFlags = VendorFlags;
+            this.CoordCount = CoordCount;
+            this.Prefix = Prefix;
+            this.Suffix = Suffix;
+            this.Colors = Colors;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="NamedColor2TagDataEntry"/>s are equal to each other.
@@ -1462,7 +2101,7 @@ namespace ColorManager.ICC
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
             return a.Signature == b.Signature && a.CoordCount == b.CoordCount
-                && a.Prefix == b.Prefix && a.Suffix == b.Suffix && CMP.Compare(a.VendorFlag, b.VendorFlag)
+                && a.Prefix == b.Prefix && a.Suffix == b.Suffix && CMP.Compare(a.VendorFlags, b.VendorFlags)
                 && CMP.Compare(a.Colors, b.Colors);
         }
 
@@ -1502,7 +2141,7 @@ namespace ColorManager.ICC
                 hash *= 16777619 ^ CoordCount.GetHashCode();
                 hash *= 16777619 ^ Prefix.GetHashCode();
                 hash *= 16777619 ^ Suffix.GetHashCode();
-                hash *= CMP.GetHashCode(VendorFlag);
+                hash *= CMP.GetHashCode(VendorFlags);
                 hash *= CMP.GetHashCode(Colors);
                 return hash;
             }
@@ -1515,16 +2154,16 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ParametricCurveTagDataEntry : TagDataEntry
     {
-        public ParametricCurve Curve
-        {
-            get { return _Curve; }
-        }
-        private ParametricCurve _Curve;
+        public readonly ParametricCurve Curve;
 
         public ParametricCurveTagDataEntry(ParametricCurve Curve)
-            : base(TypeSignature.ParametricCurve)
+            : this(Curve, TagSignature.Unknown)
+        { }
+
+        public ParametricCurveTagDataEntry(ParametricCurve Curve, TagSignature TagSignature)
+            : base(TypeSignature.ParametricCurve, TagSignature)
         {
-            _Curve = Curve;
+            this.Curve = Curve;
         }
 
         /// <summary>
@@ -1586,18 +2225,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ProfileSequenceDescTagDataEntry : TagDataEntry
     {
-        public ProfileDescription[] Descriptions
-        {
-            get { return _Descriptions; }
-        }
-        private ProfileDescription[] _Descriptions;
+        public readonly ProfileDescription[] Descriptions;
 
         public ProfileSequenceDescTagDataEntry(ProfileDescription[] Descriptions)
-            : base(TypeSignature.ProfileSequenceDesc)
+            : this(Descriptions, TagSignature.Unknown)
+        { }
+
+        public ProfileSequenceDescTagDataEntry(ProfileDescription[] Descriptions, TagSignature TagSignature)
+            : base(TypeSignature.ProfileSequenceDesc, TagSignature)
         {
             if (Descriptions == null) throw new ArgumentNullException(nameof(Descriptions));
-            _Descriptions = Descriptions;
+            this.Descriptions = Descriptions;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ProfileSequenceDescTagDataEntry"/>s are equal to each other.
@@ -1657,19 +2297,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ProfileSequenceIdentifierTagDataEntry : TagDataEntry
     {
-        public ProfileSequenceIdentifier[] Data
-        {
-            get { return _Data; }
-        }
-        private ProfileSequenceIdentifier[] _Data;
+        public readonly ProfileSequenceIdentifier[] Data;
 
         public ProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifier[] Data)
-            : base(TypeSignature.ProfileSequenceIdentifier)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public ProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifier[] Data, TagSignature TagSignature)
+            : base(TypeSignature.ProfileSequenceIdentifier, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ProfileSequenceIdentifierTagDataEntry"/>s are equal to each other.
@@ -1731,25 +2371,23 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ResponseCurveSet16TagDataEntry : TagDataEntry
     {
-        public int ChannelCount
-        {
-            get { return _ChannelCount; }
-        }
-        public ResponseCurve[] Curves
-        {
-            get { return _Curves; }
-        }
+        public readonly ushort ChannelCount;
+        public readonly ResponseCurve[] Curves;
 
-        private int _ChannelCount;
-        private ResponseCurve[] _Curves;
+        public ResponseCurveSet16TagDataEntry(ResponseCurve[] Curves)
+            : this(Curves, TagSignature.Unknown)
+        { }
 
-        public ResponseCurveSet16TagDataEntry(int ChannelCount, ResponseCurve[] Curves)
-            : base(TypeSignature.ResponseCurveSet16)
+        public ResponseCurveSet16TagDataEntry(ResponseCurve[] Curves, TagSignature TagSignature)
+            : base(TypeSignature.ResponseCurveSet16, TagSignature)
         {
             if (Curves == null) throw new ArgumentNullException(nameof(Curves));
-            _ChannelCount = ChannelCount;
-            _Curves = Curves;
+            if (Curves.Length < 1) throw new ArgumentException($"{nameof(Curves)} needs at least one element");
+
+            this.Curves = Curves;
+            ChannelCount = (ushort)Curves[0].ResponseArrays.Length;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ResponseCurveSet16TagDataEntry"/>s are equal to each other.
@@ -1810,18 +2448,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Fix16ArrayTagDataEntry : TagDataEntry
     {
-        public double[] Data
-        {
-            get { return _Data; }
-        }
-        private double[] _Data;
+        public readonly double[] Data;
 
         public Fix16ArrayTagDataEntry(double[] Data)
-            : base(TypeSignature.S15Fixed16Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public Fix16ArrayTagDataEntry(double[] Data, TagSignature TagSignature)
+            : base(TypeSignature.S15Fixed16Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="Fix16ArrayTagDataEntry"/>s are equal to each other.
@@ -1881,17 +2520,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class SignatureTagDataEntry : TagDataEntry
     {
-        public string SignatureData
-        {
-            get { return _SignatureData; }
-        }
-        private string _SignatureData;
+        public readonly string SignatureData;
 
         public SignatureTagDataEntry(string SignatureData)
-            : base(TypeSignature.Signature)
+            : this(SignatureData, TagSignature.Unknown)
+        { }
+
+        public SignatureTagDataEntry(string SignatureData, TagSignature TagSignature)
+            : base(TypeSignature.Signature, TagSignature)
         {
-            _SignatureData = SignatureData;
+            if (SignatureData == null) throw new ArgumentNullException(nameof(SignatureData));
+            this.SignatureData = SignatureData;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="SignatureTagDataEntry"/>s are equal to each other.
@@ -1950,17 +2591,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class TextTagDataEntry : TagDataEntry
     {
-        public string Text
-        {
-            get { return _Text; }
-        }
-        private string _Text;
+        public readonly string Text;
 
         public TextTagDataEntry(string Text)
-            : base(TypeSignature.Text)
+            : this(Text, TagSignature.Unknown)
+        { }
+
+        public TextTagDataEntry(string Text, TagSignature TagSignature)
+            : base(TypeSignature.Text, TagSignature)
         {
-            _Text = Text;
+            if (Text == null) throw new ArgumentNullException(nameof(Text));
+            this.Text = Text;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="TextTagDataEntry"/>s are equal to each other.
@@ -2019,18 +2662,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UFix16ArrayTagDataEntry : TagDataEntry
     {
-        public double[] Data
-        {
-            get { return _Data; }
-        }
-        private double[] _Data;
+        public readonly double[] Data;
 
         public UFix16ArrayTagDataEntry(double[] Data)
-            : base(TypeSignature.U16Fixed16Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UFix16ArrayTagDataEntry(double[] Data, TagSignature TagSignature)
+            : base(TypeSignature.U16Fixed16Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="UFix16ArrayTagDataEntry"/>s are equal to each other.
@@ -2089,18 +2733,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt16ArrayTagDataEntry : TagDataEntry
     {
-        public ushort[] Data
-        {
-            get { return _Data; }
-        }
-        private ushort[] _Data;
+        public readonly ushort[] Data;
 
         public UInt16ArrayTagDataEntry(ushort[] Data)
-            : base(TypeSignature.UInt16Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UInt16ArrayTagDataEntry(ushort[] Data, TagSignature TagSignature)
+            : base(TypeSignature.UInt16Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="UInt16ArrayTagDataEntry"/>s are equal to each other.
@@ -2159,18 +2804,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt32ArrayTagDataEntry : TagDataEntry
     {
-        public uint[] Data
-        {
-            get { return _Data; }
-        }
-        private uint[] _Data;
+        public readonly uint[] Data;
 
         public UInt32ArrayTagDataEntry(uint[] Data)
-            : base(TypeSignature.UInt32Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UInt32ArrayTagDataEntry(uint[] Data, TagSignature TagSignature)
+            : base(TypeSignature.UInt32Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="UInt32ArrayTagDataEntry"/>s are equal to each other.
@@ -2229,18 +2875,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt64ArrayTagDataEntry : TagDataEntry
     {
-        public ulong[] Data
-        {
-            get { return _Data; }
-        }
-        private ulong[] _Data;
+        public readonly ulong[] Data;
 
         public UInt64ArrayTagDataEntry(ulong[] Data)
-            : base(TypeSignature.UInt64Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UInt64ArrayTagDataEntry(ulong[] Data, TagSignature TagSignature)
+            : base(TypeSignature.UInt64Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="UInt64ArrayTagDataEntry"/>s are equal to each other.
@@ -2299,18 +2946,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt8ArrayTagDataEntry : TagDataEntry
     {
-        public byte[] Data
-        {
-            get { return _Data; }
-        }
-        private byte[] _Data;
+        public readonly byte[] Data;
 
         public UInt8ArrayTagDataEntry(byte[] Data)
-            : base(TypeSignature.UInt8Array)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public UInt8ArrayTagDataEntry(byte[] Data, TagSignature TagSignature)
+            : base(TypeSignature.UInt8Array, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="UInt8ArrayTagDataEntry"/>s are equal to each other.
@@ -2369,30 +3017,26 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ViewingConditionsTagDataEntry : TagDataEntry
     {
-        public XYZNumber IlluminantXYZ
-        {
-            get { return _IlluminantXYZ; }
-        }
-        public XYZNumber SurroundXYZ
-        {
-            get { return _SurroundXYZ; }
-        }
-        public StandardIlluminant Illuminant
-        {
-            get { return _Illuminant; }
-        }
-
-        private XYZNumber _IlluminantXYZ;
-        private XYZNumber _SurroundXYZ;
-        private StandardIlluminant _Illuminant;
+        public readonly XYZNumber IlluminantXYZ;
+        public readonly XYZNumber SurroundXYZ;
+        public readonly StandardIlluminant Illuminant;
 
         public ViewingConditionsTagDataEntry(XYZNumber IlluminantXYZ, XYZNumber SurroundXYZ, StandardIlluminant Illuminant)
-            : base(TypeSignature.ViewingConditions)
+            : this(IlluminantXYZ, SurroundXYZ, Illuminant, TagSignature.Unknown)
+        { }
+
+        public ViewingConditionsTagDataEntry(XYZNumber IlluminantXYZ, XYZNumber SurroundXYZ,
+            StandardIlluminant Illuminant, TagSignature TagSignature)
+            : base(TypeSignature.ViewingConditions, TagSignature)
         {
-            _IlluminantXYZ = IlluminantXYZ;
-            _SurroundXYZ = SurroundXYZ;
-            _Illuminant = Illuminant;
+            if (!Enum.IsDefined(typeof(StandardIlluminant), Illuminant))
+                throw new ArgumentException($"{nameof(Illuminant)} value is not of a defined Enum value");
+
+            this.IlluminantXYZ = IlluminantXYZ;
+            this.SurroundXYZ = SurroundXYZ;
+            this.Illuminant = Illuminant;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ViewingConditionsTagDataEntry"/>s are equal to each other.
@@ -2454,18 +3098,19 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class XYZTagDataEntry : TagDataEntry
     {
-        public XYZNumber[] Data
-        {
-            get { return _Data; }
-        }
-        private XYZNumber[] _Data;
+        public readonly XYZNumber[] Data;
 
         public XYZTagDataEntry(XYZNumber[] Data)
-            : base(TypeSignature.XYZ)
+            : this(Data, TagSignature.Unknown)
+        { }
+
+        public XYZTagDataEntry(XYZNumber[] Data, TagSignature TagSignature)
+            : base(TypeSignature.XYZ, TagSignature)
         {
             if (Data == null) throw new ArgumentNullException(nameof(Data));
-            _Data = Data;
+            this.Data = Data;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="XYZTagDataEntry"/>s are equal to each other.
@@ -2524,44 +3169,29 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class TextDescriptionTagDataEntry : TagDataEntry
     {
-        public string ASCII
+        public readonly string ASCII;
+        public readonly string Unicode;
+        public readonly string ScriptCode;
+
+        public readonly uint UnicodeLanguageCode;
+        public readonly ushort ScriptCodeCode;
+
+        public TextDescriptionTagDataEntry(string ASCII, string Unicode,
+            string ScriptCode, uint UnicodeLanguageCode, ushort ScriptCodeCode)
+            : this(ASCII, Unicode, ScriptCode, UnicodeLanguageCode, ScriptCodeCode, TagSignature.Unknown)
+        { }
+
+        public TextDescriptionTagDataEntry(string ASCII, string Unicode, string ScriptCode,
+            uint UnicodeLanguageCode, ushort ScriptCodeCode, TagSignature TagSignature)
+            : base(TypeSignature.TextDescription, TagSignature)
         {
-            get { return _ASCII; }
-        }
-        public string Unicode
-        {
-            get { return _Unicode; }
-        }
-        public string ScriptCode
-        {
-            get { return _ScriptCode; }
+            this.ASCII = ASCII;
+            this.Unicode = Unicode;
+            this.ScriptCode = ScriptCode;
+            this.UnicodeLanguageCode = UnicodeLanguageCode;
+            this.ScriptCodeCode = ScriptCodeCode;
         }
 
-        public uint UnicodeLanguageCode
-        {
-            get { return _UnicodeLanguageCode; }
-        }
-        public ushort ScriptCodeCode
-        {
-            get { return _ScriptCodeCode; }
-        }
-
-        private string _ASCII;
-        private string _Unicode;
-        private string _ScriptCode;
-
-        private uint _UnicodeLanguageCode;
-        private ushort _ScriptCodeCode;
-
-        public TextDescriptionTagDataEntry(string ASCII, string Unicode, string ScriptCode, uint UnicodeLanguageCode, ushort ScriptCodeCode)
-            : base(TypeSignature.TextDescription)
-        {
-            _ASCII = ASCII;
-            _Unicode = Unicode;
-            _ScriptCode = ScriptCode;
-            _UnicodeLanguageCode = UnicodeLanguageCode;
-            _ScriptCodeCode = ScriptCodeCode;
-        }
 
         /// <summary>
         /// Determines whether the specified <see cref="TextDescriptionTagDataEntry"/>s are equal to each other.

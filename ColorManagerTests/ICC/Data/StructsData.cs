@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using ColorManager.ICC;
 
 namespace ColorManagerTests.ICC.Data
@@ -193,13 +192,13 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly NamedColor NamedColor_ValMin = new NamedColor
         (
-            ArrayHelper.Fill('A', 32),
+            ArrayHelper.Fill('A', 31),
             new ushort[] { 0, 0, 0 },
             new ushort[] { 0, 0, 0 }
         );
         public static readonly NamedColor NamedColor_ValMax = new NamedColor
         (
-            ArrayHelper.Fill('4', 32),
+            ArrayHelper.Fill('4', 31),
             new ushort[] { ushort.MaxValue, ushort.MaxValue, ushort.MaxValue },
             new ushort[] { ushort.MaxValue, ushort.MaxValue, ushort.MaxValue, ushort.MaxValue }
         );
@@ -212,7 +211,8 @@ namespace ColorManagerTests.ICC.Data
             var data = new byte[32 + 6 + devCoordCount * 2];
             for (int i = 0; i < data.Length; i++)
             {
-                if (i < 32) data[i] = name;         //Name
+                if (i < 31) data[i] = name;         //Name
+                else if (i == 31) data[i] = 0x00;
                 else if (i < 32 + 6) data[i] = PCS; //PCS Coordinates
                 else data[i] = device;              //Device Coordinates
             }
@@ -223,8 +223,8 @@ namespace ColorManagerTests.ICC.Data
 
         #region ProfileDescription
 
-        private static readonly LocalizedString LocalizedString_Rand1 = new LocalizedString(new CultureInfo("en-US"), PrimitivesData.Unicode_ValRand2);
-        private static readonly LocalizedString LocalizedString_Rand2 = new LocalizedString(new CultureInfo("de-DE"), PrimitivesData.Unicode_ValRand3);
+        private static readonly LocalizedString LocalizedString_Rand1 = new LocalizedString("en-US", PrimitivesData.Unicode_ValRand2);
+        private static readonly LocalizedString LocalizedString_Rand2 = new LocalizedString("de-DE", PrimitivesData.Unicode_ValRand3);
 
         private static readonly LocalizedString[] LocalizedString_RandArr1 = new LocalizedString[]
         {

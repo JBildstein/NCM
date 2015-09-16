@@ -10,10 +10,11 @@ namespace ColorManagerTests.ICC.Data
         /// <para>Input Channel Count: 2</para>
         /// <para>Output Channel Count: 3</para>
         /// </summary>
-        public static readonly CurveSetProcessElement CurvePE_ValGrad = new CurveSetProcessElement(2, 3, new OneDimensionalCurve[]
+        public static readonly CurveSetProcessElement CurvePE_ValGrad = new CurveSetProcessElement(new OneDimensionalCurve[]
         {
             CurveData.OneDimensional_ValFormula1,
-            CurveData.OneDimensional_ValFormula2
+            CurveData.OneDimensional_ValFormula2,
+            CurveData.OneDimensional_ValFormula1
         });
         /// <summary>
         /// <para>Input Channel Count: 2</para>
@@ -22,7 +23,8 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] CurvePE_Grad = ArrayHelper.Concat
         (
             CurveData.OneDimensional_Formula1,
-            CurveData.OneDimensional_Formula2
+            CurveData.OneDimensional_Formula2,
+            CurveData.OneDimensional_Formula1
         );
 
         #endregion
@@ -35,7 +37,6 @@ namespace ColorManagerTests.ICC.Data
         /// </summary>
         public static readonly MatrixProcessElement MatrixPE_ValGrad = new MatrixProcessElement
         (
-            3, 3,
             MatrixData.Single_2D_ValGrad,
             MatrixData.Single_1D_ValGrad
         );
@@ -57,7 +58,7 @@ namespace ColorManagerTests.ICC.Data
         /// <para>Input Channel Count: 2</para>
         /// <para>Output Channel Count: 3</para>
         /// </summary>
-        public static readonly CLUTProcessElement CLUTPE_ValGrad = new CLUTProcessElement(2, 3, LUTData.CLUT_Valf32);
+        public static readonly CLUTProcessElement CLUTPE_ValGrad = new CLUTProcessElement(LUTData.CLUT_Valf32);
         /// <summary>
         /// <para>Input Channel Count: 2</para>
         /// <para>Output Channel Count: 3</para>
@@ -101,7 +102,7 @@ namespace ColorManagerTests.ICC.Data
             new byte[]
             {
                 0x6D, 0x66, 0x6C, 0x74,
-                0x00, 0x02,
+                0x00, 0x03,
                 0x00, 0x03,
             },
             CurvePE_Grad

@@ -122,7 +122,7 @@ namespace ColorManager
         #endregion
 
         #region ICC
-        
+
         /// <summary>
         /// States if this color is an ICC color
         /// </summary>
@@ -190,15 +190,15 @@ namespace ColorManager
         private void CheckColorTypeICC(ICCProfile profile)
         {
             _ICCProfile = profile;
-            _IsICCPCS = profile.PCS == GetType();
-            _IsICCDataSpace = profile.DataColorspace == GetType();
+            _IsICCPCS = profile.PCSType == GetType();
+            _IsICCDataSpace = profile.DataColorspaceType == GetType();
 
             if (profile.Class == ProfileClassName.DeviceLink && !IsICCDataSpace) throw new ColorTypeException("Color with Device Link profile has to be the ICC profiles DataColorspace type.");
             else if (profile.Class == ProfileClassName.Abstract && !IsICCPCS) throw new ColorTypeException("Color with Abstract profile has to be the ICC profiles PCS type.");
             else if (!IsICCPCS && !IsICCDataSpace) throw new ColorTypeException("Color is neither of PCS or DataColorspace type of ICC profile");
             _IsColorICC = true;
         }
-        
+
         /// <summary>
         /// Compares two colors for their equality of values and colorspace
         /// </summary>

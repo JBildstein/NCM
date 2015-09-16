@@ -213,11 +213,12 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly string ASCII_ValAll = CreateASCIIValue();
         public static readonly byte[] ASCII_All = CreateASCIIArr();
+        public static readonly byte[] ASCII_WriteAll = CreateASCIIWriteArr();
 
         private static string CreateASCIIValue()
         {
-            var result = new char[128];
-            for (int i = 0; i < 128; i++) { result[i] = (char)i; }
+            var result = new char[127];
+            for (int i = 1; i < 128; i++) { result[i - 1] = (char)i; }
             return new string(result);
         }
 
@@ -225,6 +226,13 @@ namespace ColorManagerTests.ICC.Data
         {
             var result = new byte[128];
             for (int i = 0; i < 128; i++) { result[i] = (byte)i; }
+            return result;
+        }
+
+        private static byte[] CreateASCIIWriteArr()
+        {
+            var result = new byte[127];
+            for (int i = 1; i < 128; i++) { result[i - 1] = (byte)i; }
             return result;
         }
 

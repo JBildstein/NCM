@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace ColorManager.ICC
 {
     public struct ProfileFlag
     {
-        public bool IsEmbedded;
-        public bool IsIndependent;
-        public bool[] Flags;
+        public bool IsEmbedded
+        {
+            get { return Flags?[0] ?? false; }
+            set { if (Flags != null) Flags[0] = value; }
+        }
+        public bool IsIndependent
+        {
+            get { return Flags?[1] ?? false; }
+            set { if (Flags != null) Flags[1] = value; }
+        }
+        public readonly bool[] Flags;
+
+        public ProfileFlag(bool IsEmbedded, bool IsIndependent)
+        {
+            Flags = new bool[16];
+            Flags[0] = IsEmbedded;
+            Flags[1] = IsIndependent;
+        }
 
         public ProfileFlag(bool[] Flags)
         {
             if (Flags == null) throw new ArgumentNullException(nameof(Flags));
             if (Flags.Length != 16) throw new ArgumentException("Flags must have a length of 16");
 
-            IsEmbedded = Flags[0];
-            IsIndependent = Flags[1];
             this.Flags = Flags;
         }
 
@@ -71,21 +85,45 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat("Embedded: ", IsEmbedded, "; Independent: ", IsIndependent);
+            return $"Embedded: {IsEmbedded}; Independent: {IsIndependent}";
         }
     }
 
     public struct DeviceAttribute
     {
-        public OpacityAttribute Opacity;
-        public ReflectivityAttribute Reflectivity;
-        public PolarityAttribute Polarity;
-        public ChromaAttribute Chroma;
-        public byte[] VendorData;
+        public readonly OpacityAttribute Opacity;
+        public readonly ReflectivityAttribute Reflectivity;
+        public readonly PolarityAttribute Polarity;
+        public readonly ChromaAttribute Chroma;
+        public readonly byte[] VendorData;
+
+        public DeviceAttribute(OpacityAttribute Opacity, ReflectivityAttribute Reflectivity,
+            PolarityAttribute Polarity, ChromaAttribute Chroma)
+            : this(Opacity, Reflectivity, Polarity, Chroma, new byte[4])
+        { }
+
+        public DeviceAttribute(OpacityAttribute Opacity, ReflectivityAttribute Reflectivity,
+            PolarityAttribute Polarity, ChromaAttribute Chroma, byte[] VendorData)
+        {
+            if (VendorData == null) throw new ArgumentNullException(nameof(VendorData));
+            if (VendorData.Length != 4) throw new ArgumentException($"{nameof(VendorData)} must have a length of 4");
+
+            if (!Enum.IsDefined(typeof(OpacityAttribute), Opacity)) throw new ArgumentException($"{nameof(Opacity)} value is not of a defined Enum value");
+            if (!Enum.IsDefined(typeof(ReflectivityAttribute), Reflectivity)) throw new ArgumentException($"{nameof(Reflectivity)} value is not of a defined Enum value");
+            if (!Enum.IsDefined(typeof(PolarityAttribute), Polarity)) throw new ArgumentException($"{nameof(Polarity)} value is not of a defined Enum value");
+            if (!Enum.IsDefined(typeof(ChromaAttribute), Chroma)) throw new ArgumentException($"{nameof(Chroma)} value is not of a defined Enum value");
+
+            this.Opacity = Opacity;
+            this.Reflectivity = Reflectivity;
+            this.Polarity = Polarity;
+            this.Chroma = Chroma;
+            this.VendorData = VendorData;
+        }
 
         public DeviceAttribute(bool Opacity, bool Reflectivity, bool Polarity, bool Chroma, byte[] VendorData)
         {
             if (VendorData == null) throw new ArgumentNullException(nameof(VendorData));
+            if (VendorData.Length != 4) throw new ArgumentException("VendorData must have a length of 4");
 
             if (Opacity) this.Opacity = OpacityAttribute.Transparency;
             else this.Opacity = OpacityAttribute.Reflective;
@@ -102,6 +140,7 @@ namespace ColorManager.ICC
             this.VendorData = VendorData;
         }
 
+
         /// <summary>
         /// Determines whether the specified <see cref="DeviceAttribute"/>s are equal to each other.
         /// </summary>
@@ -110,8 +149,9 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="DeviceAttribute"/>s are equal; otherwise, false</returns>
         public static bool operator ==(DeviceAttribute a, DeviceAttribute b)
         {
-            return a.Opacity == b.Opacity && a.Reflectivity == b.Reflectivity &&
-                a.Polarity == b.Polarity && a.Chroma == b.Chroma && CMP.Compare(a.VendorData, b.VendorData);
+            return a.Opacity == b.Opacity && a.Reflectivity == b.Reflectivity
+                && a.Polarity == b.Polarity && a.Chroma == b.Chroma
+                && CMP.Compare(a.VendorData, b.VendorData);
         }
 
         /// <summary>
@@ -159,28 +199,23 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(Opacity.ToString(), "; ", Reflectivity.ToString(),
-                "; ", Polarity.ToString(), "; ", Chroma.ToString());
+            return $"{Opacity}; {Reflectivity}; {Polarity}; {Chroma}";
         }
     }
 
     public struct TagTableEntry
     {
-        public TagSignature Signature;
-        public uint Offset;
-        public uint DataSize;
+        public readonly TagSignature Signature;
+        public readonly uint Offset;
+        public readonly uint DataSize;
 
         public TagTableEntry(TagSignature Signature, uint Offset, uint DataSize)
         {
+            if (!Enum.IsDefined(typeof(TagSignature), Signature)) throw new ArgumentException($"{nameof(Signature)} value is not of a defined Enum value");
+
             this.Signature = Signature;
             this.Offset = Offset;
             this.DataSize = DataSize;
-        }
-
-        public TagTableEntry(TagSignature Signature)
-        {
-            this.Signature = Signature;
-            Offset = DataSize = 0;
         }
 
         /// <summary>
@@ -237,24 +272,31 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(Signature, "(", Offset, ";", DataSize, ")");
+            return $"{Signature} (Offset: {Offset}; Size: {DataSize})";
         }
     }
 
     public struct ColorantTableEntry
     {
-        public string Name;
-        public ushort PCS1;
-        public ushort PCS2;
-        public ushort PCS3;
+        public readonly string Name;
+        public readonly ushort PCS1;
+        public readonly ushort PCS2;
+        public readonly ushort PCS3;
+
+        public ColorantTableEntry(string Name)
+            : this(Name, 0, 0, 0)
+        { }
 
         public ColorantTableEntry(string Name, ushort PCS1, ushort PCS2, ushort PCS3)
         {
+            if (Name == null) throw new ArgumentNullException(nameof(Name));
+
             this.Name = Name;
             this.PCS1 = PCS1;
             this.PCS2 = PCS2;
             this.PCS3 = PCS3;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ColorantTableEntry"/>s are equal to each other.
@@ -311,21 +353,35 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(Name, ": ", PCS1, ";", PCS2, ";", PCS3);
+            return $"{Name}: {PCS1}; {PCS2}; {PCS3}";
         }
     }
 
     public struct LocalizedString
     {
-        public CultureInfo Locale;
-        public string Text;
-
-        public LocalizedString(CultureInfo Locale, string Text)
+        public readonly string Culture;
+        public readonly string Text;
+        public CultureInfo Locale
         {
-            if (Locale == null) throw new ArgumentNullException(nameof(Locale));
-            this.Locale = Locale;
+            get { return CultureInfo.GetCultureInfo(Culture); }
+        }
+
+        private static Regex CultureRegex = new Regex(@"[a-z]{2}-[A-Z]{2}");
+
+        public LocalizedString(string Text)
+            : this(CultureInfo.CurrentCulture.Name, Text)
+        { }
+
+        public LocalizedString(string Culture, string Text)
+        {
+            if (Culture == null) throw new ArgumentNullException(nameof(Locale));
+            if (Text == null) throw new ArgumentNullException(nameof(Text));            
+            if (!CultureRegex.IsMatch(Culture)) throw new FormatException("Culture must have the format [a-z]{2}-[A-Z]{2} e.g.\"en-US\"");
+
+            this.Culture = Culture;
             this.Text = Text;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="LocalizedString"/>s are equal to each other.
@@ -335,7 +391,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="LocalizedString"/>s are equal; otherwise, false</returns>
         public static bool operator ==(LocalizedString a, LocalizedString b)
         {
-            return a.Text == b.Text && a.Locale.Equals(b.Locale);
+            return a.Text == b.Text && a.Culture == b.Culture;
         }
 
         /// <summary>
@@ -369,7 +425,7 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Text.GetHashCode();
-                hash *= 16777619 ^ Locale.GetHashCode();
+                hash *= 16777619 ^ Culture.GetHashCode();
                 return hash;
             }
         }
@@ -380,24 +436,34 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return Text;
+            return $"{Culture}: {Text}";
         }
     }
 
     public struct NamedColor
     {
-        public string Name;
-        public ushort[] PCScoordinates;
-        public ushort[] DeviceCoordinates;
+        public readonly string Name;
+        public readonly ushort[] PCScoordinates;
+        public readonly ushort[] DeviceCoordinates;
+
 
         public NamedColor(string Name, ushort[] PCScoordinates, ushort[] DeviceCoordinates)
         {
+            if (Name == null) throw new ArgumentNullException(nameof(Name));
             if (PCScoordinates == null) throw new ArgumentNullException(nameof(PCScoordinates));
-            if (DeviceCoordinates == null) throw new ArgumentNullException(nameof(DeviceCoordinates));
+            if (DeviceCoordinates != null)
+            {
+                if (PCScoordinates.Length < 1 || PCScoordinates.Length > 15)
+                    throw new ArgumentOutOfRangeException(nameof(PCScoordinates), "Allowed range: 1-15");
+            }
+            if (DeviceCoordinates.Length < 1 || DeviceCoordinates.Length > 15)
+                throw new ArgumentOutOfRangeException(nameof(DeviceCoordinates), "Allowed range: 1-15");
+
             this.Name = Name;
             this.PCScoordinates = PCScoordinates;
             this.DeviceCoordinates = DeviceCoordinates;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="NamedColor"/>s are equal to each other.
@@ -460,16 +526,15 @@ namespace ColorManager.ICC
 
     public struct ProfileDescription
     {
-        public uint DeviceManufacturer;
-        public uint DeviceModel;
-        public DeviceAttribute DeviceAttributes;
-        public TagSignature TechnologyInformation;
-        public LocalizedString[] DeviceManufacturerInfo;
-        public LocalizedString[] DeviceModelInfo;
+        public readonly uint DeviceManufacturer;
+        public readonly uint DeviceModel;
+        public readonly DeviceAttribute DeviceAttributes;
+        public readonly TagSignature TechnologyInformation;
+        public readonly LocalizedString[] DeviceManufacturerInfo;
+        public readonly LocalizedString[] DeviceModelInfo;
 
         public ProfileDescription(uint DeviceManufacturer, uint DeviceModel, DeviceAttribute DeviceAttributes,
-            TagSignature TechnologyInformation, LocalizedString[] DeviceManufacturerInfo,
-            LocalizedString[] DeviceModelInfo)
+            TagSignature TechnologyInformation, LocalizedString[] DeviceManufacturerInfo, LocalizedString[] DeviceModelInfo)
         {
             if (DeviceManufacturerInfo == null) throw new ArgumentNullException(nameof(DeviceManufacturerInfo));
             if (DeviceModelInfo == null) throw new ArgumentNullException(nameof(DeviceModelInfo));
@@ -539,8 +604,8 @@ namespace ColorManager.ICC
 
     public struct ProfileSequenceIdentifier
     {
-        public ProfileID ID;
-        public LocalizedString[] Description;
+        public readonly ProfileID ID;
+        public readonly LocalizedString[] Description;
 
         public ProfileSequenceIdentifier(ProfileID ID, LocalizedString[] Description)
         {

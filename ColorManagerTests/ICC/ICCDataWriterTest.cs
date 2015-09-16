@@ -411,8 +411,8 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteASCIIString(PrimitivesData.ASCII_ValAll);
-                Assert.IsTrue(c == PrimitivesData.ASCII_All.Length, "Write length incorrect");
-                CollectionAssert.AreEqual(PrimitivesData.ASCII_All, stream.ToArray(), "Written string is not the same");
+                Assert.IsTrue(c == PrimitivesData.ASCII_WriteAll.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(PrimitivesData.ASCII_WriteAll, stream.ToArray(), "Written string is not the same");
             }
         }
 
@@ -423,8 +423,8 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteASCIIString(PrimitivesData.ASCII_ValAll, PrimitivesData.ASCII_ValAll.Length);
-                Assert.IsTrue(c == PrimitivesData.ASCII_All.Length, "Write length incorrect");
-                CollectionAssert.AreEqual(PrimitivesData.ASCII_All, stream.ToArray(), "Written string is not the same");
+                Assert.IsTrue(c == PrimitivesData.ASCII_WriteAll.Length, "Write length incorrect");
+                CollectionAssert.AreEqual(PrimitivesData.ASCII_WriteAll, stream.ToArray(), "Written string is not the same");
             }
         }
 
@@ -1189,16 +1189,16 @@ namespace ColorManagerTests.ICC
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val1);
-                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr1.Length, "Write length incorrect Var1");
-                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr1, stream.ToArray(), "Written value is not the same Var1");
+                Assert.IsTrue(c == TagDataEntryData.TextDescription_WriteArr1.Length, "Write length incorrect Var1");
+                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_WriteArr1, stream.ToArray(), "Written value is not the same Var1");
             }
 
             using (var stream = new MemoryStream())
             {
                 var writer = new ICCDataWriter(stream);
                 int c = writer.WriteTextDescriptionTagDataEntry(TagDataEntryData.TextDescription_Val2);
-                Assert.IsTrue(c == TagDataEntryData.TextDescription_Arr2.Length, "Write length incorrect Var2");
-                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_Arr2, stream.ToArray(), "Written value is not the same Var2");
+                Assert.IsTrue(c == TagDataEntryData.TextDescription_WriteArr2.Length, "Write length incorrect Var2");
+                CollectionAssert.AreEqual(TagDataEntryData.TextDescription_WriteArr2, stream.ToArray(), "Written value is not the same Var2");
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using ColorManager.ICC;
+﻿using ColorManager.ICC;
 
 namespace ColorManagerTests.ICC.Data
 {
@@ -39,16 +38,24 @@ namespace ColorManagerTests.ICC.Data
 
         #region ChromaticityTagDataEntry
 
-        public static readonly ChromaticityTagDataEntry Chromaticity_Val1 = new ChromaticityTagDataEntry(3, ColorantEncoding.ITU_R_BT_709_2);
+        public static readonly ChromaticityTagDataEntry Chromaticity_Val1 = new ChromaticityTagDataEntry(ColorantEncoding.ITU_R_BT_709_2);
         public static readonly byte[] Chromaticity_Arr1 = ArrayHelper.Concat
         (
             PrimitivesData.UInt16_3,
-            PrimitivesData.UInt16_1
+            PrimitivesData.UInt16_1,
+
+            new byte[] { 0x00, 0x00, 0xA3, 0xD7 },  //0.640
+            new byte[] { 0x00, 0x00, 0x54, 0x7B },  //0.330
+
+            new byte[] { 0x00, 0x00, 0x4C, 0xCD },  //0.300
+            new byte[] { 0x00, 0x00, 0x99, 0x9A },  //0.600
+
+            new byte[] { 0x00, 0x00, 0x26, 0x66 },  //0.150
+            new byte[] { 0x00, 0x00, 0x0F, 0x5C }   //0.060
         );
 
         public static readonly ChromaticityTagDataEntry Chromaticity_Val2 = new ChromaticityTagDataEntry
         (
-            2, ColorantEncoding.Unknown,
             new double[][]
             {
                 new double[] { 1, 2 },
@@ -89,7 +96,7 @@ namespace ColorManagerTests.ICC.Data
 
         #region ColorantOrderTagDataEntry
 
-        public static readonly ColorantOrderTagDataEntry ColorantOrder_Val = new ColorantOrderTagDataEntry(3, new byte[] { 0x00, 0x01, 0x02 });
+        public static readonly ColorantOrderTagDataEntry ColorantOrder_Val = new ColorantOrderTagDataEntry(new byte[] { 0x00, 0x01, 0x02 });
         public static readonly byte[] ColorantOrder_Arr = ArrayHelper.Concat(PrimitivesData.UInt32_3, new byte[] { 0x00, 0x01, 0x02 });
 
         #endregion
@@ -98,7 +105,6 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly ColorantTableTagDataEntry ColorantTable_Val = new ColorantTableTagDataEntry
         (
-            2,
             new ColorantTableEntry[]
             {
                 StructsData.ColorantTableEntry_ValRand1,
@@ -174,7 +180,6 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly Lut16TagDataEntry Lut16_Val = new Lut16TagDataEntry
         (
-            MatrixData.Fix16_2D_ValGrad,
             new LUT[] { LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad },
             LUTData.CLUT16_ValGrad,
             new LUT[] { LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad, LUTData.LUT16_ValGrad }
@@ -182,7 +187,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] Lut16_Arr = ArrayHelper.Concat
         (
             new byte[] { 0x02, 0x03, 0x03, 0x00 },
-            MatrixData.Fix16_2D_Grad,
+            MatrixData.Fix16_2D_Identity,
             new byte[] { 0x00, (byte)LUTData.LUT16_ValGrad.Values.Length, 0x00, (byte)LUTData.LUT16_ValGrad.Values.Length },
 
             LUTData.LUT16_Grad,
@@ -201,7 +206,6 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly Lut8TagDataEntry Lut8_Val = new Lut8TagDataEntry
         (
-            MatrixData.Fix16_2D_ValGrad,
             new LUT[] { LUTData.LUT8_ValGrad, LUTData.LUT8_ValGrad },
             LUTData.CLUT8_ValGrad,
             new LUT[] { LUTData.LUT8_ValGrad, LUTData.LUT8_ValGrad, LUTData.LUT8_ValGrad }
@@ -209,7 +213,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly byte[] Lut8_Arr = ArrayHelper.Concat
         (
             new byte[] { 0x02, 0x03, 0x03, 0x00 },
-            MatrixData.Fix16_2D_Grad,
+            MatrixData.Fix16_2D_Identity,
 
             LUTData.LUT8_Grad,
             LUTData.LUT8_Grad,
@@ -243,26 +247,25 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly LutAToBTagDataEntry LutAToB_Val = new LutAToBTagDataEntry
         (
-            2, 3,
+            new CurveTagDataEntry[]
+            {
+                Curve_Val_2,
+                Curve_Val_1,
+            },
+            LUTData.CLUT_Val16,
+            new CurveTagDataEntry[]
+            {
+                Curve_Val_1,
+                Curve_Val_2,
+                Curve_Val_0,
+            },
             MatrixData.Fix16_2D_ValGrad,
             MatrixData.Fix16_1D_ValGrad,
-            LUTData.CLUT_Val16,
-            new TagDataEntry[]
+            new CurveTagDataEntry[]
             {
                 Curve_Val_0,
                 Curve_Val_1,
                 Curve_Val_2,
-            },
-            new TagDataEntry[]
-            {
-                Curve_Val_1,
-                Curve_Val_2,
-                Curve_Val_0,
-            },
-            new TagDataEntry[]
-            {
-                Curve_Val_2,
-                Curve_Val_1,
             }
         );
         public static readonly byte[] LutAToB_Arr = ArrayHelper.Concat
@@ -310,21 +313,13 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly LutBToATagDataEntry LutBToA_Val = new LutBToATagDataEntry
         (
-            2, 3,
-            MatrixData.Fix16_2D_ValGrad,
-            MatrixData.Fix16_1D_ValGrad,
-            LUTData.CLUT_Val16,
-            new TagDataEntry[]
+            new CurveTagDataEntry[]
             {
                 Curve_Val_0,
                 Curve_Val_1,
             },
-            new TagDataEntry[]
-            {
-                Curve_Val_1,
-                Curve_Val_2,
-            },
-            new TagDataEntry[]
+            LUTData.CLUT_Val16,
+            new CurveTagDataEntry[]
             {
                 Curve_Val_2,
                 Curve_Val_1,
@@ -336,26 +331,16 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x02, 0x03, 0x00, 0x00 },
 
             new byte[] { 0x00, 0x00, 0x00, 0x20 },  //b:        32
-            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //matrix:   60
-            new byte[] { 0x00, 0x00, 0x00, 0x6C },  //m:        108
-            new byte[] { 0x00, 0x00, 0x00, 0x90 },  //clut:     144
-            new byte[] { 0x00, 0x00, 0x00, 0xDC },  //a:        220
+            new byte[] { 0x00, 0x00, 0x00, 0x00 },  //matrix:   0
+            new byte[] { 0x00, 0x00, 0x00, 0x00 },  //m:        0
+            new byte[] { 0x00, 0x00, 0x00, 0x3C },  //clut:     60
+            new byte[] { 0x00, 0x00, 0x00, 0x88 },  //a:        136
 
             //B
             CurveFull_0,    //12 bytes
             CurveFull_1,    //14 bytes
             new byte[] { 0x00, 0x00 }, // Padding
-
-            //Matrix
-            MatrixData.Fix16_2D_Grad,   //36 bytes
-            MatrixData.Fix16_1D_Grad,    //12 bytes
-
-            //M
-            CurveFull_1,    //14 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-            CurveFull_2,    //18 bytes
-            new byte[] { 0x00, 0x00 }, // Padding
-
+            
             //CLUT
             LUTData.CLUT_16,           //74 bytes
             new byte[] { 0x00, 0x00 }, // Padding
@@ -390,8 +375,8 @@ namespace ColorManagerTests.ICC.Data
 
         #region MultiLocalizedUnicodeTagDataEntry
 
-        private static readonly LocalizedString LocalizedString_Rand1 = new LocalizedString(new CultureInfo("en-US"), PrimitivesData.Unicode_ValRand2);
-        private static readonly LocalizedString LocalizedString_Rand2 = new LocalizedString(new CultureInfo("de-DE"), PrimitivesData.Unicode_ValRand3);
+        private static readonly LocalizedString LocalizedString_Rand1 = new LocalizedString("en-US", PrimitivesData.Unicode_ValRand2);
+        private static readonly LocalizedString LocalizedString_Rand2 = new LocalizedString("de-DE", PrimitivesData.Unicode_ValRand3);
 
         private static readonly LocalizedString[] LocalizedString_RandArr1 = new LocalizedString[]
         {
@@ -428,7 +413,6 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly MultiProcessElementsTagDataEntry MultiProcessElements_Val = new MultiProcessElementsTagDataEntry
         (
-            2, 3,
             new MultiProcessElement[]
             {
                 MultiProcessElementData.MPE_ValCLUT,
@@ -458,7 +442,7 @@ namespace ColorManagerTests.ICC.Data
         public static readonly NamedColor2TagDataEntry NamedColor2_Val = new NamedColor2TagDataEntry
         (
             new byte[] { 0x01, 0x02, 0x03, 0x04 },
-            3, ArrayHelper.Fill('A', 32), ArrayHelper.Fill('4', 32),
+            ArrayHelper.Fill('A', 31), ArrayHelper.Fill('4', 31), 3,
             new NamedColor[]
             {
                 StructsData.NamedColor_ValMin,
@@ -470,8 +454,10 @@ namespace ColorManagerTests.ICC.Data
             new byte[] { 0x01, 0x02, 0x03, 0x04 },
             PrimitivesData.UInt32_2,
             PrimitivesData.UInt32_3,
-            ArrayHelper.Fill((byte)0x41, 32),
-            ArrayHelper.Fill((byte)0x34, 32),
+            ArrayHelper.Fill((byte)0x41, 31),
+            new byte[] { 0x00 },
+            ArrayHelper.Fill((byte)0x34, 31),
+            new byte[] { 0x00 },
             StructsData.NamedColor_Min,
             StructsData.NamedColor_Min
         );
@@ -541,7 +527,6 @@ namespace ColorManagerTests.ICC.Data
 
         public static readonly ResponseCurveSet16TagDataEntry ResponseCurveSet16_Val = new ResponseCurveSet16TagDataEntry
         (
-            3,
             new ResponseCurve[]
             {
                 CurveData.Response_ValGrad,
@@ -705,6 +690,35 @@ namespace ColorManagerTests.ICC.Data
         (
             new byte[] { 0x00, 0x00, 0x00, 0x81 },  //129
             PrimitivesData.ASCII_All,
+            new byte[] { 0x00 },                    //Null terminator
+
+            PrimitivesData.UInt32_0,
+            PrimitivesData.UInt32_0,
+
+            new byte[] { 0x00, 0x00, 0x00 },        //0, 0
+            ArrayHelper.Fill((byte)0x00, 67)
+        );
+        
+        public static readonly byte[] TextDescription_WriteArr1 = ArrayHelper.Concat
+        (
+            new byte[] { 0x00, 0x00, 0x00, 0x80 },  //128
+            PrimitivesData.ASCII_WriteAll,
+            new byte[] { 0x00 },                    //Null terminator
+
+            PrimitivesData.UInt32_9,
+            new byte[] { 0x00, 0x00, 0x00, 0x0E },  //14
+            PrimitivesData.Unicode_Rand1,
+            new byte[] { 0x00, 0x00 },              //Null terminator
+
+            new byte[] { 0x00, 0x02, 0x43 },        //2, 67
+            ArrayHelper.Fill((byte)0x41, 66),
+            new byte[] { 0x00 }                     //Null terminator
+        );
+        
+        public static readonly byte[] TextDescription_WriteArr2 = ArrayHelper.Concat
+        (
+            new byte[] { 0x00, 0x00, 0x00, 0x80 },  //128
+            PrimitivesData.ASCII_WriteAll,
             new byte[] { 0x00 },                    //Null terminator
 
             PrimitivesData.UInt32_0,

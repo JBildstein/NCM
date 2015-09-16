@@ -23,6 +23,15 @@ namespace ColorManagerTests.ICC.Data
             { 4, 5, 6 },
             { 7, 8, 9 },
         };
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
+        public static readonly double[,] Single_2D_ValIdentity =
+        {
+            { 1, 0, 0 },
+            { 0, 1, 0 },
+            { 0, 0, 1 },
+        };
 
         /// <summary>
         /// 3x3 Matrix
@@ -40,6 +49,24 @@ namespace ColorManagerTests.ICC.Data
             PrimitivesData.Fix16_3,
             PrimitivesData.Fix16_6,
             PrimitivesData.Fix16_9
+        );
+
+        /// <summary>
+        /// 3x3 Matrix
+        /// </summary>
+        public static readonly byte[] Fix16_2D_Identity = ArrayHelper.Concat
+        (
+            PrimitivesData.Fix16_1,
+            PrimitivesData.Fix16_0,
+            PrimitivesData.Fix16_0,
+
+            PrimitivesData.Fix16_0,
+            PrimitivesData.Fix16_1,
+            PrimitivesData.Fix16_0,
+
+            PrimitivesData.Fix16_0,
+            PrimitivesData.Fix16_0,
+            PrimitivesData.Fix16_1
         );
 
         /// <summary>

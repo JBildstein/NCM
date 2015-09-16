@@ -77,7 +77,7 @@ namespace ColorManagerTests.ICC.Data
                 new double[] { 22d / byte.MaxValue, 23d / byte.MaxValue, 24d / byte.MaxValue },
                 new double[] { 25d / byte.MaxValue, 26d / byte.MaxValue, 27d / byte.MaxValue },
             },
-            2, 3, new byte[] { 3, 3 }, CLUTDataType.UInt8
+            new byte[] { 3, 3 }, CLUTDataType.UInt8
         );
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace ColorManagerTests.ICC.Data
                 new double[] { 22d / ushort.MaxValue, 23d / ushort.MaxValue, 24d / ushort.MaxValue },
                 new double[] { 25d / ushort.MaxValue, 26d / ushort.MaxValue, 27d / ushort.MaxValue },
             },
-            2, 3, new byte[] { 3, 3 }, CLUTDataType.UInt16
+            new byte[] { 3, 3 }, CLUTDataType.UInt16
         );
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace ColorManagerTests.ICC.Data
                 new double[] { 4f, 5f, 6f },
                 new double[] { 7f, 8f, 9f },
             },
-            2, 3, new byte[] { 3, 3 }, CLUTDataType.Float
+            new byte[] { 3, 3 }, CLUTDataType.Float
         );
 
         /// <summary>

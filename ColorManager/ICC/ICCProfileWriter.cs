@@ -66,8 +66,8 @@ namespace ColorManager.ICC
             writer.WriteASCIIString(profile.CMMType, 4);
             writer.WriteVersionNumber(profile.Version);
             writer.WriteUInt32((uint)profile.Class);
-            writer.WriteUInt32((uint)profile.DataColorspaceType);
-            writer.WriteUInt32((uint)profile.PCSType);
+            writer.WriteUInt32((uint)profile.DataColorspace);
+            writer.WriteUInt32((uint)profile.PCS);
             writer.WriteDateTime(profile.CreationDate);
             writer.WriteASCIIString(profile.FileSignature, 4);
             writer.WriteUInt32((uint)profile.PrimaryPlatformSignature);

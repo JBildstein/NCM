@@ -14,7 +14,8 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly Stream DataStream;
         private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
-        
+        private static readonly double[,] IdentityMatrix = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+
         /// <summary>
         /// Creates a new instance of the <see cref="ICCDataWriter"/> class
         /// </summary>
@@ -126,7 +127,7 @@ namespace ColorManager.ICC
 
             value *= 65536d;
 
-            return WriteInt32((int)value);
+            return WriteInt32((int)Math.Round(value, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>
@@ -143,7 +144,7 @@ namespace ColorManager.ICC
 
             value *= 65536d;
 
-            return WriteUInt32((uint)value);
+            return WriteUInt32((uint)Math.Round(value, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace ColorManager.ICC
 
             value *= 32768d;
 
-            return WriteUInt16((ushort)value);
+            return WriteUInt16((ushort)Math.Round(value, MidpointRounding.AwayFromZero));
         }
 
         /// <summary>
@@ -177,7 +178,7 @@ namespace ColorManager.ICC
 
             value *= 256d;
 
-            return WriteUInt16((ushort)value);
+            return WriteUInt16((ushort)Math.Round(value, MidpointRounding.AwayFromZero));
         }
 
 
@@ -242,7 +243,7 @@ namespace ColorManager.ICC
         {
             byte major = SetRangeUInt8(value.Major);
             byte minor = (byte)SetRange(value.Minor, 0, 15);
-            byte bugfix = (byte)SetRange(value.BugFix, 0, 15);
+            byte bugfix = (byte)SetRange(value.Bugfix, 0, 15);
             byte mb = (byte)((minor << 4) | bugfix);
 
             return WriteByte(major)
@@ -300,7 +301,7 @@ namespace ColorManager.ICC
         /// <returns>the number of bytes written</returns>
         public int WriteProfileID(ProfileID value)
         {
-            return WriteArray(value.NumericValue);
+            return WriteArray(value.Values);
         }
 
         /// <summary>
@@ -329,7 +330,8 @@ namespace ColorManager.ICC
         /// <returns>the number of bytes written</returns>
         public int WriteNamedColor(NamedColor value)
         {
-            return WriteASCIIString(value.Name, 32)
+            return WriteASCIIString(value.Name, 31)
+                 + WriteEmpty(1)    //Null terminator
                  + WriteArray(value.PCScoordinates)
                  + WriteArray(value.DeviceCoordinates);
         }
@@ -513,7 +515,7 @@ namespace ColorManager.ICC
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            return WriteUInt32(value.ColorantCount)
+            return WriteUInt32((uint)value.ColorantNumber.Length)
                  + WriteArray(value.ColorantNumber);
         }
 
@@ -521,7 +523,7 @@ namespace ColorManager.ICC
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            int c = WriteUInt32(value.ColorantCount);
+            int c = WriteUInt32((uint)value.ColorantData.Length);
             foreach (var colorant in value.ColorantData)
             {
                 c += WriteASCIIString(colorant.Name, 32);
@@ -553,7 +555,7 @@ namespace ColorManager.ICC
                 c += WriteUInt32((uint)value.CurveData.Length);
                 for (int i = 0; i < value.CurveData.Length; i++)
                 {
-                    c += WriteUInt16(SetRangeUInt16(value.CurveData[i] * 65535));
+                    c += WriteUInt16(SetRangeUInt16(value.CurveData[i]));
                 }
             }
 
@@ -587,7 +589,7 @@ namespace ColorManager.ICC
             c += WriteByte(value.CLUTValues.GridPointCount[0]);
             c += WriteEmpty(1);
 
-            c += WriteMatrix(value.Matrix, false);
+            c += WriteMatrix(value.Matrix ?? IdentityMatrix, false);
 
             c += WriteUInt16((ushort)value.InputValues[0].Values.Length);
             c += WriteUInt16((ushort)value.OutputValues[0].Values.Length);
@@ -605,12 +607,12 @@ namespace ColorManager.ICC
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            int c = WriteByte((byte)value.InputValues.Length);
-            c += WriteByte((byte)value.OutputValues.Length);
-            c += WriteByte(value.CLUTValues.GridPointCount[0]);
+            int c = WriteByte((byte)value.InputChannelCount);
+            c += WriteByte((byte)value.OutputChannelCount);
+            c += WriteByte((byte)value.CLUTValues.Values[0].Length);
             c += WriteEmpty(1);
 
-            c += WriteMatrix(value.Matrix, false);
+            c += WriteMatrix(value.Matrix ?? IdentityMatrix, false);
 
             foreach (var lut in value.InputValues) { c += WriteLUT8(lut); }
 
@@ -813,7 +815,7 @@ namespace ColorManager.ICC
             DataStream.Position = tpos;
             for (int i = 0; i < count; i++)
             {
-                string[] code = value.Text[i].Locale.Name.Split('-');
+                string[] code = value.Text[i].Culture.Split('-');
                 if (code.Length != 2) throw new Exception();
                 c += WriteASCIIString(code[0], 2);
                 c += WriteASCIIString(code[1], 2);
@@ -862,11 +864,14 @@ namespace ColorManager.ICC
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            int c = WriteArray(value.VendorFlag)
+            int c = WriteArray(value.VendorFlags)
+                  + WriteEmpty(4 - value.VendorFlags.Length)
                   + WriteUInt32((uint)value.Colors.Length)
                   + WriteUInt32((uint)value.CoordCount)
-                  + WriteASCIIString(value.Prefix, 32)
-                  + WriteASCIIString(value.Suffix, 32);
+                  + WriteASCIIString(value.Prefix, 31)
+                  + WriteEmpty(1)//Null terminator
+                  + WriteASCIIString(value.Suffix, 31)
+                  + WriteEmpty(1);//Null terminator
 
             foreach (var color in value.Colors) { c += WriteNamedColor(color); }
 
@@ -928,7 +933,7 @@ namespace ColorManager.ICC
 
             long start = DataStream.Position - 8;
 
-            int c = WriteUInt16((ushort)value.ChannelCount);
+            int c = WriteUInt16(value.ChannelCount);
             c += WriteUInt16((ushort)value.Curves.Length);
 
             //Jump over position table
@@ -1222,7 +1227,7 @@ namespace ColorManager.ICC
                 case MultiProcessElementSignature.bACS:
                 case MultiProcessElementSignature.eACS:
                     return c + WriteEmpty(8);
-                    
+
                 default:
                     throw new CorruptProfileException("MultiProcessElement");
             }

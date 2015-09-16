@@ -1,16 +1,25 @@
-﻿namespace ColorManager.ICC
+﻿using System;
+
+namespace ColorManager.ICC
 {
     public struct VersionNumber
     {
-        public int Major;
-        public int Minor;
-        public int BugFix;
+        public readonly int Major;
+        public readonly int Minor;
+        public readonly int Bugfix;
+
+        public VersionNumber(int Major, int Minor)
+        {
+            this.Major = Major;
+            this.Minor = Minor;
+            Bugfix = 0;
+        }
 
         public VersionNumber(int Major, int Minor, int Bugfix)
         {
             this.Major = Major;
             this.Minor = Minor;
-            BugFix = Bugfix;
+            this.Bugfix = Bugfix;
         }
 
         /// <summary>
@@ -21,7 +30,7 @@
         /// <returns>True if the <see cref="VersionNumber"/>s are equal; otherwise, false</returns>
         public static bool operator ==(VersionNumber a, VersionNumber b)
         {
-            return a.Major == b.Major && a.Minor == b.Minor && a.BugFix == b.BugFix;
+            return a.Major == b.Major && a.Minor == b.Minor && a.Bugfix == b.Bugfix;
         }
 
         /// <summary>
@@ -56,7 +65,7 @@
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ Major.GetHashCode();
                 hash *= 16777619 ^ Minor.GetHashCode();
-                hash *= 16777619 ^ BugFix.GetHashCode();
+                hash *= 16777619 ^ Bugfix.GetHashCode();
                 return hash;
             }
         }
@@ -67,7 +76,7 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return $"{Major}.{ Minor}.{BugFix}.0";
+            return $"{Major}.{ Minor}.{Bugfix}.0";
         }
     }
 
@@ -77,21 +86,21 @@
         {
             get { return new double[] { X, Y, Z }; }
         }
-        public double X;
-        public double Y;
-        public double Z;
+        public readonly double X;
+        public readonly double Y;
+        public readonly double Z;
 
         public XYZNumber(double X, double Y, double Z)
         {
+            if (double.IsNaN(X) || double.IsInfinity(X)) throw new ArgumentException($"{nameof(X)} is not a number");
+            if (double.IsNaN(Y) || double.IsInfinity(Y)) throw new ArgumentException($"{nameof(Y)} is not a number");
+            if (double.IsNaN(Z) || double.IsInfinity(Z)) throw new ArgumentException($"{nameof(Z)} is not a number");
+
             this.X = X;
             this.Y = Y;
             this.Z = Z;
-            
-            //TODO: not sure why this X/Y/Z > 2 check was here
-            //if (X > 2) this.X /= 256d;
-            //if (Y > 2) this.Y /= 256d;
-            //if (Z > 2) this.Z /= 256d;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="XYZNumber"/>s are equal to each other.
@@ -147,7 +156,7 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(X, "; ", Y, "; ", Z);
+            return $"{X}; {Y}; {Z}";
         }
 
         /// <summary>
@@ -158,7 +167,7 @@
         /// <returns>he string representation of the value of this instance as specified by format</returns>
         public string ToString(string format)
         {
-            return string.Concat(X.ToString(format), "; ", Y.ToString(format), "; ", Z.ToString(format));
+            return $"{X.ToString(format)}; {Y.ToString(format)}; {Z.ToString(format)}";
         }
     }
 
@@ -168,22 +177,28 @@
         {
             get
             {
-                return NumericValue != null && NumericValue.Length == 4
-                    && NumericValue[0] != 0 && NumericValue[1] != 0
-                    && NumericValue[2] != 0 && NumericValue[3] != 0;
+                return Values != null && Values[0] != 0
+                    && Values[1] != 0 && Values[2] != 0
+                    && Values[3] != 0;
             }
         }
+        public readonly uint[] Values;
 
-        public string StringValue;
-        public uint[] NumericValue;
+        public ProfileID(uint[] Values)
+        {
+            if (Values == null) throw new ArgumentNullException(nameof(Values));
+            if (Values.Length != 4) throw new ArgumentOutOfRangeException(nameof(Values), "Values must have a length of 4");
+
+            this.Values = Values;
+        }
 
         public ProfileID(uint p1, uint p2, uint p3, uint p4)
+            : this(new uint[] { p1, p2, p3, p4 })
+        { }
+
+        private static string ToHex(uint value)
         {
-            NumericValue = new uint[] { p1, p2, p3, p4 };
-            StringValue = string.Concat(p1.ToString("X").PadRight(8, '0'), "-",
-                p2.ToString("X").PadRight(8, '0'), "-",
-                p3.ToString("X").PadRight(8, '0'), "-",
-                p4.ToString("X").PadRight(8, '0'));
+            return value.ToString("X").PadLeft(8, '0');
         }
 
 
@@ -195,7 +210,7 @@
         /// <returns>True if the <see cref="ProfileID"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ProfileID a, ProfileID b)
         {
-            return a.StringValue == b.StringValue;
+            return CMP.Compare(a.Values, b.Values);
         }
 
         /// <summary>
@@ -228,7 +243,7 @@
             unchecked
             {
                 int hash = (int)2166136261;
-                hash *= 16777619 ^ StringValue.GetHashCode();
+                hash *= 16777619 ^ CMP.GetHashCode(Values);
                 return hash;
             }
         }
@@ -239,14 +254,15 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return StringValue;
+            if (Values == null) return "00000000-00000000-00000000-00000000";
+            else return $"{ToHex(Values[0])}-{ToHex(Values[1])}-{ToHex(Values[2])}-{ToHex(Values[3])}";
         }
     }
 
     public struct PositionNumber
     {
-        public uint Offset;
-        public uint Size;
+        public readonly uint Offset;
+        public readonly uint Size;
 
         public PositionNumber(uint Offset, uint Size)
         {
@@ -307,14 +323,14 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(Offset, ";", Size);
+            return $"{Offset}; {Size}";
         }
     }
 
     public struct ResponseNumber
     {
-        public ushort DeviceCode;
-        public double MeasurmentValue;
+        public readonly ushort DeviceCode;
+        public readonly double MeasurmentValue;
 
         public ResponseNumber(ushort DeviceCode, double MeasurmentValue)
         {
@@ -375,7 +391,7 @@
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return string.Concat(DeviceCode, ";", MeasurmentValue);
+            return $"Code: {DeviceCode}; Value: {MeasurmentValue}";
         }
     }
 }

@@ -24,7 +24,7 @@ namespace ColorManager
             get { return _IsInitiated; }
         }
         private static bool _IsInitiated = false;
-        
+
         /// <summary>
         /// All available conversion paths that are used to convert from one color to another
         /// </summary>
@@ -121,7 +121,7 @@ namespace ColorManager
             if (ca == null) throw new ArgumentNullException(nameof(ca));
             return _ChromaticAdaptions.Remove(ca);
         }
-        
+
         #endregion
 
         #region Variables
@@ -192,7 +192,7 @@ namespace ColorManager
             var types = new Type[] { typeof(ColorConverter), typeof(double*), typeof(double*), typeof(ConversionData) };
             DynamicMethod convMethod = new DynamicMethod("ConversionMethod", null, types, typeof(ColorConverter));
             GetConversionMethod(convMethod.GetILGenerator());
-            ConversionMethod = convMethod.CreateDelegate(typeof(ConversionDelegate), this) as ConversionDelegate;             
+            ConversionMethod = convMethod.CreateDelegate(typeof(ConversionDelegate), this) as ConversionDelegate;
         }
 
         /// <summary>
@@ -218,27 +218,27 @@ namespace ColorManager
         }
 
         #region Find conversion type
-        
+
         private void DuaICCProfile(ILGenerator CMIL, ICCProfile profile1, ICCProfile profile2)
         {
             var inType = InColor.GetType();
             var outType = OutColor.GetType();
 
-            if (inType == profile1.DataColorspace)
+            if (inType == profile1.DataColorspaceType)
             {
-                if (outType == profile2.DataColorspace) DuaICCProfile_Data_Data(CMIL, profile1, profile2);
-                else if (outType == profile2.PCS) DuaICCProfile_Data_PCS(CMIL, profile1, profile2);
+                if (outType == profile2.DataColorspaceType) DuaICCProfile_Data_Data(CMIL, profile1, profile2);
+                else if (outType == profile2.PCSType) DuaICCProfile_Data_PCS(CMIL, profile1, profile2);
                 else throw new ConversionSetupException(); //Should never happen because of Color checks
             }
-            else if (inType == profile1.PCS)
+            else if (inType == profile1.PCSType)
             {
-                if (outType == profile2.DataColorspace) DuaICCProfile_PCS_Data(CMIL, profile1, profile2);
-                else if (outType == profile2.PCS) DuaICCProfile_PCS_PCS(CMIL, profile1, profile2);
+                if (outType == profile2.DataColorspaceType) DuaICCProfile_PCS_Data(CMIL, profile1, profile2);
+                else if (outType == profile2.PCSType) DuaICCProfile_PCS_PCS(CMIL, profile1, profile2);
                 else throw new ConversionSetupException(); //Should never happen because of Color checks
             }
             else throw new ConversionSetupException(); //Should never happen because of Color checks
         }
-        
+
         private void DuaICCProfile_PCS_PCS(ILGenerator CMIL, ICCProfile profile1, ICCProfile profile2)
         {
             //PCS1 == PCS2 will result in an assign
@@ -306,16 +306,16 @@ namespace ColorManager
                 c3.SetConversionMethod();
             }
         }
-        
+
         private void SingleICCProfile(ILGenerator CMIL, ICCProfile profile)
         {
             var inType = InColor.GetType();
             var outType = OutColor.GetType();
 
-            if (inType == profile.PCS)
+            if (inType == profile.PCSType)
             {
-                if (outType == profile.DataColorspace ||
-                    (outType == profile.PCS && profile.Class == ProfileClassName.Abstract))
+                if (outType == profile.DataColorspaceType ||
+                    (outType == profile.PCSType && profile.Class == ProfileClassName.Abstract))
                 {
                     var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
                     c.SetConversionMethod();
@@ -326,10 +326,10 @@ namespace ColorManager
                     c.SetConversionMethod();
                 }
             }
-            else if (inType == profile.DataColorspace)
+            else if (inType == profile.DataColorspaceType)
             {
-                if (outType == profile.PCS ||
-                    (outType == profile.DataColorspace && profile.Class == ProfileClassName.DeviceLink))
+                if (outType == profile.PCSType ||
+                    (outType == profile.DataColorspaceType && profile.Class == ProfileClassName.DeviceLink))
                 {
                     var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
                     c.SetConversionMethod();
@@ -345,7 +345,7 @@ namespace ColorManager
             }
             else
             {
-                if (outType == profile.DataColorspace)
+                if (outType == profile.DataColorspaceType)
                 {
                     TempColor1 = profile.GetPCSColor(true);
                     var c1 = new ConversionCreator_Color(CMIL, Data, InColor, TempColor1, false);

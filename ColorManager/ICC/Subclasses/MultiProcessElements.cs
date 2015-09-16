@@ -10,36 +10,30 @@ namespace ColorManager.ICC
         /// <summary>
         /// The signature of this element
         /// </summary>
-        public MultiProcessElementSignature Signature
-        {
-            get { return _Signature; }
-        }
+        public readonly MultiProcessElementSignature Signature;
         /// <summary>
         /// Number of input channels
         /// </summary>
-        public int InputChannelCount
-        {
-            get { return _InputChannelCount; }
-        }
+        public readonly int InputChannelCount;
         /// <summary>
         /// Number of output channels
         /// </summary>
-        public int OutputChannelCount
-        {
-            get { return _OutputChannelCount; }
-        }
-
-        private MultiProcessElementSignature _Signature;
-        private int _InputChannelCount;
-        private int _OutputChannelCount;
+        public readonly int OutputChannelCount;
 
         protected MultiProcessElement(MultiProcessElementSignature Signature, int inChCount, int outChCount)
         {
-            _Signature = Signature;
-            _InputChannelCount = inChCount;
-            _OutputChannelCount = outChCount;
+            if (!Enum.IsDefined(typeof(MultiProcessElementSignature), Signature))
+                throw new ArgumentException($"{nameof(Signature)} value is not of a defined Enum value");
+            if (inChCount < 1 || inChCount > 15)
+                throw new ArgumentOutOfRangeException("Input channel count must be in the range of 1-15");
+            if (outChCount < 1 || outChCount > 15)
+                throw new ArgumentOutOfRangeException("Output channel count must be in the range of 1-15");
+
+            this.Signature = Signature;
+            InputChannelCount = inChCount;
+            OutputChannelCount = outChCount;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="MultiProcessElement"/>s are equal to each other.
         /// </summary>
@@ -102,19 +96,15 @@ namespace ColorManager.ICC
         /// <summary>
         /// An array with one dimensional curves
         /// </summary>
-        public OneDimensionalCurve[] Curves
-        {
-            get { return _Curves; }
-        }
-        private OneDimensionalCurve[] _Curves;
+        public readonly OneDimensionalCurve[] Curves;
 
-        public CurveSetProcessElement(int inChCount, int outChCount, OneDimensionalCurve[] curves)
-            : base(MultiProcessElementSignature.CurveSet, inChCount, outChCount)
+        public CurveSetProcessElement(OneDimensionalCurve[] Curves)
+            : base(MultiProcessElementSignature.CurveSet, Curves?.Length ?? 1, Curves?.Length ?? 1)
         {
-            if (curves == null) throw new ArgumentNullException(nameof(curves));
-            _Curves = curves;
+            if (Curves == null) throw new ArgumentNullException(nameof(Curves));
+            this.Curves = Curves;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="CurveSetProcessElement"/>s are equal to each other.
         /// </summary>
@@ -175,28 +165,21 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MatrixProcessElement : MultiProcessElement
     {
-        public double[,] MatrixIxO
-        {
-            get { return _MatrixIxO; }
-        }
-        public double[] MatrixOx1
-        {
-            get { return _MatrixOx1; }
-        }
+        public readonly double[,] MatrixIxO;
+        public readonly double[] MatrixOx1;
 
-        private double[,] _MatrixIxO;
-        private double[] _MatrixOx1;
-
-        public MatrixProcessElement(int inChCount, int outChCount, double[,] MatrixIxO, double[] MatrixOx1)
-            : base(MultiProcessElementSignature.Matrix, inChCount, outChCount)
+        public MatrixProcessElement(double[,] MatrixIxO, double[] MatrixOx1)
+            : base(MultiProcessElementSignature.Matrix, MatrixIxO?.GetLength(0) ?? 1, MatrixIxO?.GetLength(1) ?? 1)
         {
             if (MatrixIxO == null) throw new ArgumentNullException(nameof(MatrixIxO));
             if (MatrixOx1 == null) throw new ArgumentNullException(nameof(MatrixOx1));
+            if (MatrixIxO.GetLength(1) != MatrixOx1.Length)
+                throw new ArgumentException($"Second dimension if {MatrixIxO} must be the same length as {nameof(MatrixOx1)}");
 
-            _MatrixIxO = MatrixIxO;
-            _MatrixOx1 = MatrixOx1;
+            this.MatrixIxO = MatrixIxO;
+            this.MatrixOx1 = MatrixOx1;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="MatrixProcessElement"/>s are equal to each other.
         /// </summary>
@@ -259,19 +242,15 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class CLUTProcessElement : MultiProcessElement
     {
-        public CLUT CLUTValue
-        {
-            get { return _CLUTValue; }
-        }
-        private CLUT _CLUTValue;
+        public readonly CLUT CLUTValue;
 
-        public CLUTProcessElement(int inChCount, int outChCount, CLUT CLUTValue)
-            : base(MultiProcessElementSignature.CLUT, inChCount, outChCount)
+        public CLUTProcessElement(CLUT CLUTValue)
+            : base(MultiProcessElementSignature.CLUT, CLUTValue?.InputChannelCount ?? 1, CLUTValue?.OutputChannelCount ?? 1)
         {
             if (CLUTValue == null) throw new ArgumentNullException(nameof(CLUTValue));
-            _CLUTValue = CLUTValue;
+            this.CLUTValue = CLUTValue;
         }
-        
+
         /// <summary>
         /// Determines whether the specified <see cref="CLUTProcessElement"/>s are equal to each other.
         /// </summary>

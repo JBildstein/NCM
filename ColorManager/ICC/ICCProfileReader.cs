@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace ColorManager.ICC
 {
@@ -8,6 +7,8 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ICCProfileReader
     {
+        //TODO: handle errors more gracefully (e.g. some profile errors are not worth an exception)
+
         #region Read Profile
 
         /// <summary>
@@ -119,12 +120,10 @@ namespace ColorManager.ICC
             profile.CMMType = reader.ReadASCIIString(4);
             profile.Version = reader.ReadVersionNumber();
             profile.Class = (ProfileClassName)reader.ReadUInt32();
-            profile.DataColorspaceType = (ColorSpaceType)reader.ReadUInt32();
-            profile.DataColorspace = GetColorType(profile.DataColorspaceType);
-            profile.PCSType = (ColorSpaceType)reader.ReadUInt32();
-            profile.PCS = GetColorType(profile.PCSType);
+            profile.DataColorspace = (ColorSpaceType)reader.ReadUInt32();
+            profile.PCS = (ColorSpaceType)reader.ReadUInt32();
             profile.CreationDate = reader.ReadDateTime();
-            profile.FileSignature = reader.ReadASCIIString(4);
+            if (reader.ReadASCIIString(4) != "acsp") throw new CorruptProfileException("FileSignature has to be \"acsp\"");
             profile.PrimaryPlatformSignature = (PrimaryPlatformType)reader.ReadUInt32();
             profile.Flags = reader.ReadProfileFlag();
             profile.DeviceManufacturer = reader.ReadUInt32();
@@ -159,46 +158,6 @@ namespace ColorManager.ICC
                 TagDataEntry entry = reader.ReadTagDataEntry(table[i]);
                 entry.TagSignature = table[i].Signature;
                 profile.Data.Add(entry);
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of a color from a given <see cref="ColorSpaceType"/>
-        /// </summary>
-        /// <param name="tp">The ColorSpaceType</param>
-        /// <returns>The type of the color</returns>
-        private Type GetColorType(ColorSpaceType tp)
-        {
-            switch (tp)
-            {
-                case ColorSpaceType.CIEXYZ: return typeof(ColorXYZ);
-                case ColorSpaceType.CIELAB: return typeof(ColorLab);
-                case ColorSpaceType.CIELUV: return typeof(ColorLuv);
-                case ColorSpaceType.YCbCr: return typeof(ColorYCbCr);
-                case ColorSpaceType.CIEYxy: return typeof(ColorYxy);
-                case ColorSpaceType.RGB: return typeof(ColorRGB);
-                case ColorSpaceType.Gray: return typeof(ColorGray);
-                case ColorSpaceType.HSV: return typeof(ColorHSV);
-                case ColorSpaceType.HLS: return typeof(ColorHSL);
-                case ColorSpaceType.CMYK: return typeof(ColorCMYK);
-                case ColorSpaceType.CMY: return typeof(ColorCMY);
-                case ColorSpaceType.Color2:
-                case ColorSpaceType.Color3:
-                case ColorSpaceType.Color4:
-                case ColorSpaceType.Color5:
-                case ColorSpaceType.Color6:
-                case ColorSpaceType.Color7:
-                case ColorSpaceType.Color8:
-                case ColorSpaceType.Color9:
-                case ColorSpaceType.Color10:
-                case ColorSpaceType.Color11:
-                case ColorSpaceType.Color12:
-                case ColorSpaceType.Color13:
-                case ColorSpaceType.Color14:
-                case ColorSpaceType.Color15: return typeof(ColorX);
-
-                default:
-                    throw new CorruptProfileException("Unsupported color type: " + tp.ToString());
             }
         }
 

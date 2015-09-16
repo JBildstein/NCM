@@ -31,19 +31,26 @@ namespace ColorManager.ICC
         /// <summary>
         /// Colorspace of data
         /// </summary>
-        public Type DataColorspace { get; set; }
+        public ColorSpaceType DataColorspace { get; set; }
         /// <summary>
-        /// Type name of colorspace of data
+        /// Type of the colorspace of data
         /// </summary>
-        public ColorSpaceType DataColorspaceType { get; set; }
+        public Type DataColorspaceType
+        {
+            get { return GetColorType(DataColorspace); }
+        }
+        /// <
         /// <summary>
         /// Profile Connection Space
         /// </summary>
-        public Type PCS { get; set; }
+        public ColorSpaceType PCS { get; set; }
         /// <summary>
-        /// Type name of Profile Connection Space
+        /// Type of the Profile Connection Space
         /// </summary>
-        public ColorSpaceType PCSType { get; set; }
+        public Type PCSType
+        {
+            get { return GetColorType(PCS); }
+        }
         /// <summary>
         /// Date and time this profile as first created
         /// </summary>
@@ -51,7 +58,10 @@ namespace ColorManager.ICC
         /// <summary>
         /// Has to be "acsp"
         /// </summary>
-        public string FileSignature { get; set; }
+        public string FileSignature
+        {
+            get { return "acsp"; }
+        }
         /// <summary>
         /// Primary platform this profile as created for
         /// </summary>
@@ -146,7 +156,7 @@ namespace ColorManager.ICC
         /// <returns>An instance of the <see cref="DataColorspaceType"/></returns>
         public Color GetDataColor(bool useICC = true)
         {
-            return GetColor(useICC, DataColorspaceType);
+            return GetColor(useICC, DataColorspace);
         }
 
         /// <summary>
@@ -162,7 +172,7 @@ namespace ColorManager.ICC
         public Color GetPCSColor(bool useICC = false)
         {
             //LTODO: GetPCSColor should actually only return either Lab or XYZ
-            return GetColor(useICC, PCSType);
+            return GetColor(useICC, PCS);
         }
 
         private Color GetColor(bool useICC, ColorSpaceType type)
@@ -410,9 +420,9 @@ namespace ColorManager.ICC
         }
 
         #endregion
-        
+
         #region Static Methods
-                
+
         /// <summary>
         /// Calculates the MD5 hash value of the data array.
         /// </summary>
@@ -479,6 +489,46 @@ namespace ColorManager.ICC
             {
                 if (BitConverter.IsLittleEndian) return (uint)((data[start++] << 24) | (data[start++] << 16) | (data[start++] << 8) | data[start++]);
                 else return (uint)(data[start++] | (data[start++] << 8) | (data[start++] << 16) | (data[start++] << 24));
+            }
+        }
+
+        /// <summary>
+        /// Gets the type of a color from a given <see cref="ColorSpaceType"/>
+        /// </summary>
+        /// <param name="tp">The ColorSpaceType</param>
+        /// <returns>The type of the color</returns>
+        private static Type GetColorType(ColorSpaceType tp)
+        {
+            switch (tp)
+            {
+                case ColorSpaceType.CIEXYZ: return typeof(ColorXYZ);
+                case ColorSpaceType.CIELAB: return typeof(ColorLab);
+                case ColorSpaceType.CIELUV: return typeof(ColorLuv);
+                case ColorSpaceType.YCbCr: return typeof(ColorYCbCr);
+                case ColorSpaceType.CIEYxy: return typeof(ColorYxy);
+                case ColorSpaceType.RGB: return typeof(ColorRGB);
+                case ColorSpaceType.Gray: return typeof(ColorGray);
+                case ColorSpaceType.HSV: return typeof(ColorHSV);
+                case ColorSpaceType.HLS: return typeof(ColorHSL);
+                case ColorSpaceType.CMYK: return typeof(ColorCMYK);
+                case ColorSpaceType.CMY: return typeof(ColorCMY);
+                case ColorSpaceType.Color2:
+                case ColorSpaceType.Color3:
+                case ColorSpaceType.Color4:
+                case ColorSpaceType.Color5:
+                case ColorSpaceType.Color6:
+                case ColorSpaceType.Color7:
+                case ColorSpaceType.Color8:
+                case ColorSpaceType.Color9:
+                case ColorSpaceType.Color10:
+                case ColorSpaceType.Color11:
+                case ColorSpaceType.Color12:
+                case ColorSpaceType.Color13:
+                case ColorSpaceType.Color14:
+                case ColorSpaceType.Color15: return typeof(ColorX);
+
+                default:
+                    throw new Exception($"Unsupported color type: {tp}");
             }
         }
 

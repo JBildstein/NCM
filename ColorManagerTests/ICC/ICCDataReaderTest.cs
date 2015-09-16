@@ -865,7 +865,7 @@ namespace ColorManagerTests.ICC
         public void ReadCurveSetProcessElement()
         {
             var reader = new ICCDataReader(MultiProcessElementData.CurvePE_Grad);
-            var value = reader.ReadCurveSetProcessElement(2, 3);
+            var value = reader.ReadCurveSetProcessElement(3, 3);
             Assert.AreEqual(MultiProcessElementData.CurvePE_ValGrad, value);
         }
 

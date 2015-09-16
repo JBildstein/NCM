@@ -10,21 +10,23 @@ namespace ColorManager.ICC
         /// <summary>
         /// Breakpoints separate two curve segments
         /// </summary>
-        public double[] BreakPoints;
+        public readonly double[] BreakPoints;
         /// <summary>
         /// An array of curve segments
         /// </summary>
-        public CurveSegment[] Segments;
+        public readonly CurveSegment[] Segments;
 
         public OneDimensionalCurve(double[] BreakPoints, CurveSegment[] Segments)
         {
             if (BreakPoints == null) throw new ArgumentNullException(nameof(BreakPoints));
             if (Segments == null) throw new ArgumentNullException(nameof(Segments));
-            
+            if (BreakPoints.Length != Segments.Length - 1) throw new ArgumentException("Number of BreakPoints must be one less than number of Segments");
+
             this.BreakPoints = BreakPoints;
             this.Segments = Segments;
         }
-        
+
+
         /// <summary>
         /// Determines whether the specified <see cref="OneDimensionalCurve"/>s are equal to each other.
         /// </summary>
@@ -79,20 +81,22 @@ namespace ColorManager.ICC
     /// </summary>
     public struct ResponseCurve
     {
-        public CurveMeasurementEncodings CurveType;
-        public XYZNumber[] XYZvalues;
-        public ResponseNumber[][] ResponseArrays;
+        public readonly CurveMeasurementEncodings CurveType;
+        public readonly XYZNumber[] XYZvalues;
+        public readonly ResponseNumber[][] ResponseArrays;
 
         public ResponseCurve(CurveMeasurementEncodings CurveType, XYZNumber[] XYZvalues, ResponseNumber[][] ResponseArrays)
         {
             if (XYZvalues == null) throw new ArgumentNullException(nameof(XYZvalues));
             if (ResponseArrays == null) throw new ArgumentNullException(nameof(ResponseArrays));
             if (XYZvalues.Length != ResponseArrays.Length) throw new ArgumentException("Arrays must have same length");
+            if (XYZvalues.Length < 1 || XYZvalues.Length > 15) throw new ArgumentException("Arrays length must be in the range of 1-15");
 
             this.CurveType = CurveType;
             this.XYZvalues = XYZvalues;
             this.ResponseArrays = ResponseArrays;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="ResponseCurve"/>s are equal to each other.
@@ -149,30 +153,15 @@ namespace ColorManager.ICC
     /// </summary>
     public struct ParametricCurve
     {
-        public ushort type;
-        public double g;
-        public double a;
-        public double b;
-        public double c;
-        public double d;
-        public double e;
-        public double f;
+        public readonly ushort type;
+        public readonly double g;
+        public readonly double a;
+        public readonly double b;
+        public readonly double c;
+        public readonly double d;
+        public readonly double e;
+        public readonly double f;
 
-        public ParametricCurve(ushort type, double g, double a, double b, double c, double d, double e, double f)
-        {
-            this.type = type;
-            this.g = g;
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            this.e = e;
-            this.f = f;
-        }
-
-        public ParametricCurve(double g, double a, double b, double c, double d, double e, double f)
-            : this(4, g, a, b, c, d, e, f)
-        { }
 
         public ParametricCurve(double g)
             : this(0, g, 0, 0, 0, 0, 0, 0)
@@ -189,7 +178,26 @@ namespace ColorManager.ICC
         public ParametricCurve(double g, double a, double b, double c, double d)
             : this(3, g, a, b, c, d, 0, 0)
         { }
-        
+
+        public ParametricCurve(double g, double a, double b, double c, double d, double e, double f)
+            : this(4, g, a, b, c, d, e, f)
+        { }
+
+        private ParametricCurve(ushort type, double g, double a, double b, double c, double d, double e, double f)
+        {
+            if (type > 4) throw new ArgumentOutOfRangeException(nameof(type), "Type must be between 0 and 4");
+
+            this.type = type;
+            this.g = g;
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.d = d;
+            this.e = e;
+            this.f = f;
+        }
+
+
         /// <summary>
         /// Determines whether the specified <see cref="ParametricCurve"/>s are equal to each other.
         /// </summary>
@@ -254,17 +262,17 @@ namespace ColorManager.ICC
         /// <summary>
         /// The signature of this segment
         /// </summary>
-        public CurveSegmentSignature Signature
-        {
-            get { return _Signature; }
-        }
-        private CurveSegmentSignature _Signature;
+        public readonly CurveSegmentSignature Signature;
 
         protected CurveSegment(CurveSegmentSignature Signature)
         {
-            _Signature = Signature;
+            if (!Enum.IsDefined(typeof(CurveSegmentSignature), Signature))
+                throw new ArgumentException($"{nameof(Signature)} value is not of a defined Enum value");
+
+            this.Signature = Signature;
         }
-        
+
+
         /// <summary>
         /// Determines whether the specified <see cref="CurveSegment"/>s are equal to each other.
         /// </summary>
@@ -332,6 +340,8 @@ namespace ColorManager.ICC
         public FormulaCurveElement(ushort type, double gamma, double a, double b, double c, double d, double e)
             : base(CurveSegmentSignature.FormulaCurve)
         {
+            if (type > 2) throw new ArgumentOutOfRangeException(nameof(type), "Type must be between 0 and 2");
+
             this.type = type;
             this.gamma = gamma;
             this.a = a;
@@ -340,7 +350,8 @@ namespace ColorManager.ICC
             this.d = d;
             this.e = e;
         }
-        
+
+
         /// <summary>
         /// Determines whether the specified <see cref="FormulaCurveElement"/>s are equal to each other.
         /// </summary>
@@ -351,6 +362,7 @@ namespace ColorManager.ICC
         {
             if (ReferenceEquals(a, b)) return true;
             if ((object)a == null || (object)b == null) return false;
+
             return a.Signature == b.Signature && a.type == b.type && a.gamma == b.gamma && a.a == b.a
                 && a.b == b.b && a.c == b.c && a.d == b.d && a.e == b.e;
         }
@@ -408,19 +420,18 @@ namespace ColorManager.ICC
         /// <summary>
         /// The curve entries
         /// </summary>
-        public double[] CurveEntries
-        {
-            get { return _CurveEntries; }
-        }
-        private double[] _CurveEntries;
+        public readonly double[] CurveEntries;
 
         public SampledCurveElement(double[] CurveEntries)
             : base(CurveSegmentSignature.SampledCurve)
         {
             if (CurveEntries == null) throw new ArgumentNullException(nameof(CurveEntries));
-            _CurveEntries = CurveEntries;
+            if (CurveEntries.Length < 1) throw new ArgumentOutOfRangeException(nameof(CurveEntries), "There must be at least one value"); ;
+
+            this.CurveEntries = CurveEntries;
         }
-        
+
+
         /// <summary>
         /// Determines whether the specified <see cref="SampledCurveElement"/>s are equal to each other.
         /// </summary>

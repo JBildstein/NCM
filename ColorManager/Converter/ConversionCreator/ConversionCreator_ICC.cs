@@ -139,15 +139,15 @@ namespace ColorManager.ICC.Conversion
             switch (ConversionType)
             {
                 case ConvType.DataToPCS:
-                    AdjustInputColor(Profile.DataColorspaceType);
+                    AdjustInputColor(Profile.DataColorspace);
                     ConvertICC_DataPCS();
-                    AdjustOutputColor(Profile.PCSType);
+                    AdjustOutputColor(Profile.PCS);
                     break;
 
                 case ConvType.PCSToData:
-                    AdjustInputColor(Profile.PCSType);
+                    AdjustInputColor(Profile.PCS);
                     ConvertICC_PCSData();
-                    AdjustOutputColor(Profile.DataColorspaceType);
+                    AdjustOutputColor(Profile.DataColorspace);
                     break;
 
                 case ConvType.DataToData:
@@ -246,7 +246,7 @@ namespace ColorManager.ICC.Conversion
         #endregion
 
         #region Profile Conversion Type
-        
+
         private bool IsNComponentLUT()
         {
             switch (Profile.Class)
@@ -255,7 +255,7 @@ namespace ColorManager.ICC.Conversion
                     return Profile.HasTag(TagSignature.AToB0) && Profile.HasTag(TagSignature.BToA0);
 
                 case ProfileClassName.OutputDevice:
-                    if (Profile.DataColorspace == typeof(ColorX) && !Profile.HasTag(TagSignature.ColorantTable)) return false;
+                    if (Profile.DataColorspaceType == typeof(ColorX) && !Profile.HasTag(TagSignature.ColorantTable)) return false;
                     return Profile.HasTag(TagSignature.AToB0) && Profile.HasTag(TagSignature.BToA0)
                         && Profile.HasTag(TagSignature.AToB1) && Profile.HasTag(TagSignature.BToA1)
                         && Profile.HasTag(TagSignature.AToB2) && Profile.HasTag(TagSignature.BToA2)
@@ -311,7 +311,7 @@ namespace ColorManager.ICC.Conversion
             var entries = Profile.GetConversionTag(false);
             if (entries == null || entries.Length < 1) throw new InvalidProfileException();
 
-            if (IsNComponentLUT()) ConvertICC_PCSData_LUT(entries[0], Profile.PCSType);
+            if (IsNComponentLUT()) ConvertICC_PCSData_LUT(entries[0], Profile.PCS);
             else if (IsThreeComponentMatrix()) ConvertICC_PCSData_Matrix(entries);
             else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
             else if (IsMonochrome()) ConvertICC_PCSData_Monochrome(entries);
@@ -391,7 +391,7 @@ namespace ColorManager.ICC.Conversion
             var entries = Profile.GetConversionTag(true);
             if (entries == null || entries.Length < 1) throw new InvalidProfileException();
 
-            if (IsNComponentLUT()) ConvertICC_DataPCS_LUT(entries[0], Profile.DataColorspaceType);
+            if (IsNComponentLUT()) ConvertICC_DataPCS_LUT(entries[0], Profile.DataColorspace);
             else if (IsThreeComponentMatrix()) ConvertICC_DataPCS_Matrix(entries);
             else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
             else if (IsMonochrome()) ConvertICC_DataPCS_Monochrome(entries);
@@ -1176,7 +1176,7 @@ namespace ColorManager.ICC.Conversion
         }
 
         #region Formula Curve Segment
-        
+
         private void WriteFormulaCurveSegment_Type0(FormulaCurveElement segment, int index)
         {
             //OutColor[index] = Math.Pow(InColor[index] * segment.a + segment.b, segment.gamma) + segment.c;
@@ -1328,7 +1328,7 @@ namespace ColorManager.ICC.Conversion
             for (int i = 0; i < InCurve.Length; i++) WriteLUT(InCurve[i], i);
             IsFirst = false;
             SwitchTempVar();
-            
+
             //CLUT
             WriteCLUT(clut);
 
@@ -1630,7 +1630,7 @@ namespace ColorManager.ICC.Conversion
             WriteLdOutput();            //Load output value
             if (element.OutputChannelCount == 3) WriteCallAddMatrix_3x1();
             else WriteCallAddMatrix(element.OutputChannelCount, element.OutputChannelCount);
-            
+
             ICCData.Add(GetMatrix(element.MatrixIxO));
             ICCData.Add(element.MatrixOx1);
         }
@@ -1699,8 +1699,8 @@ namespace ColorManager.ICC.Conversion
         private double[] GetMatrix(double[,] matrix)
         {
             double[] result = new double[matrix.Length];
-            fixed(double* rp = result)
-            fixed(double* mp = matrix)
+            fixed (double* rp = result)
+            fixed (double* mp = matrix)
             {
                 for (int i = 0; i < result.Length; i++) { rp[i] = mp[i]; }
             }
@@ -1732,8 +1732,8 @@ namespace ColorManager.ICC.Conversion
             else if (otherProfile != null)
             {
                 var tp = color.GetType();
-                if (tp == otherProfile.PCS) return true;
-                else if (tp == otherProfile.DataColorspace) return false;
+                if (tp == otherProfile.PCSType) return true;
+                else if (tp == otherProfile.DataColorspaceType) return false;
                 else return null;
             }
             else return null;

@@ -368,7 +368,7 @@ namespace ICCViewer
 
             StringBuilder txt = new StringBuilder();
 
-            txt.Append($"{nameof(ctrl.VendorFlag)}: {FromBytes(ctrl.VendorFlag, true)}");
+            txt.Append($"{nameof(ctrl.VendorFlags)}: {FromBytes(ctrl.VendorFlags, true)}");
             txt.Append(Environment.NewLine);
 
             txt.Append($"{nameof(ctrl.Prefix)}: {ctrl.Prefix}");
@@ -627,7 +627,7 @@ namespace ICCViewer
             RenderingIntentLabel.Text = Profile.RenderingIntent.ToString();
             PCSIlluminantLabel.Text = Profile.PCSIlluminant.ToString("F4");
             ProfileCreatorSignatureLabel.Text = Profile.CreatorSignature;
-            ProfileIDLabel.Text = Profile.ID.StringValue;
+            ProfileIDLabel.Text = Profile.ID.ToString();
         }
 
         private void SetTagTableUI()

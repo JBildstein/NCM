@@ -4,45 +4,11 @@ namespace ColorManager.ICC
 {
     public sealed class CLUT
     {
-        public double[][] Values
-        {
-            get { return _Values; }
-        }
-        private double[][] _Values;
-
-        public CLUTDataType DataType
-        {
-            get { return _DataType; }
-            set { _DataType = value; }
-        }
-        public int InputChannelCount
-        {
-            get { return _InputChannelCount; }
-        }
-        public int OutputChannelCount
-        {
-            get { return _OutputChannelCount; }
-        }
-        public byte[] GridPointCount
-        {
-            get { return _GridPointCount; }
-        }
-
-        private CLUTDataType _DataType;
-        private int _InputChannelCount;
-        private int _OutputChannelCount;
-        private byte[] _GridPointCount;
-
-
-        private CLUT(int inChCount, int outChCount, byte[] gridPointCount, CLUTDataType type)
-        {
-            if (gridPointCount == null) throw new ArgumentNullException(nameof(gridPointCount));
-
-            _DataType = type;
-            _InputChannelCount = inChCount;
-            _OutputChannelCount = outChCount;
-            _GridPointCount = gridPointCount;
-        }
+        public readonly double[][] Values;
+        public readonly CLUTDataType DataType;
+        public readonly int InputChannelCount;
+        public readonly int OutputChannelCount;
+        public readonly byte[] GridPointCount;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CLUT"/> class
@@ -52,11 +18,13 @@ namespace ColorManager.ICC
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         /// <param name="type">The data type of this CLUT</param>
-        public CLUT(double[][] values, int inChCount, int outChCount, byte[] gridPointCount, CLUTDataType type)
-            : this(inChCount, outChCount, gridPointCount, type)
+        public CLUT(double[][] values, byte[] gridPointCount, CLUTDataType type)
+            : this(gridPointCount?.Length ?? 1, values?[0]?.Length ?? 1, gridPointCount, type)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
-            _Values = values;
+
+            Values = values;
+            CheckValues();
         }
 
         /// <summary>
@@ -66,19 +34,21 @@ namespace ColorManager.ICC
         /// <param name="inChCount">The input channel count</param>
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
-        public CLUT(ushort[][] values, int inChCount, int outChCount, byte[] gridPointCount)
-            : this(inChCount, outChCount, gridPointCount, CLUTDataType.UInt16)
+        public CLUT(ushort[][] values, byte[] gridPointCount)
+            : this(gridPointCount?.Length ?? 1, values?[0]?.Length ?? 1, gridPointCount, CLUTDataType.UInt16)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
 
             const double max = ushort.MaxValue;
 
-            _Values = new double[values.Length][];
+            Values = new double[values.Length][];
             for (int i = 0; i < values.Length; i++)
             {
-                _Values[i] = new double[values[i].Length];
-                for (int j = 0; j < values[i].Length; j++) _Values[i][j] = values[i][j] / max;
+                Values[i] = new double[values[i].Length];
+                for (int j = 0; j < values[i].Length; j++) Values[i][j] = values[i][j] / max;
             }
+
+            CheckValues();
         }
 
         /// <summary>
@@ -88,19 +58,43 @@ namespace ColorManager.ICC
         /// <param name="inChCount">The input channel count</param>
         /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
-        public CLUT(byte[][] values, int inChCount, int outChCount, byte[] gridPointCount)
-            : this(inChCount, outChCount, gridPointCount, CLUTDataType.UInt8)
+        public CLUT(byte[][] values, byte[] gridPointCount)
+            : this(gridPointCount?.Length ?? 1, values?[0]?.Length ?? 1, gridPointCount, CLUTDataType.UInt8)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
 
             const double max = byte.MaxValue;
 
-            _Values = new double[values.Length][];
+            Values = new double[values.Length][];
             for (int i = 0; i < values.Length; i++)
             {
-                _Values[i] = new double[values[i].Length];
-                for (int j = 0; j < values[i].Length; j++) _Values[i][j] = values[i][j] / max;
+                Values[i] = new double[values[i].Length];
+                for (int j = 0; j < values[i].Length; j++) Values[i][j] = values[i][j] / max;
             }
+
+            CheckValues();
+        }
+
+        private CLUT(int inChCount, int outChCount, byte[] gridPointCount, CLUTDataType type)
+        {
+            if (gridPointCount == null) throw new ArgumentNullException(nameof(gridPointCount));
+            if (!Enum.IsDefined(typeof(CLUTDataType), type)) throw new ArgumentException($"{nameof(type)} value is not of a defined Enum value");
+            if (inChCount < 1 || inChCount > 15) throw new ArgumentOutOfRangeException("Input channel count must be in the range of 1-15");
+            if (outChCount < 1 || outChCount > 15) throw new ArgumentOutOfRangeException("Output channel count must be in the range of 1-15");
+
+            DataType = type;
+            InputChannelCount = inChCount;
+            OutputChannelCount = outChCount;
+            GridPointCount = gridPointCount;
+        }
+
+        private void CheckValues()
+        {
+            int length = 0;
+            for (int i = 0; i < InputChannelCount; i++) { length += (int)Math.Pow(GridPointCount[i], InputChannelCount); }
+            length /= InputChannelCount;
+
+            if (Values.Length != length) throw new ArgumentException("Length of values array does not match");
         }
 
 
@@ -162,21 +156,16 @@ namespace ColorManager.ICC
 
     public sealed class LUT
     {
-        public double[] Values
-        {
-            get { return _Values; }
-        }
-        private double[] _Values;
+        public readonly double[] Values;
 
         /// <summary>
         /// Creates a new instance of the <see cref="LUT"/> class
         /// </summary>
         /// <param name="values">The LUT values</param>
-        public LUT(double[] values)
+        public LUT(double[] Values)
         {
-            if (values == null) throw new ArgumentNullException(nameof(values));
-
-            _Values = values;
+            if (Values == null) throw new ArgumentNullException(nameof(Values));
+            this.Values = Values;
         }
 
         /// <summary>
@@ -189,8 +178,8 @@ namespace ColorManager.ICC
 
             const double max = ushort.MaxValue;
 
-            _Values = new double[values.Length];
-            for (int i = 0; i < values.Length; i++) _Values[i] = values[i] / max;
+            this.Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) this.Values[i] = values[i] / max;
         }
 
         /// <summary>
@@ -203,9 +192,10 @@ namespace ColorManager.ICC
 
             const double max = byte.MaxValue;
 
-            _Values = new double[values.Length];
-            for (int i = 0; i < values.Length; i++) _Values[i] = values[i] / max;
+            this.Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) this.Values[i] = values[i] / max;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="LUT"/>s are equal to each other.
