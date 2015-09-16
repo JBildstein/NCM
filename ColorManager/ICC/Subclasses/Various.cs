@@ -211,8 +211,6 @@ namespace ColorManager.ICC
 
         public TagTableEntry(TagSignature Signature, uint Offset, uint DataSize)
         {
-            if (!Enum.IsDefined(typeof(TagSignature), Signature)) throw new ArgumentException($"{nameof(Signature)} value is not of a defined Enum value");
-
             this.Signature = Signature;
             this.Offset = Offset;
             this.DataSize = DataSize;
