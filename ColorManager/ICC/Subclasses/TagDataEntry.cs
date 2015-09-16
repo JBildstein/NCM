@@ -1269,7 +1269,7 @@ namespace ColorManager.ICC
 
         private LutAToBTagDataEntry(TagSignature TagSignature, TagDataEntry[] CurveB, TagDataEntry[] CurveM,
             TagDataEntry[] CurveA, double[,] Matrix3x3, double[] Matrix3x1, CLUT CLUTValues)
-            : base(TypeSignature.LutBToA, TagSignature)
+            : base(TypeSignature.LutAToB, TagSignature)
         {
             if (Matrix3x1 != null && Matrix3x1.Length != 3)
                 throw new ArgumentOutOfRangeException(nameof(Matrix3x1), "Matrix must have a length of three");
