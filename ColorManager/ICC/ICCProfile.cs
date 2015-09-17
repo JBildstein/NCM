@@ -533,5 +533,68 @@ namespace ColorManager.ICC
         }
 
         #endregion
+
+        #region Equals/HashCode
+
+        /// <summary>
+        /// Compares this profile to another object.
+        /// <para>Compared values are:</para>
+        /// <para> - <see cref="Class"/></para>
+        /// <para> - <see cref="DataColorspace"/></para>
+        /// <para> - <see cref="PCS"/></para>
+        /// <para> - <see cref="PCSIlluminant"/></para>
+        /// <para> - <see cref="Data"/></para>
+        /// </summary>
+        /// <param name="obj">The object to compare to</param>
+        /// <returns>True if the listed values are the same, false otherwise</returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ICCProfile);
+        }
+
+        /// <summary>
+        /// Compares this profile to another object.
+        /// <para>Compared values are:</para>
+        /// <para> - <see cref="Class"/></para>
+        /// <para> - <see cref="DataColorspace"/></para>
+        /// <para> - <see cref="PCS"/></para>
+        /// <para> - <see cref="PCSIlluminant"/></para>
+        /// <para> - <see cref="Data"/></para>
+        /// </summary>
+        /// <param name="obj">The object to compare to</param>
+        /// <returns>True if the listed values are the same, false otherwise</returns>
+        public bool Equals(ICCProfile obj)
+        {
+            if (obj == null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+
+            return Class == obj.Class && DataColorspace == obj.DataColorspace && PCS == obj.PCS
+                && PCSIlluminant == obj.PCSIlluminant && CMP.Compare(Data, obj.Data);
+        }
+
+        /// <summary>
+        /// Calculates a hash code of these values:
+        /// <para> - <see cref="Class"/></para>
+        /// <para> - <see cref="DataColorspace"/></para>
+        /// <para> - <see cref="PCS"/></para>
+        /// <para> - <see cref="PCSIlluminant"/></para>
+        /// <para> - <see cref="Data"/></para>
+        /// </summary>
+        /// <returns>The hash code of the listed values</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash *= 16777619 ^ Class.GetHashCode();
+                hash *= 16777619 ^ DataColorspace.GetHashCode();
+                hash *= 16777619 ^ PCS.GetHashCode();
+                hash *= 16777619 ^ PCSIlluminant.GetHashCode();
+                hash *= CMP.GetHashCode(Data);
+                return hash;
+            }
+        }
+
+        #endregion
     }
 }
