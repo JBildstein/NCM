@@ -1445,7 +1445,6 @@ namespace ColorManager.ICC.Conversion
             else throw new InvalidProfileException("BToA tag has an invalid configuration");
         }
 
-        //TODO: LUT and CLUT lookup doesn't seem to be completely accurate (when compared to other converters)
 
         /// <summary>
         /// Writes the IL code for a LUT
@@ -1454,26 +1453,52 @@ namespace ColorManager.ICC.Conversion
         /// <param name="index">The channel index</param>
         private void WriteLUT(int length, int index)
         {
-            //outColor[index] = lut.Values[(int)(inColor[index] * lut.Length - 1)];
-            WriteLdOutput(index);
-            WriteLdICCData(DataPos);
+            //double idx = inColor[index] * (length - 1);
+            //double low = lut[(int)idx];
+            //double high = lut[(int)idx + 1];
+            //outColor[index] = low + ((high - low) * (idx % 1));
+            
             WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, length - 1d);
             CMIL.Emit(OpCodes.Mul);
+            var idx = WriteStloc(typeof(double));
 
-            //Normal rounding
-            //CMIL.Emit(OpCodes.Ldc_R8, 0.5);
-            //CMIL.Emit(OpCodes.Add);
-
+            WriteLdICCData(DataPos);
+            WriteLdloc(idx);
             CMIL.Emit(OpCodes.Conv_I4);
+            CMIL.Emit(OpCodes.Ldc_I4_8);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Add);
+            CMIL.Emit(OpCodes.Ldind_R8);
+            var low = WriteStloc(typeof(double));
+
+            WriteLdICCData(DataPos);
+            WriteLdloc(idx);
+            CMIL.Emit(OpCodes.Conv_I4);
+            CMIL.Emit(OpCodes.Ldc_I4_1);
+            CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Conv_I);
             CMIL.Emit(OpCodes.Ldc_I4_8);
             CMIL.Emit(OpCodes.Mul);
             CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Ldind_R8);
+            var high = WriteStloc(typeof(double));
+
+            WriteLdOutput(index);
+            WriteLdloc(low);
+            WriteLdloc(high);
+            WriteLdloc(low);
+            CMIL.Emit(OpCodes.Sub);
+            WriteLdloc(idx);
+            CMIL.Emit(OpCodes.Ldc_R8, 1d);
+            CMIL.Emit(OpCodes.Rem);
+            CMIL.Emit(OpCodes.Mul);
+            CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Stind_R8);
         }
+
+        //TODO: CLUT lookup could need interpolation
 
         /// <summary>
         /// Writes the IL code for a CLUT
@@ -1754,10 +1779,10 @@ namespace ColorManager.ICC.Conversion
                 case ColorSpaceType.CIELUV:
                 case ColorSpaceType.CIELAB:
                     //L / 100
-                    //(abuv + 256) / 512
+                    //(abuv + 128) / 256
                     AdjustColor_Div(0, 100);
-                    AdjustColor_AddDiv(1, 256, 512);
-                    AdjustColor_AddDiv(2, 256, 512);
+                    AdjustColor_AddDiv(1, 128, 256);
+                    AdjustColor_AddDiv(2, 128, 256);
                     break;
 
                 case ColorSpaceType.HSV:
@@ -1797,10 +1822,10 @@ namespace ColorManager.ICC.Conversion
                 case ColorSpaceType.CIELAB:
                 case ColorSpaceType.CIELUV:
                     //L * 100
-                    //(abuv * 512) - 256
+                    //(abuv * 256) - 128
                     AdjustColor_Mul(0, 100);
-                    AdjustColor_MulSub(1, 512, 256);
-                    AdjustColor_MulSub(2, 512, 256);
+                    AdjustColor_MulSub(1, 256, 128);
+                    AdjustColor_MulSub(2, 256, 128);
                     break;
 
                 case ColorSpaceType.HSV:
