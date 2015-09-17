@@ -128,7 +128,6 @@ namespace ColorManager.ICC.Conversion
             if (Profile == null) throw new ConversionSetupException();
 
             CheckConversionType();
-            CheckProfileClassValidity();
         }
 
         /// <summary>
@@ -207,7 +206,7 @@ namespace ColorManager.ICC.Conversion
 
         private void CheckDeviceLinkProfile()
         {
-            if (IsInPCS == false && IsOutPCS == false) ConversionType = ConvType.DataToData;
+            if (IsInPCS == false && IsOutPCS == true) ConversionType = ConvType.DataToData;
         }
 
         private void CheckAbstractProfile()
@@ -226,20 +225,6 @@ namespace ColorManager.ICC.Conversion
             {
                 var spaceWP = InColor.Space.ReferenceWhite.GetType();
                 if (IsInPCS == true && spaceWP == typeof(WhitepointD50)) ConversionType = ConvType.PCSToData;
-            }
-        }
-
-        private void CheckProfileClassValidity()
-        {
-            //Device Link needs both colors to have a profile and the profiles need to be the same
-            var dl = ProfileClassName.DeviceLink;
-            if ((InColor.ICCProfile != null && InColor.ICCProfile.Class == dl) || (OutColor.ICCProfile != null && OutColor.ICCProfile.Class == dl))
-            {
-                bool valid = true;
-                if (InColor.ICCProfile == null || OutColor.ICCProfile == null) valid = false;
-                else if (InColor.ICCProfile != OutColor.ICCProfile) valid = false;
-
-                if (!valid) throw new ConversionSetupException("Profile type \"Device Link\" needs both colors to have the same ICC profile");
             }
         }
 
@@ -467,10 +452,12 @@ namespace ColorManager.ICC.Conversion
 
         private void ConvertICC_PCSPCS()
         {
-            //TODO: Add PCS-PCS ICC conversion
+            var entries = Profile.GetConversionTag(true);
+            if (entries == null || entries.Length < 1) throw new InvalidProfileException();
 
-            //AtoB0
-            throw new NotImplementedException();
+            if (IsNComponentLUT()) ConvertICC_PCSData_LUT(entries[0], Profile.PCS);
+            else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
+            else throw new InvalidProfileException();
         }
 
         #endregion
@@ -479,10 +466,12 @@ namespace ColorManager.ICC.Conversion
 
         private void ConvertICC_DataData()
         {
-            //TODO: Add Data-Data ICC conversion
+            var entries = Profile.GetConversionTag(true);
+            if (entries == null || entries.Length < 1) throw new InvalidProfileException();
 
-            //AtoB0
-            throw new NotImplementedException();
+            if (IsNComponentLUT()) ConvertICC_PCSData_LUT(entries[0], Profile.DataColorspace);
+            else if (IsMultiProcess()) ConcvertICC_PCSData_Multiprocess(entries[0]);
+            else throw new InvalidProfileException();
         }
 
         #endregion
