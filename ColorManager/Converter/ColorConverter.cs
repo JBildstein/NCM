@@ -205,7 +205,7 @@ namespace ColorManager
 
             if (iccIn != null && iccOut != null)
             {
-                if (iccIn.Profile == iccOut.Profile) SingleICCProfile(CMIL, iccIn.Profile);
+                if (iccIn.Profile.Equals(iccOut.Profile)) SingleICCProfile(CMIL, iccIn.Profile);
                 else DuaICCProfile(CMIL, iccIn.Profile, iccOut.Profile);
             }
             else if (iccIn != null) SingleICCProfile(CMIL, iccIn.Profile);
@@ -218,25 +218,56 @@ namespace ColorManager
         }
 
         #region Find conversion type
-
+        
         private void DuaICCProfile(ILGenerator CMIL, ICCProfile profile1, ICCProfile profile2)
         {
             var inType = InColor.GetType();
             var outType = OutColor.GetType();
 
-            if (inType == profile1.DataColorspaceType)
+            const ProfileClassName abst = ProfileClassName.Abstract;
+            const ProfileClassName devl = ProfileClassName.DeviceLink;
+
+            if (profile1.Class == abst || profile2.Class == abst)
             {
-                if (outType == profile2.DataColorspaceType) DuaICCProfile_Data_Data(CMIL, profile1, profile2);
-                else if (outType == profile2.PCSType) DuaICCProfile_Data_PCS(CMIL, profile1, profile2);
+                if (profile1.Class != profile2.Class || profile1.PCS != profile2.PCS)
+                    throw new ConversionSetupException();
+
+                if (inType == profile1.PCSType && outType == profile1.PCSType)
+                {
+                    var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
+                    c.SetConversionMethod();
+                }
+                else throw new ConversionSetupException();
+            }
+            else if (profile1.Class == devl || profile2.Class == devl)
+            {
+                if (profile1.Class != profile2.Class || profile1.PCS != profile2.PCS
+                    || profile1.DataColorspace != profile2.DataColorspace)
+                    throw new ConversionSetupException();
+
+                if (inType == profile1.DataColorspaceType && outType == profile1.PCSType)
+                {
+                    var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
+                    c.SetConversionMethod();
+                }
+                else throw new ConversionSetupException();
+            }
+            else
+            {
+                if (inType == profile1.DataColorspaceType)
+                {
+                    if (outType == profile2.DataColorspaceType) DuaICCProfile_Data_Data(CMIL, profile1, profile2);
+                    else if (outType == profile2.PCSType) DuaICCProfile_Data_PCS(CMIL, profile1, profile2);
+                    else throw new ConversionSetupException(); //Should never happen because of Color checks
+                }
+                else if (inType == profile1.PCSType)
+                {
+                    if (outType == profile2.DataColorspaceType) DuaICCProfile_PCS_Data(CMIL, profile1, profile2);
+                    else if (outType == profile2.PCSType) DuaICCProfile_PCS_PCS(CMIL, profile1, profile2);
+                    else throw new ConversionSetupException(); //Should never happen because of Color checks
+                }
                 else throw new ConversionSetupException(); //Should never happen because of Color checks
             }
-            else if (inType == profile1.PCSType)
-            {
-                if (outType == profile2.DataColorspaceType) DuaICCProfile_PCS_Data(CMIL, profile1, profile2);
-                else if (outType == profile2.PCSType) DuaICCProfile_PCS_PCS(CMIL, profile1, profile2);
-                else throw new ConversionSetupException(); //Should never happen because of Color checks
-            }
-            else throw new ConversionSetupException(); //Should never happen because of Color checks
         }
 
         private void DuaICCProfile_PCS_PCS(ILGenerator CMIL, ICCProfile profile1, ICCProfile profile2)
@@ -311,52 +342,71 @@ namespace ColorManager
         {
             var inType = InColor.GetType();
             var outType = OutColor.GetType();
-
-            if (inType == profile.PCSType)
+            
+            if (profile.Class == ProfileClassName.Abstract)
             {
-                if (outType == profile.DataColorspaceType ||
-                    (outType == profile.PCSType && profile.Class == ProfileClassName.Abstract))
+                if (inType == profile.PCSType && outType == profile.PCSType)
                 {
                     var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
                     c.SetConversionMethod();
                 }
-                else
-                {
-                    var c = new ConversionCreator_Color(CMIL, Data, InColor, OutColor);
-                    c.SetConversionMethod();
-                }
+                else throw new ConversionSetupException();
             }
-            else if (inType == profile.DataColorspaceType)
+            else if (profile.Class == ProfileClassName.DeviceLink)
             {
-                if (outType == profile.PCSType ||
-                    (outType == profile.DataColorspaceType && profile.Class == ProfileClassName.DeviceLink))
+                if (inType == profile.DataColorspaceType && outType == profile.PCSType)
                 {
                     var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
                     c.SetConversionMethod();
                 }
-                else
-                {
-                    TempColor1 = profile.GetPCSColor(true);
-                    var c1 = new ConversionCreator_ICC(CMIL, Data, InColor, TempColor1, false);
-                    c1.SetConversionMethod();
-                    var c2 = new ConversionCreator_Color(c1, TempColor1, OutColor, true);
-                    c2.SetConversionMethod();
-                }
+                else throw new ConversionSetupException();
             }
             else
             {
-                if (outType == profile.DataColorspaceType)
+                if (inType == profile.PCSType)
                 {
-                    TempColor1 = profile.GetPCSColor(true);
-                    var c1 = new ConversionCreator_Color(CMIL, Data, InColor, TempColor1, false);
-                    c1.SetConversionMethod();
-                    var c2 = new ConversionCreator_ICC(c1, TempColor1, OutColor, true);
-                    c2.SetConversionMethod();
+                    if (outType == profile.DataColorspaceType)
+                    {
+                        var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
+                        c.SetConversionMethod();
+                    }
+                    else
+                    {
+                        var c = new ConversionCreator_Color(CMIL, Data, InColor, OutColor);
+                        c.SetConversionMethod();
+                    }
+                }
+                else if (inType == profile.DataColorspaceType)
+                {
+                    if (outType == profile.PCSType)
+                    {
+                        var c = new ConversionCreator_ICC(CMIL, Data, InColor, OutColor);
+                        c.SetConversionMethod();
+                    }
+                    else
+                    {
+                        TempColor1 = profile.GetPCSColor(true);
+                        var c1 = new ConversionCreator_ICC(CMIL, Data, InColor, TempColor1, false);
+                        c1.SetConversionMethod();
+                        var c2 = new ConversionCreator_Color(c1, TempColor1, OutColor, true);
+                        c2.SetConversionMethod();
+                    }
                 }
                 else
                 {
-                    var c = new ConversionCreator_Color(CMIL, Data, InColor, OutColor);
-                    c.SetConversionMethod();
+                    if (outType == profile.DataColorspaceType)
+                    {
+                        TempColor1 = profile.GetPCSColor(true);
+                        var c1 = new ConversionCreator_Color(CMIL, Data, InColor, TempColor1, false);
+                        c1.SetConversionMethod();
+                        var c2 = new ConversionCreator_ICC(c1, TempColor1, OutColor, true);
+                        c2.SetConversionMethod();
+                    }
+                    else
+                    {
+                        var c = new ConversionCreator_Color(CMIL, Data, InColor, OutColor);
+                        c.SetConversionMethod();
+                    }
                 }
             }
         }
