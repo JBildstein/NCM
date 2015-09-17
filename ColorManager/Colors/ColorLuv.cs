@@ -99,11 +99,11 @@ namespace ColorManager
         /// <summary>
         /// Minimum value for the <see cref="u"/> channel
         /// </summary>
-        public static readonly double Min_u = -255.0;
+        public static readonly double Min_u = -128.0;
         /// <summary>
         /// Minimum value for the <see cref="v"/> channel
         /// </summary>
-        public static readonly double Min_v = -255.0;
+        public static readonly double Min_v = -128.0;
 
         /// <summary>
         /// Maximum value for the <see cref="L"/> channel
@@ -112,11 +112,11 @@ namespace ColorManager
         /// <summary>
         /// Maximum value for the <see cref="u"/> channel
         /// </summary>
-        public static readonly double Max_u = 255.0;
+        public static readonly double Max_u = 127.0;
         /// <summary>
         /// Maximum value for the <see cref="v"/> channel
         /// </summary>
-        public static readonly double Max_v = 255.0;
+        public static readonly double Max_v = 127.0;
 
         #endregion
 
