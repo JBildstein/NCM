@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ColorManager.ICC
 {
@@ -6,11 +7,11 @@ namespace ColorManager.ICC
     {
         #region Compare One Dimensional Arrays
 
-        public static bool Compare<T>(T[] a, T[] b)
+        public static bool Compare<T>(IList<T> a, IList<T> b)
         {
             if (a == null && b == null) return true;
-            if (!CompareBase<T>(a, b)) return false;
-            for (int i = 0; i < a.Length; i++) { if (!a[i].Equals(b[i])) return false; }
+            if (!CompareBase(a, b)) return false;
+            for (int i = 0; i < a.Count; i++) { if (!a[i].Equals(b[i])) return false; }
             return true;
         }
 
@@ -595,7 +596,7 @@ namespace ColorManager.ICC
 
         #region GetHashCode One Dimensional Arrays
 
-        public static int GetHashCode<T>(T[] a)
+        public static int GetHashCode<T>(IList<T> a)
         {
             if (a == null) return 0;
             unchecked
@@ -1147,11 +1148,11 @@ namespace ColorManager.ICC
 
         #region Subroutines
 
-        private static bool CompareBase<T>(T[] a, T[] b)
+        private static bool CompareBase<T>(IList<T> a, IList<T> b)
         {
             if (a == null || b == null) return false;
             if (ReferenceEquals(a, b)) return true;
-            if (a.Length != b.Length) return false;
+            if (a.Count != b.Count) return false;
 
             return true;
         }
