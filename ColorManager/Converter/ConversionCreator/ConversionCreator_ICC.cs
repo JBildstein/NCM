@@ -1766,22 +1766,29 @@ namespace ColorManager.ICC.Conversion
             switch (colorType)
             {
                 case ColorSpaceType.CIELUV:
+                    //L / 100
+                    //(uv + -Min) / -Min + Max
+                    AdjustColor_Div(0, ColorLuv.Max_L);
+                    AdjustColor_AddDiv(1, -ColorLuv.Min_u, -ColorLuv.Min_u + ColorLuv.Max_u);
+                    AdjustColor_AddDiv(2, -ColorLuv.Min_v, -ColorLuv.Min_v + ColorLuv.Max_v);
+                    break;
+
                 case ColorSpaceType.CIELAB:
                     //L / 100
-                    //(abuv + 128) / 256
-                    AdjustColor_Div(0, 100);
-                    AdjustColor_AddDiv(1, 128, 256);
-                    AdjustColor_AddDiv(2, 128, 256);
+                    //(ab + -Min) / -Min + Max
+                    AdjustColor_Div(0, ColorLab.Max_L);
+                    AdjustColor_AddDiv(1, -ColorLab.Min_a, -ColorLab.Min_a + ColorLab.Max_a);
+                    AdjustColor_AddDiv(2, -ColorLab.Min_b, -ColorLab.Min_b + ColorLab.Max_b);
                     break;
 
                 case ColorSpaceType.HSV:
                     //H / 360
-                    AdjustColor_Div(0, 360);
+                    AdjustColor_Div(0, ColorHSV.Max_H);
                     break;
 
                 case ColorSpaceType.HLS:
                     //H / 360
-                    AdjustColor_Div(0, 360);
+                    AdjustColor_Div(0, ColorHSL.Max_H);
                     //Switch S and L channel
                     Adjust_SwitchChannel(1, 2, true);
                     WriteAssignSingle(0);
@@ -1808,23 +1815,30 @@ namespace ColorManager.ICC.Conversion
             IsLast = true;
             switch (colorType)
             {
-                case ColorSpaceType.CIELAB:
                 case ColorSpaceType.CIELUV:
                     //L * 100
-                    //(abuv * 256) - 128
-                    AdjustColor_Mul(0, 100);
-                    AdjustColor_MulSub(1, 256, 128);
-                    AdjustColor_MulSub(2, 256, 128);
+                    //(uv * (-Min + Max)) - -Min
+                    AdjustColor_Mul(0, ColorLuv.Max_L);
+                    AdjustColor_MulSub(1, -ColorLuv.Min_u + ColorLuv.Max_u, -ColorLuv.Min_u);
+                    AdjustColor_MulSub(2, -ColorLuv.Min_v + ColorLuv.Max_v, -ColorLuv.Min_v);
+                    break;
+
+                case ColorSpaceType.CIELAB:
+                    //L * 100
+                    //(ab * (-Min + Max)) - -Min
+                    AdjustColor_Mul(0, ColorLab.Max_L);
+                    AdjustColor_MulSub(1, -ColorLab.Min_a + ColorLab.Max_a, -ColorLab.Min_a);
+                    AdjustColor_MulSub(2, -ColorLab.Min_b + ColorLab.Max_b, -ColorLab.Min_b);
                     break;
 
                 case ColorSpaceType.HSV:
                     //H * 360
-                    AdjustColor_Mul(0, 360);
+                    AdjustColor_Mul(0, ColorHSV.Max_H);
                     break;
 
                 case ColorSpaceType.HLS:
                     //H * 360
-                    AdjustColor_Mul(0, 360);
+                    AdjustColor_Mul(0, ColorHSL.Max_H);
                     //Switch S and L channel
                     Adjust_SwitchChannel(1, 2, false);
                     break;
