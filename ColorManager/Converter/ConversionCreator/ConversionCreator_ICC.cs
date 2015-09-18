@@ -1445,8 +1445,8 @@ namespace ColorManager.ICC.Conversion
             //double idx = inColor[index] * (length - 1);
             //double low = lut[(int)idx];
             //double high = lut[(int)idx + 1];
-            //outColor[index] = low + ((high - low) * (idx % 1));
-            
+            //outColor[index] = low + ((high - low) * (idx - (int)idx));
+
             WriteLdInput(index);
             CMIL.Emit(OpCodes.Ldind_R8);
             CMIL.Emit(OpCodes.Ldc_R8, length - 1d);
@@ -1480,8 +1480,9 @@ namespace ColorManager.ICC.Conversion
             WriteLdloc(low);
             CMIL.Emit(OpCodes.Sub);
             WriteLdloc(idx);
-            CMIL.Emit(OpCodes.Ldc_R8, 1d);
-            CMIL.Emit(OpCodes.Rem);
+            WriteLdloc(idx);
+            CMIL.Emit(OpCodes.Conv_I4);
+            CMIL.Emit(OpCodes.Sub);
             CMIL.Emit(OpCodes.Mul);
             CMIL.Emit(OpCodes.Add);
             CMIL.Emit(OpCodes.Stind_R8);
@@ -1562,7 +1563,7 @@ namespace ColorManager.ICC.Conversion
 
             #endregion
         }
-
+        
         /// <summary>
         /// Writes the IL code for (3x3 * 3x1) + 3x1 matrix calculation
         /// </summary>
