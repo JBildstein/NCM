@@ -8,27 +8,27 @@ namespace ColorManagerTests.Conversions
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 14.96419735484, -98.880598020684, -111.354721216184  }; }
+            get { return new double[] { 61.421368052914, 86.216007474678, 2.074585824308  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 14.96419735484, 148.920269278773, -131.604387616535  }; }
+            get { return new double[] { 61.421368052914, 86.240963881534, 1.378422430189  }; }
         }
         protected override double[] Min_Out_U
         {
-            get { return new double[] { 0.0, 360.624458405139, -135.0  }; }
+            get { return new double[] { 0.0, 181.019335983756, -135.0  }; }
         }
         protected override double[] Max_Out_U
         {
-            get { return new double[] { 100.0, 360.624458405139, 45.0  }; }
+            get { return new double[] { 100.0, 179.605122421383, 45.0  }; }
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 14.96419735484, 78.059700989658, 101.396667376811  }; }
+            get { return new double[] { 61.421368052914, 214.216007474678, 183.634709399023  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 14.96419735484, -15.424622076496, 76.520572086153  }; }
+            get { return new double[] { 61.421368052914, -213.785113523192, -13.580246472989  }; }
         }
         protected override double[] Min_Out_T
         {

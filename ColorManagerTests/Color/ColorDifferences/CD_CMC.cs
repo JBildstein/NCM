@@ -9,34 +9,34 @@ namespace ColorManagerTests.ColorDifferences
     {
         public override double[] DeltaCOutput
         {
-            get { return new double[] { -86.409632216911, -24.195336889968  }; }
+            get { return new double[] { -2.350194091289, 7.221956402131  }; }
         }
         public override double[] DeltaEOutput
         {
-            get { return new double[] { 92.848580605973, 175.33806567674  }; }
+            get { return new double[] { 95.953655648734, 36.27469483365  }; }
         }
         public override double[] DeltaHOutput
         {
-            get { return new double[] { 221.007556059494, 383.75611425126  }; }
+            get { return new double[] { 187.867511692714, 48.961146434267  }; }
         }
 
         [TestMethod]
         public override void DeltaC()
         {
-            var col1 = new ColorLab(68.299230753118, -6.984772069373, -183.810101017035, Whitepoint.D65);
-            var col2 = new ColorLab(9.915364650039, -237.783012568151, -128.645469613208, Whitepoint.D65);
+            var col1 = new ColorLab(56.54364036468, -116.587189881288, 0.552391820495, Whitepoint.D65);
+            var col2 = new ColorLab(15.649015053943, 31.881040123352, -114.586263900197, Whitepoint.D65);
 
             using (var cdc = new ColorDifference_CMC(col1, col2))
             {
                 DeltaC(cdc, 0);
 
-                col1[0] = 66.897016259328;
-                col1[1] = -87.729733205275;
-                col1[2] = 160.534756600174;
+                col1[0] = 31.310532664093;
+                col1[1] = 81.583387114612;
+                col1[2] = -41.510887980932;
 
-                col2[0] = 65.226921206446;
-                col2[1] = 154.097315747103;
-                col2[2] = -138.419835181637;
+                col2[0] = 36.092706008857;
+                col2[1] = 83.941777394475;
+                col2[2] = 7.923801354796;
 
                 DeltaC(cdc, 1);
             }
@@ -45,20 +45,20 @@ namespace ColorManagerTests.ColorDifferences
         [TestMethod]
         public override void DeltaE()
         {
-            var col1 = new ColorLab(68.299230753118, -6.984772069373, -183.810101017035, Whitepoint.D65);
-            var col2 = new ColorLab(9.915364650039, -237.783012568151, -128.645469613208, Whitepoint.D65);
+            var col1 = new ColorLab(56.54364036468, -116.587189881288, 0.552391820495, Whitepoint.D65);
+            var col2 = new ColorLab(15.649015053943, 31.881040123352, -114.586263900197, Whitepoint.D65);
 
             using (var cdc = new ColorDifference_CMC(col1, col2))
             {
                 DeltaE(cdc, 0);
 
-                col1[0] = 66.897016259328;
-                col1[1] = -87.729733205275;
-                col1[2] = 160.534756600174;
+                col1[0] = 31.310532664093;
+                col1[1] = 81.583387114612;
+                col1[2] = -41.510887980932;
 
-                col2[0] = 65.226921206446;
-                col2[1] = 154.097315747103;
-                col2[2] = -138.419835181637;
+                col2[0] = 36.092706008857;
+                col2[1] = 83.941777394475;
+                col2[2] = 7.923801354796;
 
                 DeltaE(cdc, 1);
             }
@@ -67,20 +67,20 @@ namespace ColorManagerTests.ColorDifferences
         [TestMethod]
         public override void DeltaH()
         {
-            var col1 = new ColorLab(68.299230753118, -6.984772069373, -183.810101017035, Whitepoint.D65);
-            var col2 = new ColorLab(9.915364650039, -237.783012568151, -128.645469613208, Whitepoint.D65);
+            var col1 = new ColorLab(56.54364036468, -116.587189881288, 0.552391820495, Whitepoint.D65);
+            var col2 = new ColorLab(15.649015053943, 31.881040123352, -114.586263900197, Whitepoint.D65);
 
             using (var cdc = new ColorDifference_CMC(col1, col2))
             {
                 DeltaH(cdc, 0);
 
-                col1[0] = 66.897016259328;
-                col1[1] = -87.729733205275;
-                col1[2] = 160.534756600174;
+                col1[0] = 31.310532664093;
+                col1[1] = 81.583387114612;
+                col1[2] = -41.510887980932;
 
-                col2[0] = 65.226921206446;
-                col2[1] = 154.097315747103;
-                col2[2] = -138.419835181637;
+                col2[0] = 36.092706008857;
+                col2[1] = 83.941777394475;
+                col2[2] = 7.923801354796;
 
                 DeltaH(cdc, 1);
             }

@@ -8,11 +8,11 @@ namespace ColorManagerTests.Conversions
     {
         protected override double[] Rand_In_T
         {
-            get { return new double[] { 0.315549002432, 0.387697047967, 0.849990960839  }; }
+            get { return new double[] { 0.780120709413, 0.071643347909, 0.228429964082  }; }
         }
         protected override double[] Rand_Out_U
         {
-            get { return new double[] { 68.584117134126, -18.371506969358, -38.319420763539  }; }
+            get { return new double[] { 32.178130833248, 260.477854161322, -35.773805753782  }; }
         }
         protected override double[] Min_Out_U
         {
@@ -24,19 +24,19 @@ namespace ColorManagerTests.Conversions
         }
         protected override double[] Rand_In_U
         {
-            get { return new double[] { 31.554900243205, -57.274505536665, 178.495390027992  }; }
+            get { return new double[] { 78.012070941279, -109.730946283313, -69.750359159196  }; }
         }
         protected override double[] Rand_Out_T
         {
-            get { return new double[] { 0.024501962605, 0.068898831624, -0.086755294905  }; }
+            get { return new double[] { 0.196187885134, 0.532325034854, 1.696039503892  }; }
         }
         protected override double[] Min_Out_T
         {
-            get { return new double[] { -0.062249569084, 0.0, 3.07130517342  }; }
+            get { return new double[] { -0.031246842521, 0.0, 0.512605628496  }; }
         }
         protected override double[] Max_Out_T
         {
-            get { return new double[] { 3.27242163697, 1.0, -0.057738482062  }; }
+            get { return new double[] { 1.87426512028, 1.0, 0.052946672514  }; }
         }
 
         public XYZ_Lab() : base(new ColorXYZ(Whitepoint.D65),
