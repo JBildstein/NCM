@@ -65,6 +65,7 @@
     <Compile Include="Colors\ColorYCbCr.cs" />
     <Compile Include="Conversions\LCHuv.cs" />
     <Compile Include="Conversions\LCHab.cs" />
+    <Compile Include="Converter\Helper\ILWriter.cs" />
     <Compile Include="Helper\Const.cs" />
     <Compile Include="Converter\Helper\ConversionCommand.cs" />
     <Compile Include="Helper\Delegates.cs" />

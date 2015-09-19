@@ -25,4 +25,9 @@ namespace ColorManager.Conversion
     /// <param name="data">The data that will be used to perform a conversion</param>
     /// <returns>The result of the condition</returns>
     public delegate bool ConditionDelegate(ConversionData data);
+    /// <summary>
+    /// A delegate to write IL code according to some conversion data
+    /// </summary>
+    /// <param name="data">The data that will be used to perform a conversion</param>
+    public delegate void ILWriterDelegate(ConversionData data, ILWriter writer);
 }

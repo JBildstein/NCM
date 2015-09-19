@@ -171,13 +171,12 @@ namespace ColorManager.ICC
         /// <returns>An instance of the <see cref="PCSType"/></returns>
         public Color GetPCSColor(bool useICC = false)
         {
-            //LTODO: GetPCSColor should actually only return either Lab or XYZ
             return GetColor(useICC, PCS);
         }
 
         private Color GetColor(bool useICC, ColorSpaceType type)
         {
-            //TODO: Whitepoint might be different for different kind of profiles (Abstract, DeviceLink)
+            //TODO: Whitepoint can be different from D50
             var wp = new WhitepointD50();
 
             switch (type)

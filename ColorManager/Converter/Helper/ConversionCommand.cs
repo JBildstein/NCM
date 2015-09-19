@@ -13,9 +13,9 @@ namespace ColorManager.Conversion
     /// </summary>
     public sealed class CC_ExecuteMethod : IConversionCommand
     {
-        internal ConversionDelegate methodC;
-        internal TransformToDelegate methodTTo;
-        internal TransformDelegate methodT;
+        public readonly ConversionDelegate MethodC;
+        public readonly TransformToDelegate MethodTTo;
+        public readonly TransformDelegate MethodT;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CC_ExecuteMethod"/> class
@@ -24,7 +24,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(ConversionDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            methodC = method;
+            MethodC = method;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(TransformToDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            methodTTo = method;
+            MethodTTo = method;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace ColorManager.Conversion
         public CC_ExecuteMethod(TransformDelegate method)
         {
             if (method == null) throw new ArgumentNullException();
-            methodT = method;
+            MethodT = method;
         }
     }
 
@@ -53,8 +53,14 @@ namespace ColorManager.Conversion
     /// </summary>
     public sealed class CC_Convert : IConversionCommand
     {
-        internal Type inColor;
-        internal Type outColor;
+        /// <summary>
+        /// The input color type
+        /// </summary>
+        public readonly Type InColor;
+        /// <summary>
+        /// The output color type
+        /// </summary>
+        public readonly Type OutColor;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CC_Convert"/> class
@@ -66,8 +72,8 @@ namespace ColorManager.Conversion
             if (inColor == null || outColor == null) throw new ArgumentNullException();
             if (!inColor.IsSubclassOf(typeof(Color)) || !outColor.IsSubclassOf(typeof(Color))) throw new ArgumentException("Type must derive from Color");
 
-            this.inColor = inColor;
-            this.outColor = outColor;
+            InColor = inColor;
+            OutColor = outColor;
         }
     }
 
@@ -76,9 +82,18 @@ namespace ColorManager.Conversion
     /// </summary>
     public sealed class CC_Condition : IConversionCommand
     {
-        internal ConditionDelegate condition;
-        internal IConversionCommand[] IfCommands;
-        internal IConversionCommand[] ElseCommands;
+        /// <summary>
+        /// The condition to check
+        /// </summary>
+        public readonly ConditionDelegate Condition;
+        /// <summary>
+        /// The commands to execute if the condition is true
+        /// </summary>
+        public readonly IConversionCommand[] IfCommands;
+        /// <summary>
+        /// The commands to execute if the condition is false
+        /// </summary>
+        public readonly IConversionCommand[] ElseCommands;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CC_Condition"/> class
@@ -89,7 +104,7 @@ namespace ColorManager.Conversion
         {
             if (condition == null || ifCommands == null) throw new ArgumentNullException();
 
-            this.condition = condition;
+            Condition = condition;
             IfCommands = ifCommands;
         }
 
@@ -103,7 +118,7 @@ namespace ColorManager.Conversion
         {
             if (condition == null || ifCommands == null || elseCommands == null) throw new ArgumentNullException();
 
-            this.condition = condition;
+            Condition = condition;
             IfCommands = ifCommands;
             ElseCommands = elseCommands;
         }
@@ -118,7 +133,7 @@ namespace ColorManager.Conversion
         {
             if (condition == null || ifCommand == null || elseCommand == null) throw new ArgumentNullException();
 
-            this.condition = condition;
+            Condition = condition;
             IfCommands = new IConversionCommand[] { ifCommand };
             ElseCommands = new IConversionCommand[] { elseCommand };
         }
@@ -129,7 +144,10 @@ namespace ColorManager.Conversion
     /// </summary>
     public sealed class CC_Assign : IConversionCommand
     {
-        internal int channels;
+        /// <summary>
+        /// The number of channels to assign
+        /// </summary>
+        public readonly int Channels;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CC_Assign"/> class
@@ -138,7 +156,28 @@ namespace ColorManager.Conversion
         public CC_Assign(int channels)
         {
             if (channels < 1 || channels > Color.MaxChannels) throw new ArgumentOutOfRangeException($"Number of channels must be at least one and less than {nameof(Color.MaxChannels)}({Color.MaxChannels})");
-            this.channels = channels;
+            Channels = channels;
+        }
+    }
+
+    /// <summary>
+    /// A conversion command for writing IL code
+    /// </summary>
+    public sealed class CC_ILWriter : IConversionCommand
+    {
+        /// <summary>
+        /// The method that writes the IL code
+        /// </summary>
+        public readonly ILWriterDelegate WriterMethod;
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CC_ILWriter"/> class
+        /// </summary>
+        /// <param name="method">The method that writes the IL code</param>
+        public CC_ILWriter(ILWriterDelegate method)
+        {
+            if (method == null) throw new ArgumentNullException();
+            WriterMethod = method;
         }
     }
 }

@@ -98,6 +98,7 @@ namespace ColorManager.Conversion
             FindCommands(cmds, outCmds);
             WriteMethod(outCmds);
             WriteRangeCheck(OutColor);
+            if (IsLastG) Write(OpCodes.Ret);
         }
 
         #endregion
@@ -263,14 +264,14 @@ namespace ColorManager.Conversion
         /// <param name="outCmds">The resolved output commands</param>
         private void FindCommand(IConversionCommand cmd, List<IConversionCommand> outCmds)
         {
-            if (cmd is CC_Assign || cmd is CC_ExecuteMethod) outCmds.Add(cmd);
+            if (cmd is CC_Assign || cmd is CC_ExecuteMethod || cmd is CC_ILWriter) outCmds.Add(cmd);
             else
             {
                 var condition = cmd as CC_Condition;
                 if (condition != null) { FindCommand(condition, outCmds); return; }
 
                 var convert = cmd as CC_Convert;
-                if (convert != null) { FindConvertTo(convert.inColor, convert.outColor, outCmds); return; }
+                if (convert != null) { FindConvertTo(convert.InColor, convert.OutColor, outCmds); return; }
             }
         }
 
@@ -282,7 +283,7 @@ namespace ColorManager.Conversion
         /// <param name="outCmds">The resolved output commands</param>
         private void FindCommand(CC_Condition condition, List<IConversionCommand> outCmds)
         {
-            if (condition.condition(Data)) foreach (var cmd in condition.IfCommands) FindCommand(cmd, outCmds);
+            if (condition.Condition(Data)) foreach (var cmd in condition.IfCommands) FindCommand(cmd, outCmds);
             else if (condition.ElseCommands != null) foreach (var cmd in condition.ElseCommands) FindCommand(cmd, outCmds);
         }
 
@@ -317,7 +318,7 @@ namespace ColorManager.Conversion
                 var assign = cmds[i] as CC_Assign;
                 if (assign != null)
                 {
-                    WriteAssign(assign.channels);
+                    WriteAssign(assign.Channels);
                     continue;
                 }
 
@@ -325,6 +326,13 @@ namespace ColorManager.Conversion
                 if (execute != null)
                 {
                     WriteMethod(execute);
+                    continue;
+                }
+
+                var il = cmds[i] as CC_ILWriter;
+                if (il != null)
+                {
+                    il.WriterMethod(Data, this);
                     continue;
                 }
             }
@@ -337,12 +345,13 @@ namespace ColorManager.Conversion
         private void WriteMethod(CC_ExecuteMethod cc)
         {
             MethodInfo m;
-            if (cc.methodC != null) m = cc.methodC.Method;
-            else if (cc.methodTTo != null) m = cc.methodTTo.Method;
-            else if (cc.methodT != null) m = cc.methodT.Method;
+            if (cc.MethodC != null) m = cc.MethodC.Method;
+            else if (cc.MethodTTo != null) m = cc.MethodTTo.Method;
+            else if (cc.MethodT != null) m = cc.MethodT.Method;
             else return;
 
-            WriteMethodCall(m);
+            WriteLdArg(true);
+            WriteCallMethod(m);
         }
 
         #endregion
