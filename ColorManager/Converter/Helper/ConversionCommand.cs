@@ -14,8 +14,11 @@ namespace ColorManager.Conversion
     public sealed class CC_ExecuteMethod : IConversionCommand
     {
         public readonly ConversionDelegate MethodC;
+        public readonly ConversionExDelegate MethodCE;
         public readonly TransformToDelegate MethodTTo;
         public readonly TransformDelegate MethodT;
+
+        public readonly double[][] MethodCEData;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CC_ExecuteMethod"/> class
@@ -23,8 +26,21 @@ namespace ColorManager.Conversion
         /// <param name="method">The method to execute</param>
         public CC_ExecuteMethod(ConversionDelegate method)
         {
-            if (method == null) throw new ArgumentNullException();
+            if (method == null) throw new ArgumentNullException(nameof(method));
             MethodC = method;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="CC_ExecuteMethod"/> class
+        /// </summary>
+        /// <param name="method">The method to execute</param>
+        /// <param name="data">The data that is used for the method</param>
+        public CC_ExecuteMethod(ConversionExDelegate method, double[][] data)
+        {
+            if (method == null) throw new ArgumentNullException(nameof(method));
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            MethodCE = method;
+            MethodCEData = data;
         }
 
         /// <summary>
@@ -33,7 +49,7 @@ namespace ColorManager.Conversion
         /// <param name="method">The method to execute</param>
         public CC_ExecuteMethod(TransformToDelegate method)
         {
-            if (method == null) throw new ArgumentNullException();
+            if (method == null) throw new ArgumentNullException(nameof(method));
             MethodTTo = method;
         }
 
@@ -43,7 +59,7 @@ namespace ColorManager.Conversion
         /// <param name="method">The method to execute</param>
         public CC_ExecuteMethod(TransformDelegate method)
         {
-            if (method == null) throw new ArgumentNullException();
+            if (method == null) throw new ArgumentNullException(nameof(method));
             MethodT = method;
         }
     }
