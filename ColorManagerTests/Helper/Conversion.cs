@@ -17,6 +17,10 @@ namespace ColorManagerTests.Conversions
         ConversionDelegate ConvToT;
         ConversionDelegate ConvToU;
 
+        ConversionExDelegate ConvToTEx;
+        ConversionExDelegate ConvToUEx;
+
+        bool IsConversionEx = false;
         protected const double Margin = 0.00005;
         
         protected abstract double[] Rand_In_T { get; }
@@ -28,6 +32,9 @@ namespace ColorManagerTests.Conversions
         protected abstract double[] Rand_Out_T { get; }
         protected abstract double[] Min_Out_T { get; }
         protected abstract double[] Max_Out_T { get; }
+
+        protected virtual double[][] AdditionalDataToT { get { return null; } }
+        protected virtual double[][] AdditionalDataToU { get { return null; } }
 
         protected Conversion(T Color1, U Color2)
         {
@@ -48,11 +55,21 @@ namespace ColorManagerTests.Conversions
                     if (args[0] == typeof(U) && args[1] == typeof(T))
                     {
                         ConvToT = GetDelegate(paths[i]);
+                        if (ConvToT == null)
+                        {
+                            ConvToTEx = GetDelegateEx(paths[i]);
+                            IsConversionEx = true;
+                        }
                         c++;
                     }
                     else if (args[0] == typeof(T) && args[1] == typeof(U))
                     {
                         ConvToU = GetDelegate(paths[i]);
+                        if (ConvToU == null)
+                        {
+                            ConvToUEx = GetDelegateEx(paths[i]);
+                            IsConversionEx = true;
+                        }
                         c++;
                     }
 
@@ -60,7 +77,8 @@ namespace ColorManagerTests.Conversions
                 }
             }
 
-            if (ConvToU == null || ConvToT == null) throw new MissingMethodException();
+            if (IsConversionEx && (ConvToUEx == null || ConvToTEx == null)) throw new MissingMethodException();
+            else if (!IsConversionEx && (ConvToU == null || ConvToT == null)) throw new MissingMethodException();
         }
 
         #region T -> U
@@ -104,8 +122,16 @@ namespace ColorManagerTests.Conversions
         private void Test(double[] inValues, double[] outValues, bool toU)
         {
             PathCheckData path;
-            if (toU) path = new PathCheckData(Color1, Color2, ConvToU, inValues, outValues);
-            else path = new PathCheckData(Color2, Color1, ConvToT, inValues, outValues);
+            if (toU)
+            {
+                if (IsConversionEx) path = new PathCheckData(Color1, Color2, ConvToUEx, inValues, outValues, AdditionalDataToU);
+                else path = new PathCheckData(Color1, Color2, ConvToU, inValues, outValues);
+            }
+            else
+            {
+                if (IsConversionEx) path = new PathCheckData(Color2, Color1, ConvToTEx, inValues, outValues, AdditionalDataToT);
+                else path = new PathCheckData(Color2, Color1, ConvToT, inValues, outValues);
+            }
 
             CheckConversionPath(path);
         }
@@ -113,7 +139,14 @@ namespace ColorManagerTests.Conversions
         private static ConversionDelegate GetDelegate(Type tp)
         {
             var m = tp.GetMethod("Convert", new Type[] { typeof(double*), typeof(double*), typeof(ConversionData) });
+            if (m == null) return null;
             return Delegate.CreateDelegate(typeof(ConversionDelegate), m) as ConversionDelegate;
+        }
+
+        private static ConversionExDelegate GetDelegateEx(Type tp)
+        {
+            var m = tp.GetMethod("Convert", new Type[] { typeof(double*), typeof(double*), typeof(ConversionData), typeof(double**) });
+            return Delegate.CreateDelegate(typeof(ConversionExDelegate), m) as ConversionExDelegate;
         }
 
         private static void CheckConversionPath(PathCheckData pathData)
@@ -124,7 +157,12 @@ namespace ColorManagerTests.Conversions
 
             for (int i = 0; i < pathData.inCount; i++) { inColor[i] = pathData.inValues[i]; }
 
-            pathData.conversion(inColor, outColor, data);
+            if (pathData.conversion != null) pathData.conversion(inColor, outColor, data);
+            else if (pathData.conversionEx != null)
+            {
+                int idx = data.AddAdditionalData(pathData.additionalData);
+                pathData.conversionEx(inColor, outColor, data, data.AdditionalData[idx]);
+            }
 
             //Ensure that the input values have not changed
             for (int i = 0; i < pathData.inCount; i++)
@@ -159,28 +197,44 @@ namespace ColorManagerTests.Conversions
         public Color inColor;
         public Color outColor;
         public ConversionDelegate conversion;
+        public ConversionExDelegate conversionEx;
         public double[] inValues;
         public double[] outValues;
+        public double[][] additionalData;
 
-        public PathCheckData(Color inColor, Color outColor,
-            ConversionDelegate conversion,
+        public PathCheckData(Color inColor, Color outColor, ConversionDelegate conversion,
             double[] inValues, double[] outValues)
+            : this(inColor, outColor, inValues, outValues)
+        {
+            if (conversion == null) throw new ArgumentNullException(nameof(conversion));
+            this.conversion = conversion;
+        }
+
+        public PathCheckData(Color inColor, Color outColor, ConversionExDelegate conversion,
+            double[] inValues, double[] outValues, double[][] additionalData)
+            : this(inColor, outColor, inValues, outValues)
+        {
+            if (conversion == null) throw new ArgumentNullException(nameof(conversion));
+            if (conversion == null) throw new ArgumentNullException(nameof(additionalData));
+            conversionEx = conversion;
+            this.additionalData = additionalData;
+        }
+
+        private PathCheckData(Color inColor, Color outColor, double[] inValues, double[] outValues)
         {
             if (inColor == null ||
                 outColor == null ||
-                conversion == null ||
                 inValues == null ||
                 outValues == null)
                 throw new ArgumentNullException();
 
             if (inColor.ChannelCount != inValues.Length) throw new ArgumentException();
             if (outColor.ChannelCount != outValues.Length) throw new ArgumentException();
-            
+
             this.inColor = inColor;
             this.outColor = outColor;
             this.inValues = inValues;
             this.outValues = outValues;
-            this.conversion = conversion;
 
             inCount = inValues.Length;
             outCount = outValues.Length;
