@@ -9,6 +9,14 @@ namespace ColorManager.Conversion
     /// <param name="data">The data that is used to perform the conversion</param>
     public unsafe delegate void ConversionDelegate(double* inColor, double* outColor, ConversionData data);
     /// <summary>
+    /// A delegate for color conversions with additional data
+    /// </summary>
+    /// <param name="inColor">The pointer to the input color values</param>
+    /// <param name="outColor">The pointer to the output color values</param>
+    /// <param name="data">The data that is used to perform the conversion</param>
+    /// <param name="additional">Additional data specific to this conversion</param>
+    public unsafe delegate void ConversionExDelegate(double* inColor, double* outColor, ConversionData data, double** additional);
+    /// <summary>
     /// A delegate to transform values
     /// </summary>
     /// <param name="inValues">The pointer to the input values</param>
