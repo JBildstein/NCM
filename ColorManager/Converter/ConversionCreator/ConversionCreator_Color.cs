@@ -342,15 +342,35 @@ namespace ColorManager.Conversion
         /// Writes the IL code to call a method
         /// </summary>
         /// <param name="cc">The conversion command with the method</param>
-        private void WriteMethod(CC_ExecuteMethod cc)
+        private unsafe void WriteMethod(CC_ExecuteMethod cc)
         {
             MethodInfo m;
-            if (cc.MethodC != null) m = cc.MethodC.Method;
-            else if (cc.MethodTTo != null) m = cc.MethodTTo.Method;
-            else if (cc.MethodT != null) m = cc.MethodT.Method;
+            if (cc.MethodC != null)
+            {
+                WriteLdArg(true);
+                m = cc.MethodC.Method;
+            }
+            else if (cc.MethodCE != null)
+            {
+                WriteLdArg(true);
+                int idx = Data.AddAdditionalData(cc.MethodCEData);
+                WriteDataLdfld(nameof(ConversionData.AdditionalData));
+                WriteLdPtr(idx, sizeof(double**));
+                Write(OpCodes.Ldind_I);
+                m = cc.MethodCE.Method;
+            }
+            else if (cc.MethodTTo != null)
+            {
+                WriteLdArg(false);
+                m = cc.MethodTTo.Method;
+            }
+            else if (cc.MethodT != null)
+            {
+                WriteLdOutput();
+                m = cc.MethodT.Method;
+            }
             else return;
 
-            WriteLdArg(true);
             WriteCallMethod(m);
         }
 
