@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ColorManager.ICC.Conversion;
 
@@ -64,6 +65,10 @@ namespace ColorManager.Conversion
         /// </summary>
         public void* OutSpaceData;
         /// <summary>
+        /// An array of additional data for conversions
+        /// </summary>
+        public double*** AdditionalData;
+        /// <summary>
         /// The transformation method of the input colorspace
         /// <para>If not defined by the colorspace, this is null</para>
         /// </summary>
@@ -118,6 +123,8 @@ namespace ColorManager.Conversion
         private GCHandle InWPCrHandle;
         private GCHandle OutWPCrHandle;
         private GCHandle CAMatrixHandle;
+        private IntPtr AdditionalDataPointer;
+        private List<ArrayData> AdditionalDataHandle;
 
         #endregion
 
@@ -128,7 +135,7 @@ namespace ColorManager.Conversion
         /// </summary>
         /// <param name="inColor">The input color</param>
         /// <param name="outColor">The output color</param>
-        protected internal ConversionData(Color inColor, Color outColor)
+        public ConversionData(Color inColor, Color outColor)
         {
             if (inColor == null || outColor == null) throw new ArgumentNullException();
 
@@ -166,13 +173,15 @@ namespace ColorManager.Conversion
             OutWP = (double*)OutWPHandle.AddrOfPinnedObject();
             InWPCr = (double*)InWPCrHandle.AddrOfPinnedObject();
             OutWPCr = (double*)OutWPCrHandle.AddrOfPinnedObject();
+
+            AdditionalDataHandle = new List<ArrayData>();
         }
 
         /// <summary>
         /// Sets the chromatic adaption data
         /// </summary>
         /// <param name="ca">The chromatic adaption data</param>
-        protected internal void SetCAData(ChromaticAdaption ca)
+        public void SetCAData(ChromaticAdaption ca)
         {
             if (ca == null) throw new ArgumentNullException();
             var data = ca.GetCAData(this);
@@ -185,7 +194,7 @@ namespace ColorManager.Conversion
         /// </summary>
         /// <param name="inProfileData">Input profile data</param>
         /// <param name="outProfileData">Output profile data</param>
-        protected internal void SetICCData(ICCData inProfileData, ICCData outProfileData)
+        public void SetICCData(ICCData inProfileData, ICCData outProfileData)
         {
             if (inProfileData != null)
             {
@@ -197,6 +206,82 @@ namespace ColorManager.Conversion
             {
                 _OutICCData = outProfileData;
                 OutICCData = (double**)outProfileData.DataPointer;
+            }
+        }
+
+        /// <summary>
+        /// Adds additional data for specific conversions 
+        /// </summary>
+        /// <param name="data">The data to add</param>
+        /// <returns>The index of the added data</returns>
+        public int AddAdditionalData(double[][] data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
+            AdditionalDataHandle.Add(new ArrayData(data));
+            if (AdditionalDataPointer != IntPtr.Zero) Marshal.FreeHGlobal(AdditionalDataPointer);
+            AdditionalDataPointer = Marshal.AllocHGlobal(AdditionalDataHandle.Count * sizeof(double**));
+            AdditionalData = (double***)AdditionalDataPointer;
+            for (int i = 0; i < AdditionalDataHandle.Count; i++)
+            {
+                AdditionalData[i] = AdditionalDataHandle[i].Pointer;
+            }
+            return AdditionalDataHandle.Count - 1;
+        }
+
+        #endregion
+
+        #region ArrayData Class
+
+        protected sealed class ArrayData : IDisposable
+        {
+            public double** Pointer
+            {
+                get { return (double**)DataPointer; }
+            }
+
+            private IntPtr DataPointer;
+            private GCHandle[] ArrayHandle;
+
+            public ArrayData(double[][] data)
+            {
+                if (data == null) throw new ArgumentNullException(nameof(data));
+
+                DataPointer = Marshal.AllocHGlobal(data.Length * sizeof(double*));
+                double** tmp = (double**)DataPointer;
+                ArrayHandle = new GCHandle[data.Length];
+
+                for (int i = 0; i < data.Length; i++)
+                {
+                    if (data[i] == null)
+                    {
+                        Dispose();
+                        throw new ArgumentNullException(nameof(data));
+                    }
+                    ArrayHandle[i] = GCHandle.Alloc(data[i], GCHandleType.Pinned);
+                    tmp[i] = (double*)ArrayHandle[i].AddrOfPinnedObject();
+                }
+            }            
+            
+            ~ArrayData()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void Dispose(bool managed)
+            {
+                foreach (var handle in ArrayHandle) { if (handle.IsAllocated) handle.Free(); }
+                if (DataPointer != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(DataPointer);
+                    DataPointer = IntPtr.Zero;
+                }
             }
         }
 
@@ -236,11 +321,11 @@ namespace ColorManager.Conversion
                     VarsArray = null;
                 }
 
-                if (_CAData != null) _CAData.Dispose();
-                if (_InSpaceData != null) _InSpaceData.Dispose();
-                if (_OutSpaceData != null) _OutSpaceData.Dispose();
-                if (_InICCData != null) _InICCData.Dispose();
-                if (_OutICCData != null) _OutICCData.Dispose();
+                _CAData?.Dispose();
+                _InSpaceData?.Dispose();
+                _OutSpaceData?.Dispose();
+                _InICCData?.Dispose();
+                _OutICCData?.Dispose();
 
                 if (ColVars1Handle.IsAllocated) ColVars1Handle.Free();
                 if (ColVars2Handle.IsAllocated) ColVars2Handle.Free();
@@ -250,6 +335,11 @@ namespace ColorManager.Conversion
                 if (InWPCrHandle.IsAllocated) InWPCrHandle.Free();
                 if (OutWPCrHandle.IsAllocated) OutWPCrHandle.Free();
                 if (CAMatrixHandle.IsAllocated) CAMatrixHandle.Free();
+                if (AdditionalDataPointer != IntPtr.Zero) Marshal.FreeHGlobal(AdditionalDataPointer);
+                if (AdditionalDataHandle != null)
+                {
+                    foreach (var data in AdditionalDataHandle) { data?.Dispose(); }
+                }
 
                 _IsDisposed = true;
             }
