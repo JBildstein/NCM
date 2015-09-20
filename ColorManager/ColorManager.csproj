@@ -124,7 +124,6 @@
     <Compile Include="Conversions\LCH99.cs" />
     <Compile Include="Conversions\Lab.cs" />
     <Compile Include="Conversions\RGB.cs" />
-    <Compile Include="ICC\Conversion\ICCData.cs" />
     <Compile Include="ICC\Enums.cs" />
     <Compile Include="ICC\ICCDataReader.cs" />
     <Compile Include="ICC\ICCDataWriter.cs" />

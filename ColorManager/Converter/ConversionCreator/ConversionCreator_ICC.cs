@@ -167,8 +167,8 @@ namespace ColorManager.ICC.Conversion
 
             if (ICCData != null && ICCData.Count > 0)
             {
-                if (IsInput) Data.SetICCData(new ICCData(ICCData.ToArray()), null);
-                else Data.SetICCData(null, new ICCData(ICCData.ToArray()));
+                if (IsInput) Data.SetICCData(ICCData.ToArray(), null);
+                else Data.SetICCData(null, ICCData.ToArray());
             }
             if (IsLastG) Write(OpCodes.Ret);
         }

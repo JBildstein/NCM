@@ -113,8 +113,8 @@ namespace ColorManager.Conversion
         private CustomData _CAData;
         private CustomData _InSpaceData;
         private CustomData _OutSpaceData;
-        private ICCData _InICCData;
-        private ICCData _OutICCData;
+        private ArrayData _InICCData;
+        private ArrayData _OutICCData;
         private GCHandle ColVars1Handle;
         private GCHandle ColVars2Handle;
         private GCHandle VarsHandle;
@@ -194,18 +194,18 @@ namespace ColorManager.Conversion
         /// </summary>
         /// <param name="inProfileData">Input profile data</param>
         /// <param name="outProfileData">Output profile data</param>
-        public void SetICCData(ICCData inProfileData, ICCData outProfileData)
+        public void SetICCData(double[][] inProfileData, double[][] outProfileData)
         {
             if (inProfileData != null)
             {
-                _InICCData = inProfileData;
-                InICCData = (double**)inProfileData.DataPointer;
+                _InICCData = new ArrayData(inProfileData);
+                InICCData = _InICCData.Pointer;
             }
 
             if (outProfileData != null)
             {
-                _OutICCData = outProfileData;
-                OutICCData = (double**)outProfileData.DataPointer;
+                _OutICCData = new ArrayData(outProfileData);
+                OutICCData = _OutICCData.Pointer;
             }
         }
 
