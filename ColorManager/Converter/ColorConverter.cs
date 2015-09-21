@@ -12,7 +12,7 @@ namespace ColorManager
     /// <summary>
     /// Provides methods to convert from one color to another
     /// </summary>
-    public unsafe partial class ColorConverter : IDisposable
+    public unsafe class ColorConverter : IDisposable
     {
         #region Static Content
 
