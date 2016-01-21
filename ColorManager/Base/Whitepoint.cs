@@ -13,7 +13,7 @@ namespace ColorManager
         public static Whitepoint Default
         {
             get { return _Default; }
-            set { if (value == null) _Default = value; }
+            set { if (value != null) _Default = value; }
         }
         private static Whitepoint _Default = new WhitepointD65();
 
