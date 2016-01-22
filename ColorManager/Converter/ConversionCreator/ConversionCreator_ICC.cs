@@ -1235,7 +1235,7 @@ namespace ColorManager.ICC.Conversion
         {
             //TODO: WriteSampledCurveSegment is probably incorrect. inColor[index] goes from 0-1 while this is a segment >=0 - <=1
 
-            //outColor[index] = lut.Values[(int)(inColor[index] * lut.Length - 1)];
+            //outColor[index] = lut.Values[(int)(inColor[index] * lut.CurveEntries - 1)];
             WriteLdOutput(index);
             WriteLdICCData(DataPos);
             WriteLdInput(index);
