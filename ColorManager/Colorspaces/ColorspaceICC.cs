@@ -21,7 +21,7 @@ namespace ColorManager.ICC
         /// </summary>
         /// <param name="profile">The ICC profile of this colorspace</param>
         public ColorspaceICC(ICCProfile profile)
-            : base(new WhitepointD50())
+            : base(new WhitepointD50())//TODO: whitepoint is not always D50 for ICC profile
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             _Profile = profile;
