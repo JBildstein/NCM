@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:ICCViewerLib.Controls;assembly=ICCViewerLib">
+  <StackLayout Spacing="8" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <TableLayout Spacing="8,2">
+      <TableRow>
+        <Label TextAlignment="Right">Device Manufacturer:</Label>
+        <Label ID="DeviceManufacturerLabel">N/A</Label>
+      </TableRow>
+      <TableRow>
+        <Label TextAlignment="Right">Device Model:</Label>
+        <Label ID="DeviceModelLabel">N/A</Label>
+      </TableRow>
+      <TableRow>
+        <Label TextAlignment="Right">Technology Information:</Label>
+        <Label ID="TechnologyInformationLabel">N/A</Label>
+      </TableRow>
+      <TableRow>
+        <Label TextAlignment="Right">Device Attributes:</Label>
+        <TableLayout Spacing="8,2">
+          <TableRow>
+            <Label TextAlignment="Right">Opacity:</Label>
+            <Label ID="OpacityLabel">N/A</Label>
+          </TableRow>
+          <TableRow>
+            <Label TextAlignment="Right">Reflectivity:</Label>
+            <Label ID="ReflectivityLabel">N/A</Label>
+          </TableRow>
+          <TableRow>
+            <Label TextAlignment="Right">Polarity:</Label>
+            <Label ID="PolarityLabel">N/A</Label>
+          </TableRow>
+          <TableRow>
+            <Label TextAlignment="Right">Chroma:</Label>
+            <Label ID="ChromaLabel">N/A</Label>
+          </TableRow>
+          <TableRow>
+            <Label TextAlignment="Right">Vendor Data:</Label>
+            <Label ID="VendorDataLabel">N/A</Label>
+          </TableRow>
+        </TableLayout>
+      </TableRow>
+    </TableLayout>
+    <Label>Device Manufacturer Info:</Label>
+    <StackLayoutItem Expand="True">
+      <local:LocalizedStringControl ID="DeviceManufacturerInfoPanel" />
+    </StackLayoutItem>
+    <Label>Device Model Info:</Label>
+    <StackLayoutItem Expand="True">
+      <local:LocalizedStringControl ID="DeviceModelInfoPanel" />
+    </StackLayoutItem>
+  </StackLayout>
+</Panel>

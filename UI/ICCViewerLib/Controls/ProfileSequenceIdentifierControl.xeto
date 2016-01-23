@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:ICCViewerLib.Controls;assembly=ICCViewerLib">
+  <StackLayout Padding="6" Spacing="6" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <StackLayoutItem>
+      <StackLayout Spacing="8" Orientation="Horizontal">        
+          <Label TextAlignment="Right">Profile ID:</Label>
+          <Label ID="ProfileIDLabel">N/A</Label>
+      </StackLayout>
+    </StackLayoutItem>
+    <Label>Description:</Label>
+    <StackLayoutItem Expand="True">
+      <local:LocalizedStringControl ID="DescriptionPanel" />
+    </StackLayoutItem>
+  </StackLayout>
+</Panel>

@@ -1,23 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using ColorManager.ICC;
+using Eto.Forms;
+using Eto.Serialization.Xaml;
+using ICCViewer.Controls;
 
 namespace ICCViewer
 {
-    public partial class MainForm : Form
+    public class MainForm : Form
     {
+        #region Variables
+
         private ICCProfileReader Reader = new ICCProfileReader();
         private string ProfilePath;
         private ICCProfile Profile;
 
+        private Button OpenButton { get; set; }
+        private TextBox PathTextBox { get; set; }
+        private ListBox TagTableListBox { get; set; }
+
+        private Label ProfileSizeLabel { get; set; }
+        private Label CMMTypeLabel { get; set; }
+        private Label ProfileVersionLabel { get; set; }
+        private Label ProfileClassLabel { get; set; }
+        private Label DataColorspaceLabel { get; set; }
+        private Label PCSLabel { get; set; }
+        private Label CreationDateLabel { get; set; }
+        private Label ProfileFileSignatureLabel { get; set; }
+        private Label PrimaryPlatformLabel { get; set; }
+        private Label ProfileFlagsLabel { get; set; }
+        private Label DeviceManufacturerLabel { get; set; }
+        private Label DeviceModelLabel { get; set; }
+        private Label DeviceAttributesLabel { get; set; }
+        private Label RenderingIntentLabel { get; set; }
+        private Label PCSIlluminantLabel { get; set; }
+        private Label ProfileCreatorLabel { get; set; }
+        private Label ProfileIDLabel { get; set; }
+
+        #endregion
+
         public MainForm()
         {
-            InitializeComponent();
+            XamlReader.Load(this);
+
+            OpenButton.Click += OpenButton_Click;
+            TagTableListBox.SelectedIndexChanged += TagTableListBox_SelectedIndexChanged;
         }
 
         #region UI Events
@@ -28,10 +55,11 @@ namespace ICCViewer
             {
                 using (OpenFileDialog dlg = new OpenFileDialog())
                 {
-                    dlg.Filter = "ICC Profile|*.icc;*.icm|All Files|*.*";
+                    dlg.Filters.Add(new FileDialogFilter("ICC Profile", ".icc",".icm"));
+                    dlg.Filters.Add(new FileDialogFilter("All Files", ".*"));
 
-                    var res = dlg.ShowDialog();
-                    if (res == DialogResult.OK)
+                    var res = dlg.ShowDialog(this);
+                    if (res == DialogResult.Ok)
                     {
                         ProfilePath = dlg.FileName;
                         PathTextBox.Text = ProfilePath;
@@ -45,17 +73,16 @@ namespace ICCViewer
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK); }
         }
 
-        private void TagTableListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private async void TagTableListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (TagTableListBox.SelectedIndex > -1)
             {
-                using (DetailsForm frm = new DetailsForm())
+                var data = Profile.Data[TagTableListBox.SelectedIndex];
+                var ctrl = GetControl(data);
+                using (DetailsForm frm = new DetailsForm(ctrl))
                 {
-                    var data = Profile.Data[TagTableListBox.SelectedIndex];
-                    var ctrl = GetControl(data);
-                    frm.Controls.Add(ctrl);
-                    frm.Text = data.TagSignature.ToString() + " - " + data.Signature.ToString();
-                    frm.ShowDialog(this);
+                    frm.Title = data.TagSignature.ToString() + " - " + data.Signature.ToString();
+                    await frm.ShowModalAsync(this);
                 }
             }
         }
@@ -92,9 +119,7 @@ namespace ICCViewer
         }
 
         #endregion
-
-        //TODO: implement specific controls for each ICC tag type
-
+        
         #region Show Data
 
         private Control GetControl(TagDataEntry entry)
@@ -145,6 +170,8 @@ namespace ICCViewer
                     return GetControlSignature(entry);
                 case TypeSignature.Text:
                     return GetControlText(entry);
+                case TypeSignature.TextDescription:
+                    return GetControlTextDescription(entry);
                 case TypeSignature.U16Fixed16Array:
                     return GetControlU16Fixed16Array(entry);
                 case TypeSignature.UInt16Array:
@@ -161,49 +188,44 @@ namespace ICCViewer
                     return GetControlXYZ(entry);
 
                 default:
-                    return new Label() { Text = "N/A" };
+                    return new Label() { Text = "Unknown Type Signature" };
             }
         }
 
         private Control GetControlUnknown(TagDataEntry entry)
         {
             var ctrl = entry as UnknownTagDataEntry;
-                        
-            return CreateTextBox(FromBytes(ctrl.Data, true));
+            return CreateTextArea(Conversion.FromBytes(ctrl.Data, true));
         }
 
         private Control GetControlChromaticity(TagDataEntry entry)
         {
             var ctrl = entry as ChromaticityTagDataEntry;
 
-            string txt;
-            txt = "Channels: " + ctrl.ChannelCount;
-            txt += "Colorant Type: " + ctrl.ColorantType.ToString();
+            StringBuilder txt = new StringBuilder();
+            txt.Append($"Channels: {ctrl.ChannelCount}");
+            txt.Append($"Colorant Type: {ctrl.ColorantType}");
 
             for (int i = 0; i < ctrl.ChannelValues.Length; i++)
             {
-                txt += "Channel " + i + ": ";
+                txt.Append($"Channel {i}: ");
                 for (int j = 0; j < ctrl.ChannelValues[i].Length; j++)
                 {
-                    txt += ctrl.ChannelValues[i][j].ToString("F3");
+                    txt.Append(ctrl.ChannelValues[i][j].ToString("F3"));
                 }
-                txt += Environment.NewLine;
+                txt.AppendLine();
             }
 
-            return CreateTextBox(txt);
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlColorantOrder(TagDataEntry entry)
         {
             var ctrl = entry as ColorantOrderTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            StringBuilder txt = new StringBuilder();
+            for (int i = 0; i < ctrl.ColorantNumber.Length; i++) txt.AppendLine(ctrl.ColorantNumber[i].ToString("F3"));
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlColorantTable(TagDataEntry entry)
@@ -211,27 +233,24 @@ namespace ICCViewer
             var ctrl = entry as ColorantTableTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-
             for (int i = 0; i < ctrl.ColorantData.Length; i++)
             {
                 var d = ctrl.ColorantData[i];
-                txt.Append($"{nameof(d.Name)}: {d.Name}{Environment.NewLine}");
-                txt.Append($"{nameof(d.PCS1)}: {d.PCS1}{Environment.NewLine}");
-                txt.Append($"{nameof(d.PCS2)}: {d.PCS2}{Environment.NewLine}");
-                txt.Append($"{nameof(d.PCS3)}: {d.PCS3}{Environment.NewLine}");
+                txt.AppendLine($"{nameof(d.Name)}: {d.Name}");
+                txt.AppendLine($"{nameof(d.PCS1)}: {d.PCS1}");
+                txt.AppendLine($"{nameof(d.PCS2)}: {d.PCS2}");
+                txt.AppendLine($"{nameof(d.PCS3)}: {d.PCS3}");
             }
 
-            return CreateTextBox(txt.ToString());
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlCurve(TagDataEntry entry)
         {
+            //TODO: add Curve Control
             var ctrl = entry as CurveTagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -242,33 +261,29 @@ namespace ICCViewer
             var ctrl = entry as DataTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            txt.Append(FromBytes(ctrl.Data, false));
+            txt.AppendLine(Conversion.FromBytes(ctrl.Data, false));
             if (ctrl.IsASCII)
             {
-                txt.Append(Environment.NewLine);
-                txt.Append("ASCII");
-                txt.Append(Environment.NewLine);
-                txt.Append(ctrl.ASCIIString);
+                txt.AppendLine();
+                txt.AppendLine("ASCII:");
+                txt.AppendLine(ctrl.ASCIIString);
             }
 
-            return CreateTextBox(txt.ToString());
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlDateTime(TagDataEntry entry)
         {
             var ctrl = entry as DateTimeTagDataEntry;
-            
-            return CreateTextBox(ctrl.Value.ToString());
+            return CreateTextArea(ctrl.Value.ToString());
         }
 
         private Control GetControlLut16(TagDataEntry entry)
         {
+            //TODO: add Lut16 Control
             var ctrl = entry as Lut16TagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -276,12 +291,10 @@ namespace ICCViewer
 
         private Control GetControlLut8(TagDataEntry entry)
         {
+            //TODO: add Lut8 Control
             var ctrl = entry as Lut8TagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -289,12 +302,10 @@ namespace ICCViewer
 
         private Control GetControlLutAToB(TagDataEntry entry)
         {
+            //TODO: add LutAToB Control
             var ctrl = entry as LutAToBTagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -302,12 +313,10 @@ namespace ICCViewer
 
         private Control GetControlLutBToA(TagDataEntry entry)
         {
+            //TODO: add LutBToA Control
             var ctrl = entry as LutBToATagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -318,45 +327,26 @@ namespace ICCViewer
             var ctrl = entry as MeasurementTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            txt.Append($"{nameof(ctrl.Observer)}: {ctrl.Observer.ToString()}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Geometry)}: {ctrl.Geometry.ToString()}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Flare)}: {ctrl.Flare.ToString("F3")}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.XYZBacking)}: {ctrl.XYZBacking.ToString("F3")}");
-            txt.Append(Environment.NewLine);
-
-            return CreateTextBox(txt.ToString());
+            txt.AppendLine($"{nameof(ctrl.Observer)}: {ctrl.Observer.ToString()}");
+            txt.AppendLine($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
+            txt.AppendLine($"{nameof(ctrl.Geometry)}: {ctrl.Geometry.ToString()}");
+            txt.AppendLine($"{nameof(ctrl.Flare)}: {ctrl.Flare.ToString("F3")}");
+            txt.AppendLine($"{nameof(ctrl.XYZBacking)}: {ctrl.XYZBacking.ToString("F3")}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlMultiLocalizedUnicode(TagDataEntry entry)
         {
             var ctrl = entry as MultiLocalizedUnicodeTagDataEntry;
-
-            StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Text.Length; i++)
-            {
-                txt.Append(FromLocalized(ctrl.Text[i]));
-                txt.Append(Environment.NewLine);
-            }
-            return CreateTextBox(txt.ToString());
+            return new LocalizedStringControl(ctrl.Text);
         }
 
         private Control GetControlMultiProcessElements(TagDataEntry entry)
         {
+            //TODO: add MultiProcessElements Control
             var ctrl = entry as MultiProcessElementsTagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -367,42 +357,31 @@ namespace ICCViewer
             var ctrl = entry as NamedColor2TagDataEntry;
 
             StringBuilder txt = new StringBuilder();
+            txt.AppendLine($"{nameof(ctrl.VendorFlags)}: {Conversion.FromBytes(ctrl.VendorFlags, true)}");
+            txt.AppendLine($"{nameof(ctrl.Prefix)}: {ctrl.Prefix}");
+            txt.AppendLine($"{nameof(ctrl.Suffix)}: {ctrl.Suffix}");
 
-            txt.Append($"{nameof(ctrl.VendorFlags)}: {FromBytes(ctrl.VendorFlags, true)}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Prefix)}: {ctrl.Prefix}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Suffix)}: {ctrl.Suffix}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Colors)}:{Environment.NewLine}");
+            txt.AppendLine($"{nameof(ctrl.Colors)}:");
             for (int i = 0; i < ctrl.Colors.Length; i++)
             {
                 var col = ctrl.Colors[i];
-                txt.Append($"{nameof(col.Name)}: {col.Name}");
-                txt.Append(Environment.NewLine);
+                txt.AppendLine($"{nameof(col.Name)}: {col.Name}");
 
-                txt.Append($"{nameof(col.PCScoordinates)}:");
-                for (int j = 0; j < col.PCScoordinates.Length; j++) txt.Append($"{col.PCScoordinates[j]};");
-                txt.Append(Environment.NewLine);
+                txt.AppendLine($"{nameof(col.PCScoordinates)}:");
+                for (int j = 0; j < col.PCScoordinates.Length; j++) txt.AppendLine($"{col.PCScoordinates[j]};");
 
-                txt.Append($"{nameof(col.DeviceCoordinates)}:");
-                for (int j = 0; j < col.DeviceCoordinates.Length; j++) txt.Append($"{col.DeviceCoordinates[j]};");
-                txt.Append(Environment.NewLine);
+                txt.AppendLine($"{nameof(col.DeviceCoordinates)}:");
+                for (int j = 0; j < col.DeviceCoordinates.Length; j++) txt.AppendLine($"{col.DeviceCoordinates[j]};");
             }
-            return CreateTextBox(txt.ToString());
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlParametricCurve(TagDataEntry entry)
         {
+            //TODO: add ParametricCurve Control
             var ctrl = entry as ParametricCurveTagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -412,36 +391,40 @@ namespace ICCViewer
         {
             var ctrl = entry as ProfileSequenceDescTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            var tabCtrl = new TabControl();
+            for (int i = 0; i < ctrl.Descriptions.Length; i++)
+            {
+                var page = new TabPage();
+                var descCtrl = new ProfileDescriptionControl(ctrl.Descriptions[i]);
+                page.Content = descCtrl;
+                page.Text = $"Entry {i + 1}";
+                tabCtrl.Pages.Add(page);
+            }
+            return tabCtrl;
         }
 
         private Control GetControlProfileSequenceIdentifier(TagDataEntry entry)
         {
             var ctrl = entry as ProfileSequenceIdentifierTagDataEntry;
 
-            var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            var tabCtrl = new TabControl();
+            for (int i = 0; i < ctrl.Data.Length; i++)
+            {
+                var page = new TabPage();
+                var seqCtrl = new ProfileSequenceIdentifierControl(ctrl.Data[i]);
+                page.Content = seqCtrl;
+                page.Text = $"Entry {i + 1}";
+                tabCtrl.Pages.Add(page);
+            }
+            return tabCtrl;
         }
 
         private Control GetControlResponseCurveSet16(TagDataEntry entry)
         {
+            //TODO: add ResponseCurveSet16 Control
             var ctrl = entry as ResponseCurveSet16TagDataEntry;
 
             var lb = new Label();
-            lb.AutoSize = false;
-            lb.Dock = DockStyle.Fill;
-
             lb.Text = entry.Signature.ToString();
 
             return lb;
@@ -452,20 +435,26 @@ namespace ICCViewer
             var ctrl = entry as Fix16ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i].ToString("F3")}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i].ToString("F3")}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlSignature(TagDataEntry entry)
         {
             var ctrl = entry as SignatureTagDataEntry;
-            return CreateTextBox(ctrl.SignatureData);
+            return CreateTextArea(ctrl.SignatureData);
         }
 
         private Control GetControlText(TagDataEntry entry)
         {
             var ctrl = entry as TextTagDataEntry;
-            return CreateTextBox(ctrl.Text);
+            return CreateTextArea(ctrl.Text);
+        }
+
+        private Control GetControlTextDescription(TagDataEntry entry)
+        {
+            var ctrl = entry as TextDescriptionTagDataEntry;
+            return new TextDescriptionControl(ctrl);
         }
 
         private Control GetControlU16Fixed16Array(TagDataEntry entry)
@@ -473,8 +462,8 @@ namespace ICCViewer
             var ctrl = entry as UFix16ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i].ToString("F3")}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i].ToString("F3")}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlUInt16Array(TagDataEntry entry)
@@ -482,8 +471,8 @@ namespace ICCViewer
             var ctrl = entry as UInt16ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i]}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlUInt32Array(TagDataEntry entry)
@@ -491,8 +480,8 @@ namespace ICCViewer
             var ctrl = entry as UInt32ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i]}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlUInt64Array(TagDataEntry entry)
@@ -500,8 +489,8 @@ namespace ICCViewer
             var ctrl = entry as UInt64ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i]}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlUInt8Array(TagDataEntry entry)
@@ -509,8 +498,8 @@ namespace ICCViewer
             var ctrl = entry as UInt8ArrayTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append($"{ctrl.Data[i]}{Environment.NewLine}");
-            return CreateTextBox(txt.ToString());
+            for (int i = 0; i < ctrl.Data.Length; i++) txt.AppendLine($"{ctrl.Data[i]}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlViewingConditions(TagDataEntry entry)
@@ -518,15 +507,10 @@ namespace ICCViewer
             var ctrl = entry as ViewingConditionsTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            txt.Append($"{nameof(ctrl.IlluminantXYZ)}: {ctrl.IlluminantXYZ.ToString("F3")}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.SurroundXYZ)}: {ctrl.SurroundXYZ.ToString("F3")}");
-            txt.Append(Environment.NewLine);
-
-            txt.Append($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
-
-            return CreateTextBox(txt.ToString());
+            txt.AppendLine($"{nameof(ctrl.IlluminantXYZ)}: {ctrl.IlluminantXYZ.ToString("F3")}");
+            txt.AppendLine($"{nameof(ctrl.SurroundXYZ)}: {ctrl.SurroundXYZ.ToString("F3")}");
+            txt.AppendLine($"{nameof(ctrl.Illuminant)}: {ctrl.Illuminant.ToString()}");
+            return CreateTextArea(txt.ToString());
         }
 
         private Control GetControlXYZ(TagDataEntry entry)
@@ -534,76 +518,27 @@ namespace ICCViewer
             var ctrl = entry as XYZTagDataEntry;
 
             StringBuilder txt = new StringBuilder();
-            for (int i = 0; i < ctrl.Data.Length; i++) txt.Append(ctrl.Data[i].ToString("F3") + Environment.NewLine);
-            return CreateTextBox(txt.ToString());
-        }
-
-
-        #endregion
-
-        #region GetString
-
-        private string FromBytes(byte[] data, bool ASCII)
-        {
-            string txt = string.Empty;
-            string val;
-            for (int i = 0; i < data.Length; i++)
-            {
-                val = data[i].ToString().PadLeft(3, '0');
-                if ((i + 1) % 10 == 0) txt += val + Environment.NewLine;
-                else if (i + 1 == data.Length) txt += val;
-                else txt += val.PadRight(6);
-            }
-
-            if (ASCII)
-            {
-                txt += Environment.NewLine + Environment.NewLine + "ASCII:" + Environment.NewLine;
-                val = Encoding.ASCII.GetString(data);
-
-                string tmp;
-                for (int i = 0; i < val.Length; i++)
-                {
-                    if (val[i] == '\0') tmp = "\\0";
-                    else if (val[i] == '\r') tmp = "\\r";
-                    else if (val[i] == '\n') tmp = "\\n";
-                    else if (val[i] == ' ') tmp = "spc";
-                    else tmp = val[i].ToString();
-                    tmp = tmp.PadLeft(3);
-                    if ((i + 1) % 10 == 0) txt += tmp + Environment.NewLine;
-                    else if (i + 1 == data.Length) txt += tmp;
-                    else txt += tmp.PadRight(6);
-                }
-            }
-
-            return txt;
+            for (int i = 0; i < ctrl.Data.Length; i++) { txt.AppendLine(ctrl.Data[i].ToString("F3")); }
+            return CreateTextArea(txt.ToString());
         }
         
-        private string FromLocalized(LocalizedString lstring)
-        {
-            return $"{nameof(lstring.Locale)}: {lstring.Locale.ToString()}{Environment.NewLine}{lstring.Text}";            
-        }
-
         #endregion
-
+        
         #region Create Control
-        
-        private TextBox CreateTextBox(string value)
+
+        private Control CreateTextArea(string value)
         {
-            var txt = new TextBox();
+            var scroll = new Scrollable();
+            var txt = new TextArea();
             txt.ReadOnly = true;
-            txt.Multiline = true;
-            txt.WordWrap = false;
-            txt.ScrollBars = ScrollBars.Both;
-            txt.BorderStyle = BorderStyle.None;
-            txt.Dock = DockStyle.Fill;
             txt.Text = value;
-            txt.Select(0, 0);
-            return txt;
+            scroll.Content = txt;
+            return scroll;
         }
 
-        private PictureBox CreateCurve(ResponseCurve value)
+        private Control CreateCurve(ResponseCurve value)
         {
-            return new PictureBox();
+            return new ImageView();
         }
 
         #endregion
@@ -614,19 +549,20 @@ namespace ICCViewer
         {
             ProfileSizeLabel.Text = Profile.Size.ToString() + " bytes";
             CMMTypeLabel.Text = Profile.CMMType;
-            ProfileVersionNumberLabel.Text = Profile.Version.ToString();
+            ProfileVersionLabel.Text = Profile.Version.ToString();
             ProfileClassLabel.Text = Profile.Class.ToString();
             DataColorspaceLabel.Text = Profile.DataColorspaceType.ToString();
             PCSLabel.Text = Profile.PCSType.ToString();
             CreationDateLabel.Text = Profile.CreationDate.ToString();
             ProfileFileSignatureLabel.Text = Profile.FileSignature;
-            PrimaryPlatformSignatureLabel.Text = Profile.PrimaryPlatformSignature.ToString();
+            PrimaryPlatformLabel.Text = Profile.PrimaryPlatformSignature.ToString();
             ProfileFlagsLabel.Text = Profile.Flags.ToString();
             DeviceManufacturerLabel.Text = Profile.DeviceManufacturer.ToString();
+            DeviceModelLabel.Text = Profile.DeviceModel.ToString();
             DeviceAttributesLabel.Text = Profile.DeviceAttributes.ToString();
             RenderingIntentLabel.Text = Profile.RenderingIntent.ToString();
             PCSIlluminantLabel.Text = Profile.PCSIlluminant.ToString("F4");
-            ProfileCreatorSignatureLabel.Text = Profile.CreatorSignature;
+            ProfileCreatorLabel.Text = Profile.CreatorSignature;
             ProfileIDLabel.Text = Profile.ID.ToString();
         }
 

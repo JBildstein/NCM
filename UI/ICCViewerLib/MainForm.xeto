@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form
+	xmlns="http://schema.picoe.ca/eto.forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="ICC Profile Viewer" ClientSize="600, 500">
+
+  <Panel BackgroundColor="White">
+    <StackLayout Padding="6" Spacing="6" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+      <StackLayoutItem>
+        <StackLayout Spacing="6" VerticalContentAlignment="Center" Orientation="Horizontal">
+          <StackLayoutItem Expand="True">
+            <TextBox ID="PathTextBox" ReadOnly="True" />
+          </StackLayoutItem>
+          <StackLayoutItem>
+            <Button ID="OpenButton" Text="Open" />
+          </StackLayoutItem>
+        </StackLayout>
+      </StackLayoutItem>
+      <StackLayoutItem Expand="True">
+        <StackLayout Spacing="8" Orientation="Horizontal" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+          <StackLayoutItem Expand="True">
+            <GroupBox Text="Profile Header">
+              <Scrollable>
+                <TableLayout Padding="6" Spacing="6,6">
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile Size:</Label>
+                    <Label ID="ProfileSizeLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">CMM Type:</Label>
+                    <Label ID="CMMTypeLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile Version:</Label>
+                    <Label ID="ProfileVersionLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile Class:</Label>
+                    <Label ID="ProfileClassLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Data Colorspace:</Label>
+                    <Label ID="DataColorspaceLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">PCS:</Label>
+                    <Label ID="PCSLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Creation Date:</Label>
+                    <Label ID="CreationDateLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile File Signature:</Label>
+                    <Label ID="ProfileFileSignatureLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Primary Platform:</Label>
+                    <Label ID="PrimaryPlatformLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile Flags:</Label>
+                    <Label ID="ProfileFlagsLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Device Manufacturer:</Label>
+                    <Label ID="DeviceManufacturerLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Device Model:</Label>
+                    <Label ID="DeviceModelLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Device Attributes:</Label>
+                    <Label ID="DeviceAttributesLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Rendering Intent:</Label>
+                    <Label ID="RenderingIntentLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">PCS Illuminant:</Label>
+                    <Label ID="PCSIlluminantLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile Creator:</Label>
+                    <Label ID="ProfileCreatorLabel">N/A</Label>
+                  </TableRow>
+                  <TableRow>
+                    <Label TextAlignment="Right">Profile ID:</Label>
+                    <Label ID="ProfileIDLabel">N/A</Label>
+                  </TableRow>
+                </TableLayout>
+              </Scrollable>
+            </GroupBox>
+          </StackLayoutItem>
+          <StackLayoutItem>
+            <GroupBox Width="200" Text="Tag Table">
+              <ListBox ID="TagTableListBox" />
+            </GroupBox>
+          </StackLayoutItem>
+        </StackLayout>
+      </StackLayoutItem>
+    </StackLayout>
+  </Panel>
+</Form>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackLayout Padding="6" Spacing="2" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <Label Font="Bold">ASCII:</Label>
+    <StackLayoutItem Expand="True">
+      <TextArea ID="AsciiTextArea" ReadOnly="True" />
+    </StackLayoutItem>
+
+    <Label Font="Bold">Unicode:</Label>
+    <StackLayout Spacing="8" Orientation="Horizontal">
+      <Label>Language Code:</Label>
+      <Label ID="LanguageCodeLabel">N/A</Label>
+    </StackLayout>
+    <StackLayoutItem Expand="True">
+      <TextArea ID="UnicodeTextArea" ReadOnly="True" />
+    </StackLayoutItem>
+
+    <Label Font="Bold">ScriptCode:</Label>
+    <StackLayout Spacing="8" Orientation="Horizontal">
+      <Label>Script Code:</Label>
+      <Label ID="ScriptCodeLabel">N/A</Label>
+    </StackLayout>
+    <StackLayoutItem Expand="True">
+      <TextArea ID="ScriptCodeTextArea" ReadOnly="True" />
+    </StackLayoutItem>    
+  </StackLayout>
+</Panel>
