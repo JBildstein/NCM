@@ -45,6 +45,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\CurveControl.xeto.cs">
+      <DependentUpon>CurveControl.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LocalizedStringControl.xeto.cs">
       <DependentUpon>LocalizedStringControl.xeto</DependentUpon>
     </Compile>
@@ -83,6 +86,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextDescriptionControl.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\CurveControl.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />

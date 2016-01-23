@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using ColorManager.ICC;
+using Eto.Drawing;
 using Eto.Forms;
 using Eto.Serialization.Xaml;
 using ICCViewer.Controls;
@@ -531,6 +532,7 @@ namespace ICCViewer
             var scroll = new Scrollable();
             var txt = new TextArea();
             txt.ReadOnly = true;
+            txt.Font = Fonts.Monospace(10);
             txt.Text = value;
             scroll.Content = txt;
             return scroll;
@@ -551,8 +553,8 @@ namespace ICCViewer
             CMMTypeLabel.Text = Profile.CMMType;
             ProfileVersionLabel.Text = Profile.Version.ToString();
             ProfileClassLabel.Text = Profile.Class.ToString();
-            DataColorspaceLabel.Text = Profile.DataColorspaceType.ToString();
-            PCSLabel.Text = Profile.PCSType.ToString();
+            DataColorspaceLabel.Text = Profile.DataColorspace.ToString();
+            PCSLabel.Text = Profile.PCS.ToString();
             CreationDateLabel.Text = Profile.CreationDate.ToString();
             ProfileFileSignatureLabel.Text = Profile.FileSignature;
             PrimaryPlatformLabel.Text = Profile.PrimaryPlatformSignature.ToString();
@@ -571,7 +573,16 @@ namespace ICCViewer
             TagTableListBox.Items.Clear();
             foreach (var tag in Profile.Data)
             {
-                TagTableListBox.Items.Add(tag.TagSignature.ToString());
+                TagSignature sig = tag.TagSignature;
+                bool defined = Enum.IsDefined(typeof(TagSignature), sig);
+                string label = sig.ToString();
+                if (!defined)
+                {
+                    byte[] data = BitConverter.GetBytes((uint)sig);
+                    string ascii = Encoding.ASCII.GetString(data);
+                    label += $" ({ascii})";
+                }
+                TagTableListBox.Items.Add(label);
             }
         }
 

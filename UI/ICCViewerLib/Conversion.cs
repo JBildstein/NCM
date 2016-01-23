@@ -13,9 +13,8 @@ namespace ICCViewer
             for (int i = 0; i < data.Length; i++)
             {
                 val = data[i].ToString().PadLeft(3, '0');
-                if ((i + 1) % 10 == 0) txt += val + Environment.NewLine;
-                else if (i + 1 == data.Length) txt += val;
-                else txt += val.PadRight(6);
+                txt += val + " ";
+                if ((i + 1) % 10 == 0) txt += Environment.NewLine;
             }
 
             if (ASCII)
@@ -30,12 +29,14 @@ namespace ICCViewer
                     else if (val[i] == '\r') tmp = "\\r";
                     else if (val[i] == '\n') tmp = "\\n";
                     else if (val[i] == ' ') tmp = "spc";
+                    else if (char.IsControl(val[i])) tmp = $"\\{(uint)val[i]}";
                     else tmp = val[i].ToString();
-                    tmp = tmp.PadLeft(3);
-                    if ((i + 1) % 10 == 0) txt += tmp + Environment.NewLine;
-                    else if (i + 1 == data.Length) txt += tmp;
-                    else txt += tmp.PadRight(6);
+                    txt += tmp.PadRight(5);
+                    if ((i + 1) % 10 == 0) txt += Environment.NewLine;
                 }
+
+                txt += Environment.NewLine + Environment.NewLine;
+                txt += $"ASCII Complete: \"{val.Replace("\0", "")}\"";
             }
 
             return txt;
