@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackLayout Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <StackLayout Padding="6,6,0,0" Spacing="8" Orientation="Horizontal">
+      <Label>Data Type:</Label>
+      <Label ID="DataTypeLabel">N/A</Label>
+    </StackLayout>
+    <StackLayoutItem Expand="True">
+      <StackLayout Padding="6,0,6,6" Spacing="8" Orientation="Horizontal" VerticalContentAlignment="Stretch">
+        <StackLayoutItem Expand="True">
+          <GroupBox Padding="4" Text="Input Values">
+            <Scrollable Border="None">
+              <TableLayout ID="InValuesTable" Spacing="8,8" />
+            </Scrollable>
+          </GroupBox>
+        </StackLayoutItem>
+        <GroupBox Padding="4" Text="Output Values">
+          <Scrollable Border="None">
+            <StackLayout ID="OutValuesLayout" Spacing="4" Orientation="Vertical" HorizontalContentAlignment="Stretch" />
+          </Scrollable>
+        </GroupBox>
+      </StackLayout>
+    </StackLayoutItem>
+  </StackLayout>
+</Panel>

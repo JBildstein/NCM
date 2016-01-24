@@ -3,7 +3,7 @@ using Eto.Serialization.Xaml;
 
 namespace ICCViewer
 {
-    public class DetailsForm : Dialog
+    public class DetailsForm : Form
     {
         Scrollable ScrollContainer { get; set; }
 

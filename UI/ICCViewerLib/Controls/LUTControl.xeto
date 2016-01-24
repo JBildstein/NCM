@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:ICCViewerLib.Controls;assembly=ICCViewerLib">
+  <StackLayout Spacing="4" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <TableLayout ID="MainTable" Padding="8,8,0,0" Spacing="8,2">
+      <TableRow>
+        <Label TextAlignment="Right">Input Channel Count:</Label>
+        <Label ID="InChCountLabel">0</Label>
+      </TableRow>
+      <TableRow>
+        <Label TextAlignment="Right">Output Channel Count:</Label>
+        <Label ID="OutChCountLabel">0</Label>
+      </TableRow>
+    </TableLayout>
+    <StackLayoutItem Expand="True">
+      <TabControl ID="ContentTabs" />
+    </StackLayoutItem>
+  </StackLayout>  
+</Panel>

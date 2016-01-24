@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using ColorManager.ICC;
 using Eto.Drawing;
 using Eto.Forms;
@@ -46,17 +47,24 @@ namespace ICCViewer
 
             OpenButton.Click += OpenButton_Click;
             TagTableListBox.SelectedIndexChanged += TagTableListBox_SelectedIndexChanged;
+            DeviceAttributesLabel.MouseUp += DeviceAttributesLabel_Click;
+            ProfileFlagsLabel.MouseUp += ProfileFlagsLabel_Click;
+
+            DeviceAttributesLabel.Cursor = Cursors.Pointer;
+            ProfileFlagsLabel.Cursor = Cursors.Pointer;
         }
 
         #region UI Events
 
-        private void OpenButton_Click(object sender, EventArgs e)
+        private async void OpenButton_Click(object sender, EventArgs e)
         {
+            string title = Title;
             try
             {
+                OpenButton.Enabled = false;
                 using (OpenFileDialog dlg = new OpenFileDialog())
                 {
-                    dlg.Filters.Add(new FileDialogFilter("ICC Profile", ".icc",".icm"));
+                    dlg.Filters.Add(new FileDialogFilter("ICC Profile", ".icc", ".icm"));
                     dlg.Filters.Add(new FileDialogFilter("All Files", ".*"));
 
                     var res = dlg.ShowDialog(this);
@@ -64,7 +72,8 @@ namespace ICCViewer
                     {
                         ProfilePath = dlg.FileName;
                         PathTextBox.Text = ProfilePath;
-                        Profile = Reader.Read(ProfilePath);
+                        Title += " - Opening Profile";
+                        await Task.Run(() => { Profile = Reader.Read(ProfilePath); });
                         SetHeaderUI();
                         SetTagTableUI();
                     }
@@ -72,19 +81,34 @@ namespace ICCViewer
             }
             catch (CorruptProfileException cex) { MessageBox.Show(cex.Message, "Profile Error", MessageBoxButtons.OK); }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK); }
+            finally
+            {
+                OpenButton.Enabled = true;
+                Title = title;
+            }
         }
 
-        private async void TagTableListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void TagTableListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (TagTableListBox.SelectedIndex > -1)
+            string title = Title;
+            try
             {
-                var data = Profile.Data[TagTableListBox.SelectedIndex];
-                var ctrl = GetControl(data);
-                using (DetailsForm frm = new DetailsForm(ctrl))
+                Title += " - Loading";
+                TagTableListBox.Enabled = false;
+                if (TagTableListBox.SelectedIndex > -1)
                 {
+                    var data = Profile.Data[TagTableListBox.SelectedIndex];
+                    Control ctrl = GetControl(data);
+                    DetailsForm frm = new DetailsForm(ctrl);
                     frm.Title = data.TagSignature.ToString() + " - " + data.Signature.ToString();
-                    await frm.ShowModalAsync(this);
+                    frm.Show();
                 }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK); }
+            finally
+            {
+                TagTableListBox.Enabled = true;
+                Title = title;
             }
         }
 
@@ -92,7 +116,7 @@ namespace ICCViewer
 
         #region Header Detail
 
-        private void ProfileFlagsLabel_Click(object sender, EventArgs e)
+        private void ProfileFlagsLabel_Click(object sender, MouseEventArgs e)
         {
             if (Profile == null) return;
 
@@ -105,7 +129,7 @@ namespace ICCViewer
             MessageBox.Show(text, "Profile Flag", MessageBoxButtons.OK);
         }
 
-        private void DeviceAttributesLabel_Click(object sender, EventArgs e)
+        private void DeviceAttributesLabel_Click(object sender, MouseEventArgs e)
         {
             if (Profile == null) return;
 
@@ -120,8 +144,8 @@ namespace ICCViewer
         }
 
         #endregion
-        
-        #region Show Data
+
+        #region Create Data Controls
 
         private Control GetControl(TagDataEntry entry)
         {
@@ -248,13 +272,9 @@ namespace ICCViewer
 
         private Control GetControlCurve(TagDataEntry entry)
         {
-            //TODO: add Curve Control
             var ctrl = entry as CurveTagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            if (ctrl.IsGamma) return new Label { Text = $"Gamma: {ctrl.Gamma}" };
+            else return new CurveControl(ctrl.CurveData);
         }
 
         private Control GetControlData(TagDataEntry entry)
@@ -281,46 +301,26 @@ namespace ICCViewer
 
         private Control GetControlLut16(TagDataEntry entry)
         {
-            //TODO: add Lut16 Control
             var ctrl = entry as Lut16TagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new LUTControl(ctrl);
         }
 
         private Control GetControlLut8(TagDataEntry entry)
         {
-            //TODO: add Lut8 Control
             var ctrl = entry as Lut8TagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new LUTControl(ctrl);
         }
 
         private Control GetControlLutAToB(TagDataEntry entry)
         {
-            //TODO: add LutAToB Control
             var ctrl = entry as LutAToBTagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new LUTControl(ctrl);
         }
 
         private Control GetControlLutBToA(TagDataEntry entry)
         {
-            //TODO: add LutBToA Control
             var ctrl = entry as LutBToATagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new LUTControl(ctrl);
         }
 
         private Control GetControlMeasurement(TagDataEntry entry)
@@ -346,11 +346,7 @@ namespace ICCViewer
         {
             //TODO: add MultiProcessElements Control
             var ctrl = entry as MultiProcessElementsTagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new Label { Text = "MultiProcessElementsTagDataEntry not implemented yet" };
         }
 
         private Control GetControlNamedColor2(TagDataEntry entry)
@@ -379,13 +375,8 @@ namespace ICCViewer
 
         private Control GetControlParametricCurve(TagDataEntry entry)
         {
-            //TODO: add ParametricCurve Control
             var ctrl = entry as ParametricCurveTagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new CurveControl(ctrl.Curve);
         }
 
         private Control GetControlProfileSequenceDesc(TagDataEntry entry)
@@ -424,11 +415,7 @@ namespace ICCViewer
         {
             //TODO: add ResponseCurveSet16 Control
             var ctrl = entry as ResponseCurveSet16TagDataEntry;
-
-            var lb = new Label();
-            lb.Text = entry.Signature.ToString();
-
-            return lb;
+            return new Label { Text = "ResponseCurveSet16TagDataEntry not implemented yet" };
         }
 
         private Control GetControlS15Fixed16Array(TagDataEntry entry)
@@ -522,10 +509,7 @@ namespace ICCViewer
             for (int i = 0; i < ctrl.Data.Length; i++) { txt.AppendLine(ctrl.Data[i].ToString("F3")); }
             return CreateTextArea(txt.ToString());
         }
-        
-        #endregion
-        
-        #region Create Control
+
 
         private Control CreateTextArea(string value)
         {
@@ -538,13 +522,8 @@ namespace ICCViewer
             return scroll;
         }
 
-        private Control CreateCurve(ResponseCurve value)
-        {
-            return new ImageView();
-        }
-
         #endregion
-
+        
         #region Subroutines
 
         private void SetHeaderUI()

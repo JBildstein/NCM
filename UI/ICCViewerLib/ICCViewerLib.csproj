@@ -45,11 +45,17 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ClutControl.xeto.cs">
+      <DependentUpon>ClutControl.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CurveControl.xeto.cs">
       <DependentUpon>CurveControl.xeto</DependentUpon>
     </Compile>
     <Compile Include="Controls\LocalizedStringControl.xeto.cs">
       <DependentUpon>LocalizedStringControl.xeto</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LUTControl.xeto.cs">
+      <DependentUpon>LUTControl.xeto</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProfileDescriptionControl.xeto.cs">
       <DependentUpon>ProfileDescriptionControl.xeto</DependentUpon>
@@ -89,6 +95,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\CurveControl.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LUTControl.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ClutControl.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
