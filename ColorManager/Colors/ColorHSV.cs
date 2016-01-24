@@ -23,6 +23,13 @@ namespace ColorManager
         /// </summary>
         public override string Name
         {
+            get { return ModelName; }
+        }
+        /// <summary>
+        /// The name of this model
+        /// </summary>
+        public static string ModelName
+        {
             get { return "HSV"; }
         }
         /// <summary>

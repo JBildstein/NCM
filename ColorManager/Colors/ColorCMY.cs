@@ -39,6 +39,13 @@ namespace ColorManager
         /// </summary>
         public override string Name
         {
+            get { return ModelName; }
+        }
+        /// <summary>
+        /// The name of this model
+        /// </summary>
+        public static string ModelName
+        {
             get { return "CMY"; }
         }
         /// <summary>
@@ -117,7 +124,7 @@ namespace ColorManager
         /// Maximum value for the <see cref="Y"/> channel
         /// </summary>
         public static readonly double Max_Y = 1.0;
-        
+
         #endregion
 
         /// <summary>

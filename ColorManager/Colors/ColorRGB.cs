@@ -8,7 +8,7 @@ namespace ColorManager
     public class ColorRGB : Color
     {
         #region Variables
-        
+
         /// <summary>
         /// R-Channel
         /// </summary>
@@ -51,6 +51,13 @@ namespace ColorManager
         /// The name of this model
         /// </summary>
         public override string Name
+        {
+            get { return ModelName; }
+        }
+        /// <summary>
+        /// The name of this model
+        /// </summary>
+        public static string ModelName
         {
             get { return "RGB"; }
         }

@@ -15,7 +15,14 @@ namespace ColorManager
         /// </summary>
         public override string Name
         {
-            get { return "Color " + ChannelCount; }
+            get { return $"Color {ChannelCount}"; }
+        }
+        /// <summary>
+        /// The name of this model
+        /// </summary>
+        public static string ModelName
+        {
+            get { return "Color X"; }
         }
         /// <summary>
         /// Number of channels this model has
@@ -85,7 +92,7 @@ namespace ColorManager
         /// Minimum number of channels for <see cref="ColorX"/>
         /// </summary>
         public const int MinChannels = 2;
-        
+
         /// <summary>
         /// Minimum value for all channels
         /// </summary>
@@ -159,10 +166,10 @@ namespace ColorManager
             for (int i = 0; i < c; i++) max[i] = Max;
 
             sNames = new string[Values.Length];
-            for (int i = 0; i < c; i++) sNames[i] = "C" + (i + 1);
+            for (int i = 0; i < c; i++) sNames[i] = $"C{i + 1}";
 
             fNames = new string[Values.Length];
-            for (int i = 0; i < c; i++) fNames[i] = "Channel " + (i + 1);
+            for (int i = 0; i < c; i++) fNames[i] = $"Channel {i + 1}";
         }
     }
 }
