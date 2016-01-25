@@ -9,10 +9,16 @@ namespace ColorManager.ICC
     /// </summary>
     public abstract class TagDataEntry
     {
+        /// <summary>
+        /// Type Signature
+        /// </summary>
         public TypeSignature Signature
         {
             get { return _Signature; }
         }
+        /// <summary>
+        /// Tag Signature
+        /// </summary>
         public TagSignature TagSignature
         {
             get { return _TagSignature; }
@@ -22,10 +28,20 @@ namespace ColorManager.ICC
         private TypeSignature _Signature = TypeSignature.Unknown;
         private TagSignature _TagSignature = TagSignature.Unknown;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TagDataEntry"/> class
+        /// TagSignature will be <see cref="TagSignature.Unknown"/>
+        /// </summary>
+        /// <param name="Signature">Type Signature</param>
         protected TagDataEntry(TypeSignature Signature)
             : this(Signature, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Signature">Type Signature</param>
+        /// <param name="TagSignature">Tag Signature</param>
         protected TagDataEntry(TypeSignature Signature, TagSignature TagSignature)
         {
             _Signature = Signature;
@@ -89,12 +105,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UnknownTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The raw data of the entry
+        /// </summary>
         public readonly byte[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UnknownTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data"></param>
         public UnknownTagDataEntry(byte[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UnknownTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The raw data of the entry</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UnknownTagDataEntry(byte[] Data, TagSignature TagSignature)
             : base(TypeSignature.Unknown, TagSignature)
         {
@@ -160,25 +188,53 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ChromaticityTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of channels
+        /// </summary>
         public readonly int ChannelCount;
+        /// <summary>
+        /// Colorant Type
+        /// </summary>
         public readonly ColorantEncoding ColorantType;
+        /// <summary>
+        /// Values per channel
+        /// </summary>
         public readonly double[][] ChannelValues;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ChromaticityTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ColorantType">Colorant Type</param>
         public ChromaticityTagDataEntry(ColorantEncoding ColorantType)
             : this(ColorantType, GetColorantArray(ColorantType), TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ChromaticityTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ChannelValues">Values per channel</param>
         public ChromaticityTagDataEntry(double[][] ChannelValues)
             : this(ColorantEncoding.Unknown, ChannelValues, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ChromaticityTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ColorantType">Colorant Type</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ChromaticityTagDataEntry(ColorantEncoding ColorantType, TagSignature TagSignature)
             : this(ColorantType, GetColorantArray(ColorantType), TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ChromaticityTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ChannelValues">Values per channel</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ChromaticityTagDataEntry(double[][] ChannelValues, TagSignature TagSignature)
             : this(ColorantEncoding.Unknown, ChannelValues, TagSignature)
         { }
+
 
         private ChromaticityTagDataEntry(ColorantEncoding ColorantType, double[][] ChannelValues, TagSignature TagSignature)
             : base(TypeSignature.Chromaticity, TagSignature)
@@ -291,12 +347,23 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ColorantOrderTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Colorant order numbers
+        /// </summary>
         public readonly byte[] ColorantNumber;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantOrderTagDataEntry"/> class
+        /// </summary>
         public ColorantOrderTagDataEntry(byte[] ColorantNumber)
             : this(ColorantNumber, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantOrderTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ColorantNumber">Colorant order numbers</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ColorantOrderTagDataEntry(byte[] ColorantNumber, TagSignature TagSignature)
             : base(TypeSignature.ColorantOrder, TagSignature)
         {
@@ -367,12 +434,23 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ColorantTableTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Colorant Data
+        /// </summary>
         public readonly ColorantTableEntry[] ColorantData;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantTableTagDataEntry"/> class
+        /// </summary>
         public ColorantTableTagDataEntry(ColorantTableEntry[] ColorantData)
             : this(ColorantData, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantTableTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ColorantData">Colorant Data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ColorantTableTagDataEntry(ColorantTableEntry[] ColorantData, TagSignature TagSignature)
             : base(TypeSignature.ColorantTable, TagSignature)
         {
@@ -441,40 +519,78 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class CurveTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Curve Data
+        /// </summary>
         public readonly double[] CurveData;
+        /// <summary>
+        /// Gamma value.
+        /// Only valid if <see cref="IsGamma"/> is true
+        /// </summary>
         public double Gamma
         {
             get { return CurveData[0]; }
         }
+        /// <summary>
+        /// True if curve maps input directly to output
+        /// </summary>
         public bool IsIdentityResponse
         {
             get { return CurveData.Length == 0; }
         }
+        /// <summary>
+        /// True if the curve is a gamma curve
+        /// </summary>
         public bool IsGamma
         {
             get { return CurveData.Length == 1; }
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
         public CurveTagDataEntry()
             : this(new double[0], TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Gamma">Gamma value</param>
         public CurveTagDataEntry(double Gamma)
             : this(new double[] { Gamma }, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveData">Curve Data</param>
         public CurveTagDataEntry(double[] CurveData)
             : this(CurveData, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="TagSignature">Tag Signature</param>
         public CurveTagDataEntry(TagSignature TagSignature)
             : this(new double[0], TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Gamma">Gamma value</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public CurveTagDataEntry(double Gamma, TagSignature TagSignature)
             : this(new double[] { Gamma }, TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveData">Curve Data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public CurveTagDataEntry(double[] CurveData, TagSignature TagSignature)
             : base(TypeSignature.Curve, TagSignature)
         {
@@ -541,8 +657,18 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class DataTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Raw Data
+        /// </summary>
         public readonly byte[] Data;
+        /// <summary>
+        /// True if <see cref="Data"/> represents 7bit ASCII encoded text
+        /// </summary>
         public readonly bool IsASCII;
+        /// <summary>
+        /// The <see cref="Data"/> decoded as 7bit ASCII.
+        /// Only valid if <see cref="IsASCII"/> is true
+        /// </summary>
         public string ASCIIString
         {
             get
@@ -552,14 +678,29 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The raw data</param>
         public DataTagDataEntry(byte[] Data)
             : this(Data, false, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The raw data</param>
+        /// <param name="IsASCII">True if the given data is 7bit ASCII encoded text</param>
         public DataTagDataEntry(byte[] Data, bool IsASCII)
             : this(Data, IsASCII, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The raw data</param>
+        /// <param name="IsASCII">True if the given data is 7bit ASCII encoded text</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public DataTagDataEntry(byte[] Data, bool IsASCII, TagSignature TagSignature)
             : base(TypeSignature.Data, TagSignature)
         {
@@ -629,12 +770,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class DateTimeTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The DateTime value
+        /// </summary>
         public readonly DateTime Value;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DateTimeTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Value">The DateTime value</param>
         public DateTimeTagDataEntry(DateTime Value)
             : this(Value, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DateTimeTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Value">The DateTime value</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public DateTimeTagDataEntry(DateTime Value, TagSignature TagSignature)
             : base(TypeSignature.DateTime, TagSignature)
         {
@@ -700,25 +853,71 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Lut16TagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Conversion matrix
+        /// </summary>
         public readonly double[,] Matrix;
+        /// <summary>
+        /// Input LUT
+        /// </summary>
         public LUT[] InputValues;
+        /// <summary>
+        /// CLUT
+        /// </summary>
         public readonly CLUT CLUTValues;
+        /// <summary>
+        /// Output LUT
+        /// </summary>
         public readonly LUT[] OutputValues;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
         public Lut16TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : this(null, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public Lut16TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
             : this(null, InputValues, CLUTValues, OutputValues, TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Matrix">Conversion matrix (must be 3x3)</param>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
         public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : this(Matrix, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Matrix">Conversion matrix (must be 3x3)</param>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public Lut16TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
             : base(TypeSignature.Lut16, TagSignature)
         {
@@ -809,25 +1008,71 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Lut8TagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Conversion matrix
+        /// </summary>
         public readonly double[,] Matrix;
-        public readonly LUT[] InputValues;
+        /// <summary>
+        /// Input LUT
+        /// </summary>
+        public LUT[] InputValues;
+        /// <summary>
+        /// CLUT
+        /// </summary>
         public readonly CLUT CLUTValues;
+        /// <summary>
+        /// Output LUT
+        /// </summary>
         public readonly LUT[] OutputValues;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut8TagDataEntry"/> class
+        /// </summary>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
         public Lut8TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : this(null, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut8TagDataEntry"/> class
+        /// </summary>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public Lut8TagDataEntry(LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
             : this(null, InputValues, CLUTValues, OutputValues, TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut8TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Matrix">Conversion matrix (must be 3x3)</param>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
         public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues)
             : this(Matrix, InputValues, CLUTValues, OutputValues, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Lut8TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Matrix">Conversion matrix (must be 3x3)</param>
+        /// <param name="InputValues">Input LUT</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="OutputValues">Output LUT</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public Lut8TagDataEntry(double[,] Matrix, LUT[] InputValues, CLUT CLUTValues, LUT[] OutputValues, TagSignature TagSignature)
             : base(TypeSignature.Lut8, TagSignature)
         {
@@ -920,17 +1165,45 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class LutAToBTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Two dimensional conversion matrix (3x3)
+        /// </summary>
         public readonly double[,] Matrix3x3;
+        /// <summary>
+        /// One dimensional conversion matrix (3x1)
+        /// </summary>
         public readonly double[] Matrix3x1;
+        /// <summary>
+        /// CLUT
+        /// </summary>
         public readonly CLUT CLUTValues;
+        /// <summary>
+        /// B Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveB;
+        /// <summary>
+        /// M Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveM;
+        /// <summary>
+        /// A Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveA;
 
         #region B
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         {
@@ -938,6 +1211,11 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         {
@@ -946,18 +1224,36 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         { }
@@ -966,6 +1262,13 @@ namespace ColorManager.ICC
 
         #region M, Matrix, B
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveM, double[,] Matrix3x3,
             double[] Matrix3x1, TagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -976,6 +1279,14 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveM, double[,] Matrix3x3,
             double[] Matrix3x1, TagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -987,42 +1298,102 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM, double[,] Matrix3x3,
             double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveM, double[,] Matrix3x3,
             double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveM, double[,] Matrix3x3,
             double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -1032,6 +1403,12 @@ namespace ColorManager.ICC
 
         #region A, CLUT, B
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
         {
@@ -1041,6 +1418,13 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveB)
         {
@@ -1051,38 +1435,90 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveB)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues,
             ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues,
             CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues,
             ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues,
             CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveB)
@@ -1092,6 +1528,15 @@ namespace ColorManager.ICC
 
         #region A, CLUT, M, Matrix, B
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -1104,6 +1549,16 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(TagDataEntry[] CurveA, CLUT CLUTValues, TagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, TagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -1117,82 +1572,234 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(ParametricCurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, CurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutAToBTagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutAToBTagDataEntry(CurveTagDataEntry[] CurveA, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveM,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveA, CLUTValues, CurveM, Matrix3x3, Matrix3x1, CurveB)
@@ -1355,17 +1962,45 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class LutBToATagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Two dimensional conversion matrix (3x3)
+        /// </summary>
         public readonly double[,] Matrix3x3;
+        /// <summary>
+        /// One dimensional conversion matrix (3x1)
+        /// </summary>
         public readonly double[] Matrix3x1;
+        /// <summary>
+        /// CLUT
+        /// </summary>
         public readonly CLUT CLUTValues;
+        /// <summary>
+        /// B Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveB;
+        /// <summary>
+        /// M Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveM;
+        /// <summary>
+        /// A Curve
+        /// </summary>
         public readonly TagDataEntry[] CurveA;
 
         #region B
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         {
@@ -1373,6 +2008,11 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveB)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         {
@@ -1381,18 +2021,36 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB)
             : this(TagSignature.Unknown, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, TagSignature TagSignature)
             : this(TagSignature, CurveB)
         { }
@@ -1401,6 +2059,13 @@ namespace ColorManager.ICC
 
         #region B, Matrix, M
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3,
             double[] Matrix3x1, TagDataEntry[] CurveM)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
@@ -1411,6 +2076,14 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveM)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3,
             double[] Matrix3x1, TagDataEntry[] CurveM, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
@@ -1422,42 +2095,102 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveM)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB,
             double[,] Matrix3x3, double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB,
             double[,] Matrix3x3, double[] Matrix3x1, CurveTagDataEntry[] CurveM)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3,
             double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3,
             double[] Matrix3x1, ParametricCurveTagDataEntry[] CurveM, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3,
             double[] Matrix3x1, CurveTagDataEntry[] CurveM, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM)
@@ -1467,6 +2200,12 @@ namespace ColorManager.ICC
 
         #region B, CLUT, A
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, CLUT CLUTValues, TagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
         {
@@ -1476,6 +2215,13 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, CLUT CLUTValues, TagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, CLUTValues, CurveA)
         {
@@ -1486,38 +2232,90 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, CLUTValues, CurveA)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues,
             ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues,
             CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, CLUT CLUTValues,
             ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, CLUT CLUTValues,
             CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, CLUTValues, CurveA)
@@ -1527,6 +2325,15 @@ namespace ColorManager.ICC
 
         #region B, Matrix, M, CLUT, A
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             TagDataEntry[] CurveM, CLUT CLUTValues, TagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
@@ -1539,6 +2346,16 @@ namespace ColorManager.ICC
                 throw new ArgumentException($"{nameof(CurveA)} must be of type {nameof(ParametricCurveTagDataEntry)} or {nameof(CurveTagDataEntry)}");
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(TagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             TagDataEntry[] CurveM, CLUT CLUTValues, TagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
@@ -1553,82 +2370,234 @@ namespace ColorManager.ICC
 
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA)
             : this(TagSignature.Unknown, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(ParametricCurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, ParametricCurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             CurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LutBToATagDataEntry"/> class
+        /// </summary>
+        /// <param name="CurveA">A Curve</param>
+        /// <param name="CLUTValues">CLUT</param>
+        /// <param name="CurveM">M Curve</param>
+        /// <param name="Matrix3x3">Two dimensional conversion matrix (3x3)</param>
+        /// <param name="Matrix3x1">One dimensional conversion matrix (3x1)</param>
+        /// <param name="CurveB">B Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public LutBToATagDataEntry(CurveTagDataEntry[] CurveB, double[,] Matrix3x3, double[] Matrix3x1,
             ParametricCurveTagDataEntry[] CurveM, CLUT CLUTValues, CurveTagDataEntry[] CurveA, TagSignature TagSignature)
             : this(TagSignature, CurveB, Matrix3x3, Matrix3x1, CurveM, CLUTValues, CurveA)
@@ -1793,17 +2762,49 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MeasurementTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Observer
+        /// </summary>
         public readonly StandardObserver Observer;
+        /// <summary>
+        /// XYZ Backing values
+        /// </summary>
         public readonly XYZNumber XYZBacking;
+        /// <summary>
+        /// Geometry
+        /// </summary>
         public readonly MeasurementGeometry Geometry;
+        /// <summary>
+        /// Flare
+        /// </summary>
         public readonly double Flare;
+        /// <summary>
+        /// Illuminant
+        /// </summary>
         public readonly StandardIlluminant Illuminant;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MeasurementTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Observer">Observer</param>
+        /// <param name="XYZBacking">XYZ Backing values</param>
+        /// <param name="Geometry">Geometry</param>
+        /// <param name="Flare">Flare</param>
+        /// <param name="Illuminant">Illuminant</param>
         public MeasurementTagDataEntry(StandardObserver Observer, XYZNumber XYZBacking,
             MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant)
             : this(Observer, XYZBacking, Geometry, Flare, Illuminant, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MeasurementTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Observer">Observer</param>
+        /// <param name="XYZBacking">XYZ Backing values</param>
+        /// <param name="Geometry">Geometry</param>
+        /// <param name="Flare">Flare</param>
+        /// <param name="Illuminant">Illuminant</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public MeasurementTagDataEntry(StandardObserver Observer, XYZNumber XYZBacking,
             MeasurementGeometry Geometry, double Flare, StandardIlluminant Illuminant, TagSignature TagSignature)
             : base(TypeSignature.Measurement, TagSignature)
@@ -1888,12 +2889,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MultiLocalizedUnicodeTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Localized Text
+        /// </summary>
         public readonly LocalizedString[] Text;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MultiLocalizedUnicodeTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Text">Localized Text</param>
         public MultiLocalizedUnicodeTagDataEntry(LocalizedString[] Text)
             : this(Text, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MultiLocalizedUnicodeTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Text">Localized Text</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public MultiLocalizedUnicodeTagDataEntry(LocalizedString[] Text, TagSignature TagSignature)
             : base(TypeSignature.MultiLocalizedUnicode, TagSignature)
         {
@@ -1960,14 +2973,32 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MultiProcessElementsTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Processing elements
+        /// </summary>
         public readonly MultiProcessElement[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MultiProcessElementsTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">Processing elements</param>
         public MultiProcessElementsTagDataEntry(MultiProcessElement[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MultiProcessElementsTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">Processing elements</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public MultiProcessElementsTagDataEntry(MultiProcessElement[] Data, TagSignature TagSignature)
             : base(TypeSignature.MultiProcessElements, TagSignature)
         {
@@ -2047,32 +3078,90 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class NamedColor2TagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of coordinates
+        /// </summary>
         public readonly int CoordCount;
+        /// <summary>
+        /// Prefix
+        /// </summary>
         public readonly string Prefix;
+        /// <summary>
+        /// Suffix
+        /// </summary>
         public readonly string Suffix;
+        /// <summary>
+        /// Vendor specific flags
+        /// </summary>
         public readonly byte[] VendorFlags;
+        /// <summary>
+        /// The named colors
+        /// </summary>
         public readonly NamedColor[] Colors;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
         public NamedColor2TagDataEntry(int CoordCount, NamedColor[] Colors)
             : this(new byte[4], null, null, CoordCount, Colors, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Prefix">Prefix</param>
+        /// <param name="Suffix">Suffix</param>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
         public NamedColor2TagDataEntry(string Prefix, string Suffix, int CoordCount, NamedColor[] Colors)
             : this(new byte[4], Prefix, Suffix, CoordCount, Colors, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="VendorFlags">Vendor specific flags</param>
+        /// <param name="Prefix">Prefix</param>
+        /// <param name="Suffix">Suffix</param>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
         public NamedColor2TagDataEntry(byte[] VendorFlags, string Prefix, string Suffix, int CoordCount, NamedColor[] Colors)
             : this(VendorFlags, Prefix, Suffix, CoordCount, Colors, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public NamedColor2TagDataEntry(int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
             : this(new byte[4], null, null, CoordCount, Colors, TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Prefix">Prefix</param>
+        /// <param name="Suffix">Suffix</param>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public NamedColor2TagDataEntry(string Prefix, string Suffix, int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
             : this(new byte[4], Prefix, Suffix, CoordCount, Colors, TagSignature)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor2TagDataEntry"/> class
+        /// </summary>
+        /// <param name="VendorFlags">Vendor specific flags</param>
+        /// <param name="Prefix">Prefix</param>
+        /// <param name="Suffix">Suffix</param>
+        /// <param name="CoordCount">Number of coordinates</param>
+        /// <param name="Colors">The named colors</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public NamedColor2TagDataEntry(byte[] VendorFlags, string Prefix, string Suffix, int CoordCount, NamedColor[] Colors, TagSignature TagSignature)
             : base(TypeSignature.NamedColor2, TagSignature)
         {
@@ -2154,12 +3243,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ParametricCurveTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The Curve
+        /// </summary>
         public readonly ParametricCurve Curve;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Curve">The Curve</param>
         public ParametricCurveTagDataEntry(ParametricCurve Curve)
             : this(Curve, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurveTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Curve">The Curve</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ParametricCurveTagDataEntry(ParametricCurve Curve, TagSignature TagSignature)
             : base(TypeSignature.ParametricCurve, TagSignature)
         {
@@ -2225,12 +3326,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ProfileSequenceDescTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Profile Descriptions
+        /// </summary>
         public readonly ProfileDescription[] Descriptions;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceDescTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Descriptions">Profile Descriptions</param>
         public ProfileSequenceDescTagDataEntry(ProfileDescription[] Descriptions)
             : this(Descriptions, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceDescTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Descriptions">Profile Descriptions</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ProfileSequenceDescTagDataEntry(ProfileDescription[] Descriptions, TagSignature TagSignature)
             : base(TypeSignature.ProfileSequenceDesc, TagSignature)
         {
@@ -2297,12 +3410,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ProfileSequenceIdentifierTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Profile Identifiers
+        /// </summary>
         public readonly ProfileSequenceIdentifier[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceIdentifierTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">Profile Identifiers</param>
         public ProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifier[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceIdentifierTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">Profile Identifiers</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifier[] Data, TagSignature TagSignature)
             : base(TypeSignature.ProfileSequenceIdentifier, TagSignature)
         {
@@ -2371,13 +3496,28 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ResponseCurveSet16TagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// Number of channels
+        /// </summary>
         public readonly ushort ChannelCount;
+        /// <summary>
+        /// The Curves
+        /// </summary>
         public readonly ResponseCurve[] Curves;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ResponseCurveSet16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Curves">The Curves</param>
         public ResponseCurveSet16TagDataEntry(ResponseCurve[] Curves)
             : this(Curves, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ResponseCurveSet16TagDataEntry"/> class
+        /// </summary>
+        /// <param name="Curves">The Curves</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ResponseCurveSet16TagDataEntry(ResponseCurve[] Curves, TagSignature TagSignature)
             : base(TypeSignature.ResponseCurveSet16, TagSignature)
         {
@@ -2448,12 +3588,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class Fix16ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly double[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Fix16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public Fix16ArrayTagDataEntry(double[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Fix16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public Fix16ArrayTagDataEntry(double[] Data, TagSignature TagSignature)
             : base(TypeSignature.S15Fixed16Array, TagSignature)
         {
@@ -2520,12 +3672,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class SignatureTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The Signature
+        /// </summary>
         public readonly string SignatureData;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="SignatureTagDataEntry"/> class
+        /// </summary>
+        /// <param name="SignatureData">The Signature</param>
         public SignatureTagDataEntry(string SignatureData)
             : this(SignatureData, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="SignatureTagDataEntry"/> class
+        /// </summary>
+        /// <param name="SignatureData">The Signature</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public SignatureTagDataEntry(string SignatureData, TagSignature TagSignature)
             : base(TypeSignature.Signature, TagSignature)
         {
@@ -2591,12 +3755,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class TextTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The Text
+        /// </summary>
         public readonly string Text;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TextTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Text">The Text</param>
         public TextTagDataEntry(string Text)
             : this(Text, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TextTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Text">The Text</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public TextTagDataEntry(string Text, TagSignature TagSignature)
             : base(TypeSignature.Text, TagSignature)
         {
@@ -2662,12 +3838,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UFix16ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly double[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UFix16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public UFix16ArrayTagDataEntry(double[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UFix16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UFix16ArrayTagDataEntry(double[] Data, TagSignature TagSignature)
             : base(TypeSignature.U16Fixed16Array, TagSignature)
         {
@@ -2733,12 +3921,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt16ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly ushort[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public UInt16ArrayTagDataEntry(ushort[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt16ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UInt16ArrayTagDataEntry(ushort[] Data, TagSignature TagSignature)
             : base(TypeSignature.UInt16Array, TagSignature)
         {
@@ -2804,12 +4004,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt32ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly uint[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt32ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public UInt32ArrayTagDataEntry(uint[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt32ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UInt32ArrayTagDataEntry(uint[] Data, TagSignature TagSignature)
             : base(TypeSignature.UInt32Array, TagSignature)
         {
@@ -2875,12 +4087,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt64ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly ulong[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt64ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public UInt64ArrayTagDataEntry(ulong[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt64ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UInt64ArrayTagDataEntry(ulong[] Data, TagSignature TagSignature)
             : base(TypeSignature.UInt64Array, TagSignature)
         {
@@ -2946,12 +4170,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class UInt8ArrayTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The array data
+        /// </summary>
         public readonly byte[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt8ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
         public UInt8ArrayTagDataEntry(byte[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="UInt8ArrayTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The array data</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public UInt8ArrayTagDataEntry(byte[] Data, TagSignature TagSignature)
             : base(TypeSignature.UInt8Array, TagSignature)
         {
@@ -3017,14 +4253,36 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ViewingConditionsTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// XYZ values of Illuminant
+        /// </summary>
         public readonly XYZNumber IlluminantXYZ;
+        /// <summary>
+        /// XYZ values of Surrounding
+        /// </summary>
         public readonly XYZNumber SurroundXYZ;
+        /// <summary>
+        /// Illuminant
+        /// </summary>
         public readonly StandardIlluminant Illuminant;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ViewingConditionsTagDataEntry"/> class
+        /// </summary>
+        /// <param name="IlluminantXYZ">XYZ values of Illuminant</param>
+        /// <param name="SurroundXYZ">XYZ values of Surrounding</param>
+        /// <param name="Illuminant">Illuminant</param>
         public ViewingConditionsTagDataEntry(XYZNumber IlluminantXYZ, XYZNumber SurroundXYZ, StandardIlluminant Illuminant)
             : this(IlluminantXYZ, SurroundXYZ, Illuminant, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ViewingConditionsTagDataEntry"/> class
+        /// </summary>
+        /// <param name="IlluminantXYZ">XYZ values of Illuminant</param>
+        /// <param name="SurroundXYZ">XYZ values of Surrounding</param>
+        /// <param name="Illuminant">Illuminant</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public ViewingConditionsTagDataEntry(XYZNumber IlluminantXYZ, XYZNumber SurroundXYZ,
             StandardIlluminant Illuminant, TagSignature TagSignature)
             : base(TypeSignature.ViewingConditions, TagSignature)
@@ -3098,12 +4356,24 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class XYZTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// The XYZ numbers
+        /// </summary>
         public readonly XYZNumber[] Data;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="XYZTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The XYZ numbers</param>
         public XYZTagDataEntry(XYZNumber[] Data)
             : this(Data, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="XYZTagDataEntry"/> class
+        /// </summary>
+        /// <param name="Data">The XYZ numbers</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public XYZTagDataEntry(XYZNumber[] Data, TagSignature TagSignature)
             : base(TypeSignature.XYZ, TagSignature)
         {
@@ -3169,18 +4439,50 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class TextDescriptionTagDataEntry : TagDataEntry
     {
+        /// <summary>
+        /// ASCII text
+        /// </summary>
         public readonly string ASCII;
+        /// <summary>
+        /// Unicode text
+        /// </summary>
         public readonly string Unicode;
+        /// <summary>
+        /// ScriptCode text
+        /// </summary>
         public readonly string ScriptCode;
 
+        /// <summary>
+        /// Unicode Language-Code
+        /// </summary>
         public readonly uint UnicodeLanguageCode;
+        /// <summary>
+        /// ScriptCode Code
+        /// </summary>
         public readonly ushort ScriptCodeCode;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TextDescriptionTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ASCII">ASCII text</param>
+        /// <param name="Unicode">Unicode text</param>
+        /// <param name="ScriptCode">ScriptCode text</param>
+        /// <param name="UnicodeLanguageCode">Unicode Language-Code</param>
+        /// <param name="ScriptCodeCode">ScriptCode Code</param>
         public TextDescriptionTagDataEntry(string ASCII, string Unicode,
             string ScriptCode, uint UnicodeLanguageCode, ushort ScriptCodeCode)
             : this(ASCII, Unicode, ScriptCode, UnicodeLanguageCode, ScriptCodeCode, TagSignature.Unknown)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TextDescriptionTagDataEntry"/> class
+        /// </summary>
+        /// <param name="ASCII">ASCII text</param>
+        /// <param name="Unicode">Unicode text</param>
+        /// <param name="ScriptCode">ScriptCode text</param>
+        /// <param name="UnicodeLanguageCode">Unicode Language-Code</param>
+        /// <param name="ScriptCodeCode">ScriptCode Code</param>
+        /// <param name="TagSignature">Tag Signature</param>
         public TextDescriptionTagDataEntry(string ASCII, string Unicode, string ScriptCode,
             uint UnicodeLanguageCode, ushort ScriptCodeCode, TagSignature TagSignature)
             : base(TypeSignature.TextDescription, TagSignature)
