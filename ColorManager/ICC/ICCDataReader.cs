@@ -8,6 +8,8 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ICCDataReader
     {
+        #region Variables
+
         /// <summary>
         /// The data that is read
         /// </summary>
@@ -27,6 +29,8 @@ namespace ColorManager.ICC
 
         private int _Index;
         private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ICCDataReader"/> class
@@ -429,6 +433,11 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Reads a <see cref="TagDataEntry"/> with an unknown <see cref="TypeSignature"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UnknownTagDataEntry ReadUnknownTagDataEntry(uint size)
         {
             var count = (int)size - 8;
@@ -438,6 +447,10 @@ namespace ColorManager.ICC
             return new UnknownTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ChromaticityTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ChromaticityTagDataEntry ReadChromaticityTagDataEntry()
         {
             ushort channelCount = ReadUInt16();
@@ -459,6 +472,10 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Reads a <see cref="ColorantOrderTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ColorantOrderTagDataEntry ReadColorantOrderTagDataEntry()
         {
             var colorantCount = ReadUInt32();
@@ -467,6 +484,10 @@ namespace ColorManager.ICC
             return new ColorantOrderTagDataEntry(number);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ColorantTableTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ColorantTableTagDataEntry ReadColorantTableTagDataEntry()
         {
             var colorantCount = ReadUInt32();
@@ -475,6 +496,10 @@ namespace ColorManager.ICC
             return new ColorantTableTagDataEntry(cdata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="CurveTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public CurveTagDataEntry ReadCurveTagDataEntry()
         {
             var pointCount = ReadUInt32();
@@ -491,6 +516,11 @@ namespace ColorManager.ICC
             //TODO: Page 48: If the input is PCSXYZ, 1+(32 767/32 768) shall be mapped to the value 1,0. If the output is PCSXYZ, the value 1,0 shall be mapped to 1+(32 767/32 768).
         }
 
+        /// <summary>
+        /// Reads a <see cref="DataTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public DataTagDataEntry ReadDataTagDataEntry(uint size)
         {
             AIndex(3);//first 3 bytes are zero
@@ -504,11 +534,19 @@ namespace ColorManager.ICC
             return new DataTagDataEntry(cdata, ascii);
         }
 
+        /// <summary>
+        /// Reads a <see cref="DateTimeTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public DateTimeTagDataEntry ReadDateTimeTagDataEntry()
         {
             return new DateTimeTagDataEntry(ReadDateTime());
         }
 
+        /// <summary>
+        /// Reads a <see cref="Lut16TagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public Lut16TagDataEntry ReadLut16TagDataEntry()
         {
             var inChCount = Data[AIndex(1)];
@@ -541,6 +579,10 @@ namespace ColorManager.ICC
             return new Lut16TagDataEntry(matrix, inValues, clut, outValues);
         }
 
+        /// <summary>
+        /// Reads a <see cref="Lut8TagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public Lut8TagDataEntry ReadLut8TagDataEntry()
         {
             var inChCount = Data[AIndex(1)];
@@ -570,6 +612,10 @@ namespace ColorManager.ICC
             return new Lut8TagDataEntry(matrix, inValues, clut, outValues);
         }
 
+        /// <summary>
+        /// Reads a <see cref="LutAToBTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public LutAToBTagDataEntry ReadLutAToBTagDataEntry()
         {
             //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
@@ -635,6 +681,10 @@ namespace ColorManager.ICC
             else throw new CorruptProfileException();
         }
 
+        /// <summary>
+        /// Reads a <see cref="LutBToATagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public LutBToATagDataEntry ReadLutBToATagDataEntry()
         {
             //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
@@ -700,12 +750,20 @@ namespace ColorManager.ICC
             else throw new CorruptProfileException();
         }
 
+        /// <summary>
+        /// Reads a <see cref="MeasurementTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public MeasurementTagDataEntry ReadMeasurementTagDataEntry()
         {
             return new MeasurementTagDataEntry((StandardObserver)ReadUInt32(), ReadXYZNumber(),
                 (MeasurementGeometry)ReadUInt32(), ReadUFix16(), (StandardIlluminant)ReadUInt32());
         }
 
+        /// <summary>
+        /// Reads a <see cref="MultiLocalizedUnicodeTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public MultiLocalizedUnicodeTagDataEntry ReadMultiLocalizedUnicodeTagDataEntry()
         {
             //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
@@ -734,6 +792,10 @@ namespace ColorManager.ICC
             return new MultiLocalizedUnicodeTagDataEntry(Text);
         }
 
+        /// <summary>
+        /// Reads a <see cref="MultiProcessElementsTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public MultiProcessElementsTagDataEntry ReadMultiProcessElementsTagDataEntry()
         {
             int start = Index - 8;
@@ -755,6 +817,10 @@ namespace ColorManager.ICC
             return new MultiProcessElementsTagDataEntry(mdata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="NamedColor2TagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public NamedColor2TagDataEntry ReadNamedColor2TagDataEntry()
         {
             var vendorFlag = new byte[4];
@@ -770,11 +836,19 @@ namespace ColorManager.ICC
             return new NamedColor2TagDataEntry(vendorFlag, prefix, suffix, coordCount, colors);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ParametricCurveTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ParametricCurveTagDataEntry ReadParametricCurveTagDataEntry()
         {
             return new ParametricCurveTagDataEntry(ReadParametricCurve());
         }
 
+        /// <summary>
+        /// Reads a <see cref="ProfileSequenceDescTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ProfileSequenceDescTagDataEntry ReadProfileSequenceDescTagDataEntry()
         {
             var count = ReadUInt32();
@@ -784,6 +858,10 @@ namespace ColorManager.ICC
             return new ProfileSequenceDescTagDataEntry(description);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ProfileSequenceIdentifierTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ProfileSequenceIdentifierTagDataEntry ReadProfileSequenceIdentifierTagDataEntry()
         {
             //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
@@ -805,6 +883,10 @@ namespace ColorManager.ICC
             return new ProfileSequenceIdentifierTagDataEntry(entries);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ResponseCurveSet16TagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public ResponseCurveSet16TagDataEntry ReadResponseCurveSet16TagDataEntry()
         {
             //Start of tag = Index minus signature(4 bytes) and reserved (4 bytes)
@@ -825,6 +907,11 @@ namespace ColorManager.ICC
             return new ResponseCurveSet16TagDataEntry(curves);
         }
 
+        /// <summary>
+        /// Reads a <see cref="Fix16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public Fix16ArrayTagDataEntry ReadFix16ArrayTagDataEntry(uint size)
         {
             var count = (size - 8) / 4;
@@ -834,16 +921,30 @@ namespace ColorManager.ICC
             return new Fix16ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="SignatureTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public SignatureTagDataEntry ReadSignatureTagDataEntry()
         {
             return new SignatureTagDataEntry(ReadASCIIString(4));
         }
 
+        /// <summary>
+        /// Reads a <see cref="TextTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public TextTagDataEntry ReadTextTagDataEntry(uint size)
         {
             return new TextTagDataEntry(ReadASCIIString((int)size - 8));
         }
 
+        /// <summary>
+        /// Reads a <see cref="UFix16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UFix16ArrayTagDataEntry ReadUFix16ArrayTagDataEntry(uint size)
         {
             var count = (size - 8) / 4;
@@ -853,6 +954,11 @@ namespace ColorManager.ICC
             return new UFix16ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="UInt16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UInt16ArrayTagDataEntry ReadUInt16ArrayTagDataEntry(uint size)
         {
             var count = (size - 8) / 2;
@@ -862,6 +968,11 @@ namespace ColorManager.ICC
             return new UInt16ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="UInt32ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UInt32ArrayTagDataEntry ReadUInt32ArrayTagDataEntry(uint size)
         {
             var count = (size - 8) / 4;
@@ -871,6 +982,11 @@ namespace ColorManager.ICC
             return new UInt32ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="UInt64ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UInt64ArrayTagDataEntry ReadUInt64ArrayTagDataEntry(uint size)
         {
             var count = (size - 8) / 8;
@@ -880,6 +996,11 @@ namespace ColorManager.ICC
             return new UInt64ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="UInt8ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public UInt8ArrayTagDataEntry ReadUInt8ArrayTagDataEntry(uint size)
         {
             var count = (int)size - 8;
@@ -889,11 +1010,21 @@ namespace ColorManager.ICC
             return new UInt8ArrayTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ViewingConditionsTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public ViewingConditionsTagDataEntry ReadViewingConditionsTagDataEntry(uint size)
         {
             return new ViewingConditionsTagDataEntry(ReadXYZNumber(), ReadXYZNumber(), (StandardIlluminant)ReadUInt32());
         }
 
+        /// <summary>
+        /// Reads a <see cref="XYZTagDataEntry"/>
+        /// </summary>
+        /// <param name="size">The size of the entry in bytes</param>
+        /// <returns>The read entry</returns>
         public XYZTagDataEntry ReadXYZTagDataEntry(uint size)
         {
             var count = (size - 8) / 12;
@@ -903,6 +1034,10 @@ namespace ColorManager.ICC
             return new XYZTagDataEntry(adata);
         }
 
+        /// <summary>
+        /// Reads a <see cref="TextDescriptionTagDataEntry"/>
+        /// </summary>
+        /// <returns>The read entry</returns>
         public TextDescriptionTagDataEntry ReadTextDescriptionTagDataEntry()
         {
             string asciiValue, unicodeValue, scriptcodeValue;
@@ -939,6 +1074,13 @@ namespace ColorManager.ICC
 
         #region Read Matrix
 
+        /// <summary>
+        /// Reads a two dimensional matrix
+        /// </summary>
+        /// <param name="xCount">Number of values in X</param>
+        /// <param name="yCount">Number of values in Y</param>
+        /// <param name="isSingle">True if the values are encoded as Single; false if encoded as Fix16</param>
+        /// <returns>The read matrix</returns>
         public double[,] ReadMatrix(int xCount, int yCount, bool isSingle)
         {
             double[,] Matrix = new double[xCount, yCount];
@@ -953,6 +1095,12 @@ namespace ColorManager.ICC
             return Matrix;
         }
 
+        /// <summary>
+        /// Reads a one dimensional matrix
+        /// </summary>
+        /// <param name="yCount">Number of values</param>
+        /// <param name="isSingle">True if the values are encoded as Single; false if encoded as Fix16</param>
+        /// <returns>The read matrix</returns>
         public double[] ReadMatrix(int yCount, bool isSingle)
         {
             double[] Matrix = new double[yCount];
@@ -971,7 +1119,7 @@ namespace ColorManager.ICC
         /// <summary>
         /// Reads an 8bit lookup table
         /// </summary>
-        /// <returns>the LUT</returns>
+        /// <returns>The read LUT</returns>
         public LUT ReadLUT8()
         {
             var values = new byte[256];
@@ -983,7 +1131,7 @@ namespace ColorManager.ICC
         /// Reads a 16bit lookup table
         /// </summary>
         /// <param name="count">The number of entries</param>
-        /// <returns>the LUT</returns>
+        /// <returns>The read LUT</returns>
         public LUT ReadLUT16(int count)
         {
             var values = new ushort[count];
@@ -998,7 +1146,7 @@ namespace ColorManager.ICC
         /// <param name="outChCount">Output channel count</param>
         /// <param name="IsFloat">If true, it's read as CLUTf32,
         /// else read as either CLUT8 or CLUT16 depending on embedded information</param>
-        /// <returns>A CLUT depending on type</returns>
+        /// <returns>The read CLUT</returns>
         public CLUT ReadCLUT(int inChCount, int outChCount, bool IsFloat)
         {
             //Grid-points are always 16 bytes long but only 0-inChCount are used
@@ -1021,7 +1169,7 @@ namespace ColorManager.ICC
         /// <param name="inChCount">Input channel count</param>
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
-        /// <returns>A CLUT8</returns>
+        /// <returns>The read CLUT8</returns>
         public CLUT ReadCLUT8(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
@@ -1048,7 +1196,7 @@ namespace ColorManager.ICC
         /// <param name="inChCount">Input channel count</param>
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
-        /// <returns>A CLUT16</returns>
+        /// <returns>The read CLUT16</returns>
         public CLUT ReadCLUT16(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
@@ -1075,7 +1223,7 @@ namespace ColorManager.ICC
         /// <param name="inChCount">Input channel count</param>
         /// <param name="outChCount">Output channel count</param>
         /// <param name="gridPointCount">Grid point count for each CLUT channel</param>
-        /// <returns>A CLUTf32</returns>
+        /// <returns>The read CLUTf32</returns>
         public CLUT ReadCLUTf32(int inChCount, int outChCount, byte[] gridPointCount)
         {
             int start = Index;
@@ -1098,6 +1246,10 @@ namespace ColorManager.ICC
 
         #region Read MultiProcessElement
 
+        /// <summary>
+        /// Reads a <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <returns>The read <see cref="MultiProcessElement"/></returns>
         public MultiProcessElement ReadMultiProcessElement()
         {
             var sig = (MultiProcessElementSignature)ReadUInt32();
@@ -1126,6 +1278,12 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Reads a CurveSet <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
+        /// <returns>The read <see cref="CurveSetProcessElement"/></returns>
         public CurveSetProcessElement ReadCurveSetProcessElement(int inChCount, int outChCount)
         {
             var curves = new OneDimensionalCurve[inChCount];
@@ -1137,11 +1295,23 @@ namespace ColorManager.ICC
             return new CurveSetProcessElement(curves);
         }
 
+        /// <summary>
+        /// Reads a Matrix <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
+        /// <returns>The read <see cref="MatrixProcessElement"/></returns>
         public MatrixProcessElement ReadMatrixProcessElement(int inChCount, int outChCount)
         {
             return new MatrixProcessElement(ReadMatrix(inChCount, outChCount, true), ReadMatrix(outChCount, true));
         }
 
+        /// <summary>
+        /// Reads a CLUT <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
+        /// <returns>The read <see cref="CLUTProcessElement"/></returns>
         public CLUTProcessElement ReadCLUTProcessElement(int inChCount, int outChCount)
         {
             return new CLUTProcessElement(ReadCLUT(inChCount, outChCount, true));
@@ -1154,8 +1324,8 @@ namespace ColorManager.ICC
         /// <summary>
         /// Reads curve data
         /// </summary>
-        /// <param name="count">Input channel count</param>
-        /// <returns>the curve data</returns>
+        /// <param name="count">Number of input channels</param>
+        /// <returns>The curve data</returns>
         private TagDataEntry[] ReadCurves(int count)
         {
             var tdata = new TagDataEntry[count];
@@ -1171,6 +1341,10 @@ namespace ColorManager.ICC
             return tdata;
         }
 
+        /// <summary>
+        /// Reads a <see cref="OneDimensionalCurve"/>
+        /// </summary>
+        /// <returns>The read curve</returns>
         public OneDimensionalCurve ReadOneDimensionalCurve()
         {
             var segmentCount = ReadUInt16();
@@ -1184,6 +1358,10 @@ namespace ColorManager.ICC
             return new OneDimensionalCurve(breakPoints, segments);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ResponseCurve"/>
+        /// </summary>
+        /// <returns>The read curve</returns>
         public ResponseCurve ReadResponseCurve(int channelCount)
         {
             var type = (CurveMeasurementEncodings)ReadUInt32();
@@ -1206,6 +1384,10 @@ namespace ColorManager.ICC
             return new ResponseCurve(type, xyzValues, response);
         }
 
+        /// <summary>
+        /// Reads a <see cref="ParametricCurve"/>
+        /// </summary>
+        /// <returns>The read curve</returns>
         public ParametricCurve ReadParametricCurve()
         {
             ushort type = ReadUInt16();
@@ -1238,6 +1420,10 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Reads a <see cref="CurveSegment"/>
+        /// </summary>
+        /// <returns>The read segment</returns>
         public CurveSegment ReadCurveSegment()
         {
             var signature = (CurveSegmentSignature)ReadUInt32();
@@ -1254,6 +1440,10 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Reads a <see cref="FormulaCurveElement"/>
+        /// </summary>
+        /// <returns>The read segment</returns>
         public FormulaCurveElement ReadFormulaCurveElement()
         {
             var type = ReadUInt16();
@@ -1274,6 +1464,10 @@ namespace ColorManager.ICC
             return new FormulaCurveElement(type, gamma, a, b, c, d, e);
         }
 
+        /// <summary>
+        /// Reads a <see cref="SampledCurveElement"/>
+        /// </summary>
+        /// <returns>The read segment</returns>
         public SampledCurveElement ReadSampledCurveElement()
         {
             var count = ReadUInt32();

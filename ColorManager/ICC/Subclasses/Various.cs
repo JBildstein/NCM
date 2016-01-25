@@ -4,20 +4,37 @@ using System.Text.RegularExpressions;
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// ICC Profile Flag
+    /// </summary>
     public struct ProfileFlag
     {
+        /// <summary>
+        /// True if the profile is embedded in a file; false otherwise
+        /// </summary>
         public bool IsEmbedded
         {
             get { return Flags?[0] ?? false; }
             set { if (Flags != null) Flags[0] = value; }
         }
+        /// <summary>
+        /// True if the profile is independent; false otherwise
+        /// </summary>
         public bool IsIndependent
         {
             get { return Flags?[1] ?? false; }
             set { if (Flags != null) Flags[1] = value; }
         }
+        /// <summary>
+        /// All profile flags
+        /// </summary>
         public readonly bool[] Flags;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileFlag"/> struct
+        /// </summary>
+        /// <param name="IsEmbedded">True if the profile is embedded in a file; false otherwise</param>
+        /// <param name="IsIndependent">True if the profile is independent; false otherwise</param>
         public ProfileFlag(bool IsEmbedded, bool IsIndependent)
         {
             Flags = new bool[16];
@@ -25,6 +42,10 @@ namespace ColorManager.ICC
             Flags[1] = IsIndependent;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileFlag"/> struct
+        /// </summary>
+        /// <param name="Flags">All profile flags (length must be 16)</param>
         public ProfileFlag(bool[] Flags)
         {
             if (Flags == null) throw new ArgumentNullException(nameof(Flags));
@@ -89,19 +110,52 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Device Attributes
+    /// </summary>
     public struct DeviceAttribute
     {
+        /// <summary>
+        /// Opacity
+        /// </summary>
         public readonly OpacityAttribute Opacity;
+        /// <summary>
+        /// Reflectivity
+        /// </summary>
         public readonly ReflectivityAttribute Reflectivity;
+        /// <summary>
+        /// Polarity
+        /// </summary>
         public readonly PolarityAttribute Polarity;
+        /// <summary>
+        /// Chroma
+        /// </summary>
         public readonly ChromaAttribute Chroma;
+        /// <summary>
+        /// Additional vendor specific data
+        /// </summary>
         public readonly byte[] VendorData;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DeviceAttribute"/> struct
+        /// </summary>
+        /// <param name="Opacity">Opacity</param>
+        /// <param name="Reflectivity">Reflectivity</param>
+        /// <param name="Polarity">Polarity</param>
+        /// <param name="Chroma">Chroma</param>
         public DeviceAttribute(OpacityAttribute Opacity, ReflectivityAttribute Reflectivity,
             PolarityAttribute Polarity, ChromaAttribute Chroma)
             : this(Opacity, Reflectivity, Polarity, Chroma, new byte[4])
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DeviceAttribute"/> struct
+        /// </summary>
+        /// <param name="Opacity">Opacity</param>
+        /// <param name="Reflectivity">Reflectivity</param>
+        /// <param name="Polarity">Polarity</param>
+        /// <param name="Chroma">Chroma</param>
+        /// <param name="VendorData">Additional vendor specific data</param>
         public DeviceAttribute(OpacityAttribute Opacity, ReflectivityAttribute Reflectivity,
             PolarityAttribute Polarity, ChromaAttribute Chroma, byte[] VendorData)
         {
@@ -120,6 +174,14 @@ namespace ColorManager.ICC
             this.VendorData = VendorData;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DeviceAttribute"/> struct
+        /// </summary>
+        /// <param name="Opacity">Opacity</param>
+        /// <param name="Reflectivity">Reflectivity</param>
+        /// <param name="Polarity">Polarity</param>
+        /// <param name="Chroma">Chroma</param>
+        /// <param name="VendorData">Additional vendor specific data</param>
         public DeviceAttribute(bool Opacity, bool Reflectivity, bool Polarity, bool Chroma, byte[] VendorData)
         {
             if (VendorData == null) throw new ArgumentNullException(nameof(VendorData));
@@ -139,7 +201,7 @@ namespace ColorManager.ICC
 
             this.VendorData = VendorData;
         }
-
+        
 
         /// <summary>
         /// Determines whether the specified <see cref="DeviceAttribute"/>s are equal to each other.
@@ -203,12 +265,30 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Entry of ICC tag table
+    /// </summary>
     public struct TagTableEntry
     {
+        /// <summary>
+        /// Signature of the tag
+        /// </summary>
         public readonly TagSignature Signature;
+        /// <summary>
+        /// Offset of entry in bytes
+        /// </summary>
         public readonly uint Offset;
+        /// <summary>
+        /// Size of entry in bytes
+        /// </summary>
         public readonly uint DataSize;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="TagTableEntry"/> struct
+        /// </summary>
+        /// <param name="Signature">Signature of the tag</param>
+        /// <param name="Offset">Offset of entry in bytes</param>
+        /// <param name="DataSize">Size of entry in bytes</param>
         public TagTableEntry(TagSignature Signature, uint Offset, uint DataSize)
         {
             this.Signature = Signature;
@@ -274,17 +354,43 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Entry of ICC colorant table
+    /// </summary>
     public struct ColorantTableEntry
     {
+        /// <summary>
+        /// Colorant name
+        /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// First PCS value
+        /// </summary>
         public readonly ushort PCS1;
+        /// <summary>
+        /// Second PCS value
+        /// </summary>
         public readonly ushort PCS2;
+        /// <summary>
+        /// Third PCS value
+        /// </summary>
         public readonly ushort PCS3;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantTableEntry"/> struct
+        /// </summary>
+        /// <param name="Name">Name of the colorant</param>
         public ColorantTableEntry(string Name)
             : this(Name, 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ColorantTableEntry"/> struct
+        /// </summary>
+        /// <param name="Name">Name of the colorant</param>
+        /// <param name="PCS1">First PCS value</param>
+        /// <param name="PCS2">Second PCS value</param>
+        /// <param name="PCS3">Third PCS value</param>
         public ColorantTableEntry(string Name, ushort PCS1, ushort PCS2, ushort PCS3)
         {
             if (Name == null) throw new ArgumentNullException(nameof(Name));
@@ -355,10 +461,24 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// A string with a specific locale
+    /// </summary>
     public struct LocalizedString
     {
+        /// <summary>
+        /// The culture of this string.
+        /// This should consist of language (ISO 639-1) and country (ISO 3166-1) codes
+        /// </summary>
         public readonly string Culture;
+        /// <summary>
+        /// The actual text value
+        /// </summary>
         public readonly string Text;
+        /// <summary>
+        /// The <see cref="CultureInfo"/> from the <see cref="Culture"/> property.
+        /// This does not work when the <see cref="Culture"/> property is not a valid culture
+        /// </summary>
         public CultureInfo Locale
         {
             get { return CultureInfo.GetCultureInfo(Culture); }
@@ -366,10 +486,21 @@ namespace ColorManager.ICC
 
         private static Regex CultureRegex = new Regex(@"[a-z]{2}-[A-Z]{2}");
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LocalizedString"/> struct
+        /// The culture will be <see cref="CultureInfo.CurrentCulture"/>
+        /// </summary>
+        /// <param name="Text">The text value of this string</param>
         public LocalizedString(string Text)
             : this(CultureInfo.CurrentCulture.Name, Text)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="LocalizedString"/> struct
+        /// The culture will be <see cref="CultureInfo.CurrentCulture"/>
+        /// </summary>
+        /// <param name="Culture">The culture of this string defined by language (ISO 639-1) and country (ISO 3166-1) codes</param>
+        /// <param name="Text">The text value of this string</param>
         public LocalizedString(string Culture, string Text)
         {
             if (Culture == null) throw new ArgumentNullException(nameof(Locale));
@@ -438,13 +569,30 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// A specific color with a name
+    /// </summary>
     public struct NamedColor
     {
+        /// <summary>
+        /// Name of the color
+        /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// Coordinates of the color in the profiles PCS
+        /// </summary>
         public readonly ushort[] PCScoordinates;
+        /// <summary>
+        /// Coordinates of the color in the profiles Device-Space
+        /// </summary>
         public readonly ushort[] DeviceCoordinates;
 
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="NamedColor"/> struct
+        /// </summary>
+        /// <param name="Name">Name of the color</param>
+        /// <param name="PCScoordinates">Coordinates of the color in the profiles PCS</param>
+        /// <param name="DeviceCoordinates">Coordinates of the color in the profiles Device-Space</param>
         public NamedColor(string Name, ushort[] PCScoordinates, ushort[] DeviceCoordinates)
         {
             if (Name == null) throw new ArgumentNullException(nameof(Name));
@@ -522,15 +670,45 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// ICC Profile description
+    /// </summary>
     public struct ProfileDescription
     {
+        /// <summary>
+        /// Device Manufacturer
+        /// </summary>
         public readonly uint DeviceManufacturer;
+        /// <summary>
+        /// Device Model
+        /// </summary>
         public readonly uint DeviceModel;
+        /// <summary>
+        /// Device Attributes
+        /// </summary>
         public readonly DeviceAttribute DeviceAttributes;
+        /// <summary>
+        /// Technology Information
+        /// </summary>
         public readonly TagSignature TechnologyInformation;
+        /// <summary>
+        /// Device Manufacturer Info
+        /// </summary>
         public readonly LocalizedString[] DeviceManufacturerInfo;
+        /// <summary>
+        /// Device Model Info
+        /// </summary>
         public readonly LocalizedString[] DeviceModelInfo;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileDescription"/> struct
+        /// </summary>
+        /// <param name="DeviceManufacturer">Device Manufacturer</param>
+        /// <param name="DeviceModel">Device Model</param>
+        /// <param name="DeviceAttributes">Device Attributes</param>
+        /// <param name="TechnologyInformation">Technology Information</param>
+        /// <param name="DeviceManufacturerInfo">Device Manufacturer Info</param>
+        /// <param name="DeviceModelInfo">Device Model Info</param>
         public ProfileDescription(uint DeviceManufacturer, uint DeviceModel, DeviceAttribute DeviceAttributes,
             TagSignature TechnologyInformation, LocalizedString[] DeviceManufacturerInfo, LocalizedString[] DeviceModelInfo)
         {
@@ -600,11 +778,25 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Description of a profile within a sequence
+    /// </summary>
     public struct ProfileSequenceIdentifier
     {
+        /// <summary>
+        /// ID of the profile
+        /// </summary>
         public readonly ProfileID ID;
+        /// <summary>
+        /// Description of the profile
+        /// </summary>
         public readonly LocalizedString[] Description;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceIdentifier"/> struct
+        /// </summary>
+        /// <param name="ID">ID of the profile</param>
+        /// <param name="Description">Description of the profile</param>
         public ProfileSequenceIdentifier(ProfileID ID, LocalizedString[] Description)
         {
             if (Description == null) throw new ArgumentNullException(nameof(Description));

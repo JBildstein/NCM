@@ -37,5 +37,6 @@ namespace ColorManager.Conversion
     /// A delegate to write IL code according to some conversion data
     /// </summary>
     /// <param name="data">The data that will be used to perform a conversion</param>
+    /// <param name="writer">The IL writer with which the conversion code will be written</param>
     public delegate void ILWriterDelegate(ConversionData data, ILWriter writer);
 }

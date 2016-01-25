@@ -16,6 +16,11 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly CurveSegment[] Segments;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="OneDimensionalCurve"/> struct
+        /// </summary>
+        /// <param name="BreakPoints">The break points of this curve</param>
+        /// <param name="Segments">The segments of this curve</param>
         public OneDimensionalCurve(double[] BreakPoints, CurveSegment[] Segments)
         {
             if (BreakPoints == null) throw new ArgumentNullException(nameof(BreakPoints));
@@ -81,10 +86,25 @@ namespace ColorManager.ICC
     /// </summary>
     public struct ResponseCurve
     {
+        /// <summary>
+        /// The type of this curve
+        /// </summary>
         public readonly CurveMeasurementEncodings CurveType;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly XYZNumber[] XYZvalues;
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly ResponseNumber[][] ResponseArrays;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ResponseCurve"/> struct
+        /// </summary>
+        /// <param name="CurveType">The type of this curve</param>
+        /// <param name="XYZvalues"></param>
+        /// <param name="ResponseArrays"></param>
         public ResponseCurve(CurveMeasurementEncodings CurveType, XYZNumber[] XYZvalues, ResponseNumber[][] ResponseArrays)
         {
             if (XYZvalues == null) throw new ArgumentNullException(nameof(XYZvalues));
@@ -153,36 +173,105 @@ namespace ColorManager.ICC
     /// </summary>
     public struct ParametricCurve
     {
+        /// <summary>
+        /// The type of this curve
+        /// </summary>
         public readonly ushort type;
+        /// <summary>
+        /// G curve parameter
+        /// </summary>
         public readonly double g;
+        /// <summary>
+        /// A curve parameter
+        /// </summary>
         public readonly double a;
+        /// <summary>
+        /// B curve parameter
+        /// </summary>
         public readonly double b;
+        /// <summary>
+        /// C curve parameter
+        /// </summary>
         public readonly double c;
+        /// <summary>
+        /// D curve parameter
+        /// </summary>
         public readonly double d;
+        /// <summary>
+        /// E curve parameter
+        /// </summary>
         public readonly double e;
+        /// <summary>
+        /// F curve parameter
+        /// </summary>
         public readonly double f;
 
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct with curve type 0
+        /// </summary>
+        /// <param name="g">G curve parameter</param>
         public ParametricCurve(double g)
             : this(0, g, 0, 0, 0, 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct with curve type 1
+        /// </summary>
+        /// <param name="g">G curve parameter</param>
+        /// <param name="a">A curve parameter</param>
+        /// <param name="b">B curve parameter</param>
         public ParametricCurve(double g, double a, double b)
             : this(1, g, a, b, 0, 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct with curve type 2
+        /// </summary>
+        /// <param name="g">G curve parameter</param>
+        /// <param name="a">A curve parameter</param>
+        /// <param name="b">B curve parameter</param>
+        /// <param name="c">C curve parameter</param>
         public ParametricCurve(double g, double a, double b, double c)
             : this(2, g, a, b, c, 0, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct with curve type 3
+        /// </summary>
+        /// <param name="g">G curve parameter</param>
+        /// <param name="a">A curve parameter</param>
+        /// <param name="b">B curve parameter</param>
+        /// <param name="c">C curve parameter</param>
+        /// <param name="d">D curve parameter</param>
         public ParametricCurve(double g, double a, double b, double c, double d)
             : this(3, g, a, b, c, d, 0, 0)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct with curve type 4
+        /// </summary>
+        /// <param name="g">G curve parameter</param>
+        /// <param name="a">A curve parameter</param>
+        /// <param name="b">B curve parameter</param>
+        /// <param name="c">C curve parameter</param>
+        /// <param name="d">D curve parameter</param>
+        /// <param name="e">E curve parameter</param>
+        /// <param name="f">F curve parameter</param>
         public ParametricCurve(double g, double a, double b, double c, double d, double e, double f)
             : this(4, g, a, b, c, d, e, f)
         { }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ParametricCurve"/> struct
+        /// </summary>
+        /// <param name="type">The type of this curve (0-4)</param>
+        /// <param name="g">G curve parameter</param>
+        /// <param name="a">A curve parameter</param>
+        /// <param name="b">B curve parameter</param>
+        /// <param name="c">C curve parameter</param>
+        /// <param name="d">D curve parameter</param>
+        /// <param name="e">E curve parameter</param>
+        /// <param name="f">F curve parameter</param>
         private ParametricCurve(ushort type, double g, double a, double b, double c, double d, double e, double f)
         {
             if (type > 4) throw new ArgumentOutOfRangeException(nameof(type), "Type must be between 0 and 4");
@@ -264,6 +353,10 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly CurveSegmentSignature Signature;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveSegment"/> class
+        /// </summary>
+        /// <param name="Signature">The signature of this segment</param>
         protected CurveSegment(CurveSegmentSignature Signature)
         {
             if (!Enum.IsDefined(typeof(CurveSegmentSignature), Signature))
@@ -329,14 +422,45 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class FormulaCurveElement : CurveSegment
     {
+        /// <summary>
+        /// The type of this curve
+        /// </summary>
         public readonly ushort type;
+        /// <summary>
+        /// Gamma curve parameter
+        /// </summary>
         public readonly double gamma;
+        /// <summary>
+        /// A curve parameter
+        /// </summary>
         public readonly double a;
+        /// <summary>
+        /// B curve parameter
+        /// </summary>
         public readonly double b;
+        /// <summary>
+        /// C curve parameter
+        /// </summary>
         public readonly double c;
+        /// <summary>
+        /// D curve parameter
+        /// </summary>
         public readonly double d;
+        /// <summary>
+        /// E curve parameter
+        /// </summary>
         public readonly double e;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="FormulaCurveElement"/> class
+        /// </summary>
+        /// <param name="type">The type of this segment (0-2)</param>
+        /// <param name="gamma">Gamma segment parameter</param>
+        /// <param name="a">A segment parameter</param>
+        /// <param name="b">B segment parameter</param>
+        /// <param name="c">C segment parameter</param>
+        /// <param name="d">D segment parameter</param>
+        /// <param name="e">E segment parameter</param>
         public FormulaCurveElement(ushort type, double gamma, double a, double b, double c, double d, double e)
             : base(CurveSegmentSignature.FormulaCurve)
         {
@@ -418,10 +542,14 @@ namespace ColorManager.ICC
     public sealed class SampledCurveElement : CurveSegment
     {
         /// <summary>
-        /// The curve entries
+        /// The curve values of this segment
         /// </summary>
         public readonly double[] CurveEntries;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="SampledCurveElement"/> class
+        /// </summary>
+        /// <param name="CurveEntries">The curve values of this segment</param>
         public SampledCurveElement(double[] CurveEntries)
             : base(CurveSegmentSignature.SampledCurve)
         {

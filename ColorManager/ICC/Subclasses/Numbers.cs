@@ -2,12 +2,29 @@
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// ICC Profile version number
+    /// </summary>
     public struct VersionNumber
     {
+        /// <summary>
+        /// Major version
+        /// </summary>
         public readonly int Major;
+        /// <summary>
+        /// Minor version
+        /// </summary>
         public readonly int Minor;
+        /// <summary>
+        /// Bugfix version
+        /// </summary>
         public readonly int Bugfix;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="VersionNumber"/> struct
+        /// </summary>
+        /// <param name="Major">Major version</param>
+        /// <param name="Minor">Minor version</param>
         public VersionNumber(int Major, int Minor)
         {
             this.Major = Major;
@@ -15,6 +32,12 @@ namespace ColorManager.ICC
             Bugfix = 0;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="VersionNumber"/> struct
+        /// </summary>
+        /// <param name="Major">Major version</param>
+        /// <param name="Minor">Minor version</param>
+        /// <param name="Bugfix">Bugfix version</param>
         public VersionNumber(int Major, int Minor, int Bugfix)
         {
             this.Major = Major;
@@ -80,16 +103,37 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// XYZ number
+    /// </summary>
     public struct XYZNumber
     {
+        /// <summary>
+        /// The X, Y and Z values in an array
+        /// </summary>
         public double[] XYZ
         {
             get { return new double[] { X, Y, Z }; }
         }
+        /// <summary>
+        /// X-Value
+        /// </summary>
         public readonly double X;
+        /// <summary>
+        /// Y-Value
+        /// </summary>
         public readonly double Y;
+        /// <summary>
+        /// Z-Value
+        /// </summary>
         public readonly double Z;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="XYZNumber"/> struct
+        /// </summary>
+        /// <param name="X">X-Value</param>
+        /// <param name="Y">Y-Value</param>
+        /// <param name="Z">Z-Value</param>
         public XYZNumber(double X, double Y, double Z)
         {
             if (double.IsNaN(X) || double.IsInfinity(X)) throw new ArgumentException($"{nameof(X)} is not a number");
@@ -171,8 +215,14 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// ICC Profile ID
+    /// </summary>
     public struct ProfileID
     {
+        /// <summary>
+        /// States if the ID is set or just consists of zeros
+        /// </summary>
         public bool IsSet
         {
             get
@@ -182,8 +232,15 @@ namespace ColorManager.ICC
                     && Values[3] != 0;
             }
         }
+        /// <summary>
+        /// The values the ID consists of (always has a length of 4)
+        /// </summary>
         public readonly uint[] Values;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileID"/> struct
+        /// </summary>
+        /// <param name="Values">The ID values (length must be 4)</param>
         public ProfileID(uint[] Values)
         {
             if (Values == null) throw new ArgumentNullException(nameof(Values));
@@ -192,6 +249,13 @@ namespace ColorManager.ICC
             this.Values = Values;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileID"/> struct
+        /// </summary>
+        /// <param name="p1">Part 1 of the ID</param>
+        /// <param name="p2">Part 1 of the ID</param>
+        /// <param name="p3">Part 1 of the ID</param>
+        /// <param name="p4">Part 1 of the ID</param>
         public ProfileID(uint p1, uint p2, uint p3, uint p4)
             : this(new uint[] { p1, p2, p3, p4 })
         { }
@@ -259,16 +323,31 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Position of an object within an ICC profile
+    /// </summary>
     public struct PositionNumber
     {
+        /// <summary>
+        /// Offset in bytes
+        /// </summary>
         public readonly uint Offset;
+        /// <summary>
+        /// Size in bytes
+        /// </summary>
         public readonly uint Size;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="PositionNumber"/> struct
+        /// </summary>
+        /// <param name="Offset">Offset in bytes</param>
+        /// <param name="Size">Size in bytes</param>
         public PositionNumber(uint Offset, uint Size)
         {
             this.Offset = Offset;
             this.Size = Size;
         }
+
 
         /// <summary>
         /// Determines whether the specified <see cref="PositionNumber"/>s are equal to each other.
@@ -327,15 +406,29 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Associates a normalized device code with a measurement value
+    /// </summary>
     public struct ResponseNumber
     {
+        /// <summary>
+        /// Device Code
+        /// </summary>
         public readonly ushort DeviceCode;
-        public readonly double MeasurmentValue;
+        /// <summary>
+        /// Measurement Value
+        /// </summary>
+        public readonly double MeasurementValue;
 
-        public ResponseNumber(ushort DeviceCode, double MeasurmentValue)
+        /// <summary>
+        /// Creates a new instance of the <see cref="ResponseNumber"/> struct
+        /// </summary>
+        /// <param name="DeviceCode">Device Code</param>
+        /// <param name="MeasurementValue">Measurement Value</param>
+        public ResponseNumber(ushort DeviceCode, double MeasurementValue)
         {
             this.DeviceCode = DeviceCode;
-            this.MeasurmentValue = MeasurmentValue;
+            this.MeasurementValue = MeasurementValue;
         }
 
         /// <summary>
@@ -346,7 +439,7 @@ namespace ColorManager.ICC
         /// <returns>True if the <see cref="ResponseNumber"/>s are equal; otherwise, false</returns>
         public static bool operator ==(ResponseNumber a, ResponseNumber b)
         {
-            return a.DeviceCode == b.DeviceCode && a.MeasurmentValue == b.MeasurmentValue;
+            return a.DeviceCode == b.DeviceCode && a.MeasurementValue == b.MeasurementValue;
         }
 
         /// <summary>
@@ -380,7 +473,7 @@ namespace ColorManager.ICC
             {
                 int hash = (int)2166136261;
                 hash *= 16777619 ^ DeviceCode.GetHashCode();
-                hash *= 16777619 ^ MeasurmentValue.GetHashCode();
+                hash *= 16777619 ^ MeasurementValue.GetHashCode();
                 return hash;
             }
         }
@@ -391,7 +484,7 @@ namespace ColorManager.ICC
         /// <returns>A string that represents the current object</returns>
         public override string ToString()
         {
-            return $"Code: {DeviceCode}; Value: {MeasurmentValue}";
+            return $"Code: {DeviceCode}; Value: {MeasurementValue}";
         }
     }
 }

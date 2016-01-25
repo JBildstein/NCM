@@ -1095,6 +1095,7 @@ namespace ColorManager.ICC.Conversion
         /// Writes the IL code for a one dimensional curve
         /// </summary>
         /// <param name="curve">The curve data</param>
+        /// <param name="index">The index of the color channel</param>
         private void WriteOneDimensionalCurve(OneDimensionalCurve curve, int index)
         {
             int length = curve.BreakPoints.Length;

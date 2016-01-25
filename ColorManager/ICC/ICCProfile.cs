@@ -39,7 +39,6 @@ namespace ColorManager.ICC
         {
             get { return GetColorType(DataColorspace); }
         }
-        /// <
         /// <summary>
         /// Profile Connection Space
         /// </summary>
@@ -245,6 +244,11 @@ namespace ColorManager.ICC
 
         #region Profile Conversion Tag
 
+        /// <summary>
+        /// Gets the <see cref="TagDataEntry"/>s for the color conversion
+        /// </summary>
+        /// <param name="toPCS">True for conversion to PCS; false for conversion to Data-Space</param>
+        /// <returns>The entries necessary for conversion</returns>
         public TagDataEntry[] GetConversionTag(bool toPCS)
         {
             var pcm = GetConversionMethod();
@@ -312,6 +316,10 @@ namespace ColorManager.ICC
 
         #region Profile Conversion Method
 
+        /// <summary>
+        /// Gets the method of color conversion with this profile
+        /// </summary>
+        /// <returns>The conversion method</returns>
         public ProfileConversionMethod GetConversionMethod()
         {
             switch (Class)
@@ -469,6 +477,7 @@ namespace ColorManager.ICC
         /// <summary>
         /// Sets a range of values of a byte array to zero
         /// </summary>
+        /// <param name="data">The byte array to set</param>
         /// <param name="start">start index</param>
         /// <param name="length">number of values to set zero</param>
         private static void SetZero(byte[] data, int start, int length)

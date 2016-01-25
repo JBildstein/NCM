@@ -13,11 +13,26 @@ namespace ColorManager.Conversion
     /// </summary>
     public sealed class CC_ExecuteMethod : IConversionCommand
     {
+        /// <summary>
+        /// A standard Conversion method
+        /// </summary>
         public readonly ConversionDelegate MethodC;
+        /// <summary>
+        /// A extended Conversion method
+        /// </summary>
         public readonly ConversionExDelegate MethodCE;
+        /// <summary>
+        /// A standard transformation method with output
+        /// </summary>
         public readonly TransformToDelegate MethodTTo;
+        /// <summary>
+        /// A standard transformation method
+        /// </summary>
         public readonly TransformDelegate MethodT;
 
+        /// <summary>
+        /// Custom data that is used for the <see cref="MethodCE"/> method
+        /// </summary>
         public readonly double[][] MethodCEData;
 
         /// <summary>

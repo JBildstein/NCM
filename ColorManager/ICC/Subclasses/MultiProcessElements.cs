@@ -20,6 +20,12 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly int OutputChannelCount;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MultiProcessElement"/> class
+        /// </summary>
+        /// <param name="Signature">The signature of this element</param>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
         protected MultiProcessElement(MultiProcessElementSignature Signature, int inChCount, int outChCount)
         {
             if (!Enum.IsDefined(typeof(MultiProcessElementSignature), Signature))
@@ -98,6 +104,10 @@ namespace ColorManager.ICC
         /// </summary>
         public readonly OneDimensionalCurve[] Curves;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveSetProcessElement"/> class
+        /// </summary>
+        /// <param name="Curves">An array with one dimensional curves</param>
         public CurveSetProcessElement(OneDimensionalCurve[] Curves)
             : base(MultiProcessElementSignature.CurveSet, Curves?.Length ?? 1, Curves?.Length ?? 1)
         {
@@ -165,9 +175,20 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class MatrixProcessElement : MultiProcessElement
     {
+        /// <summary>
+        /// Two dimensional matrix with size of Input-Channels x Output-Channels
+        /// </summary>
         public readonly double[,] MatrixIxO;
+        /// <summary>
+        /// One dimensional matrix with size of Output-Channels x 1
+        /// </summary>
         public readonly double[] MatrixOx1;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MatrixProcessElement"/> class
+        /// </summary>
+        /// <param name="MatrixIxO">Two dimensional matrix with size of Input-Channels x Output-Channels</param>
+        /// <param name="MatrixOx1">One dimensional matrix with size of Output-Channels x 1</param>
         public MatrixProcessElement(double[,] MatrixIxO, double[] MatrixOx1)
             : base(MultiProcessElementSignature.Matrix, MatrixIxO?.GetLength(0) ?? 1, MatrixIxO?.GetLength(1) ?? 1)
         {
@@ -242,8 +263,15 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class CLUTProcessElement : MultiProcessElement
     {
+        /// <summary>
+        /// The color lookup table of this element
+        /// </summary>
         public readonly CLUT CLUTValue;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="CurveSetProcessElement"/> class
+        /// </summary>
+        /// <param name="CLUTValue">The color lookup table of this element</param>
         public CLUTProcessElement(CLUT CLUTValue)
             : base(MultiProcessElementSignature.CLUT, CLUTValue?.InputChannelCount ?? 1, CLUTValue?.OutputChannelCount ?? 1)
         {
@@ -307,10 +335,15 @@ namespace ColorManager.ICC
     }
 
     /// <summary>
-    /// A placeholder <see cref="MultiProcessElement"/>
+    /// A placeholder <see cref="MultiProcessElement"/> (might be used for future ICC versions)
     /// </summary>
     public sealed class bACSProcessElement : MultiProcessElement
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="eACSProcessElement"/> class
+        /// </summary>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
         public bACSProcessElement(int inChCount, int outChCount)
             : base(MultiProcessElementSignature.bACS, inChCount, outChCount)
         { }
@@ -370,10 +403,15 @@ namespace ColorManager.ICC
     }
 
     /// <summary>
-    /// A placeholder <see cref="MultiProcessElement"/>
+    /// A placeholder <see cref="MultiProcessElement"/> (might be used for future ICC versions)
     /// </summary>
     public sealed class eACSProcessElement : MultiProcessElement
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="eACSProcessElement"/> class
+        /// </summary>
+        /// <param name="inChCount">Number of input channels</param>
+        /// <param name="outChCount">Number of output channels</param>
         public eACSProcessElement(int inChCount, int outChCount)
             : base(MultiProcessElementSignature.eACS, inChCount, outChCount)
         { }

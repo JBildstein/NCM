@@ -232,8 +232,14 @@ namespace ColorManager.Conversion
 
         #region ArrayData Class
 
+        /// <summary>
+        /// Holds array data and provides an unsafe pointer to it
+        /// </summary>
         protected sealed class ArrayData : IDisposable
         {
+            /// <summary>
+            /// Pointer to the data
+            /// </summary>
             public double** Pointer
             {
                 get { return (double**)DataPointer; }
@@ -242,6 +248,10 @@ namespace ColorManager.Conversion
             private IntPtr DataPointer;
             private GCHandle[] ArrayHandle;
 
+            /// <summary>
+            /// Creates a new instance of the <see cref="ArrayData"/> class
+            /// </summary>
+            /// <param name="data">The array data to store</param>
             public ArrayData(double[][] data)
             {
                 if (data == null) throw new ArgumentNullException(nameof(data));
@@ -260,13 +270,19 @@ namespace ColorManager.Conversion
                     ArrayHandle[i] = GCHandle.Alloc(data[i], GCHandleType.Pinned);
                     tmp[i] = (double*)ArrayHandle[i].AddrOfPinnedObject();
                 }
-            }            
-            
+            }
+
+            /// <summary>
+            /// Finalizer of the <see cref="ArrayData"/> class
+            /// </summary>
             ~ArrayData()
             {
                 Dispose(false);
             }
 
+            /// <summary>
+            /// Releases all allocated resources
+            /// </summary>
             public void Dispose()
             {
                 Dispose(true);

@@ -9,12 +9,16 @@ namespace ColorManager.ICC
     /// </summary>
     public sealed class ICCDataWriter
     {
+        #region Variables
+
         /// <summary>
         /// The underlying stream where the data is written to
         /// </summary>
         public readonly Stream DataStream;
         private static readonly bool LittleEndian = BitConverter.IsLittleEndian;
         private static readonly double[,] IdentityMatrix = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+
+        #endregion
 
         /// <summary>
         /// Creates a new instance of the <see cref="ICCDataWriter"/> class
@@ -321,7 +325,7 @@ namespace ColorManager.ICC
         public int WriteResponseNumber(ResponseNumber value)
         {
             return WriteUInt16(value.DeviceCode)
-                 + WriteFix16(value.MeasurmentValue);
+                 + WriteFix16(value.MeasurementValue);
         }
 
         /// <summary>
@@ -360,9 +364,8 @@ namespace ColorManager.ICC
         /// Writes a tag data entry
         /// </summary>
         /// <param name="data">The entry to write</param>
-        /// <param name="signature">The signature of the table entry</param>
         /// <param name="table">The table entry for the written data entry</param>
-        /// <returns>the number of bytes written (excluding padding)</returns>
+        /// <returns>The number of bytes written (excluding padding)</returns>
         public int WriteTagDataEntry(TagDataEntry data, out TagTableEntry table)
         {
             uint offset = (uint)DataStream.Position;
@@ -376,7 +379,7 @@ namespace ColorManager.ICC
         /// Writes a tag data entry (without padding)
         /// </summary>
         /// <param name="entry">The entry to write</param>
-        /// <returns>the number of bytes written</returns>
+        /// <returns>The number of bytes written</returns>
         public int WriteTagDataEntry(TagDataEntry entry)
         {
             TypeSignature t = entry.Signature;
@@ -482,6 +485,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes the header of a <see cref="TagDataEntry"/>
+        /// </summary>
+        /// <param name="signature">The signature of the entry</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteTagDataEntryHeader(TypeSignature signature)
         {
             return WriteUInt32((uint)signature)
@@ -489,6 +497,11 @@ namespace ColorManager.ICC
         }
 
 
+        /// <summary>
+        /// Writes a <see cref="UnknownTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUnknownTagDataEntry(UnknownTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -496,6 +509,11 @@ namespace ColorManager.ICC
             return WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="ChromaticityTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteChromaticityTagDataEntry(ChromaticityTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -511,6 +529,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ColorantOrderTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteColorantOrderTagDataEntry(ColorantOrderTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -519,6 +542,11 @@ namespace ColorManager.ICC
                  + WriteArray(value.ColorantNumber);
         }
 
+        /// <summary>
+        /// Writes a <see cref="ColorantTableTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteColorantTableTagDataEntry(ColorantTableTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -535,6 +563,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="CurveTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCurveTagDataEntry(CurveTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -564,6 +597,11 @@ namespace ColorManager.ICC
             //TODO: Page 48: If the input is PCSXYZ, 1+(32 767/32 768) shall be mapped to the value 1,0. If the output is PCSXYZ, the value 1,0 shall be mapped to 1+(32 767/32 768).
         }
 
+        /// <summary>
+        /// Writes a <see cref="DataTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteDataTagDataEntry(DataTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -573,6 +611,11 @@ namespace ColorManager.ICC
                  + WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="DateTimeTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteDateTimeTagDataEntry(DateTimeTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -580,6 +623,11 @@ namespace ColorManager.ICC
             return WriteDateTime(value.Value);
         }
 
+        /// <summary>
+        /// Writes a <see cref="Lut16TagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteLut16TagDataEntry(Lut16TagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -603,6 +651,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="Lut8TagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteLut8TagDataEntry(Lut8TagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -623,6 +676,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="LutAToBTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteLutAToBTagDataEntry(LutAToBTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -699,6 +757,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="LutBToATagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteLutBToATagDataEntry(LutBToATagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -775,6 +838,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="MeasurementTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteMeasurementTagDataEntry(MeasurementTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -786,6 +854,11 @@ namespace ColorManager.ICC
                  + WriteUInt32((uint)value.Illuminant);
         }
 
+        /// <summary>
+        /// Writes a <see cref="MultiLocalizedUnicodeTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteMultiLocalizedUnicodeTagDataEntry(MultiLocalizedUnicodeTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -827,6 +900,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="MultiProcessElementsTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteMultiProcessElementsTagDataEntry(MultiProcessElementsTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -860,6 +938,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="NamedColor2TagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteNamedColor2TagDataEntry(NamedColor2TagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -878,6 +961,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ParametricCurveTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteParametricCurveTagDataEntry(ParametricCurveTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -885,6 +973,11 @@ namespace ColorManager.ICC
             return WriteParametricCurve(value.Curve);
         }
 
+        /// <summary>
+        /// Writes a <see cref="ProfileSequenceDescTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteProfileSequenceDescTagDataEntry(ProfileSequenceDescTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -894,6 +987,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ProfileSequenceIdentifierTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteProfileSequenceIdentifierTagDataEntry(ProfileSequenceIdentifierTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -927,6 +1025,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ResponseCurveSet16TagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteResponseCurveSet16TagDataEntry(ResponseCurveSet16TagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -958,6 +1061,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="Fix16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteFix16ArrayTagDataEntry(Fix16ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -967,6 +1075,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="SignatureTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteSignatureTagDataEntry(SignatureTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -974,6 +1087,11 @@ namespace ColorManager.ICC
             return WriteASCIIString(value.SignatureData, 4);
         }
 
+        /// <summary>
+        /// Writes a <see cref="TextTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteTextTagDataEntry(TextTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -981,6 +1099,11 @@ namespace ColorManager.ICC
             return WriteASCIIString(value.Text);
         }
 
+        /// <summary>
+        /// Writes a <see cref="UFix16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUFix16ArrayTagDataEntry(UFix16ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -990,6 +1113,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="UInt16ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUInt16ArrayTagDataEntry(UInt16ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -997,6 +1125,11 @@ namespace ColorManager.ICC
             return WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="UInt32ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUInt32ArrayTagDataEntry(UInt32ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1004,6 +1137,11 @@ namespace ColorManager.ICC
             return WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="UInt64ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUInt64ArrayTagDataEntry(UInt64ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1011,6 +1149,11 @@ namespace ColorManager.ICC
             return WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="UInt8ArrayTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteUInt8ArrayTagDataEntry(UInt8ArrayTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1018,6 +1161,11 @@ namespace ColorManager.ICC
             return WriteArray(value.Data);
         }
 
+        /// <summary>
+        /// Writes a <see cref="ViewingConditionsTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteViewingConditionsTagDataEntry(ViewingConditionsTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1027,6 +1175,11 @@ namespace ColorManager.ICC
                  + WriteUInt32((uint)value.Illuminant);
         }
 
+        /// <summary>
+        /// Writes a <see cref="XYZTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteXYZTagDataEntry(XYZTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1036,6 +1189,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="TextDescriptionTagDataEntry"/>
+        /// </summary>
+        /// <param name="value">The entry to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteTextDescriptionTagDataEntry(TextDescriptionTagDataEntry value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1090,7 +1248,13 @@ namespace ColorManager.ICC
 
         #region Write Matrix
 
-        public int WriteMatrix(double[,] value, bool isFloat)
+        /// <summary>
+        /// Writes a two dimensional matrix
+        /// </summary>        
+        /// <param name="value">The matrix to write</param>
+        /// <param name="isSingle">True if the values are encoded as Single; false if encoded as Fix16</param>
+        /// <returns>The number of bytes written</returns>
+        public int WriteMatrix(double[,] value, bool isSingle)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -1099,21 +1263,27 @@ namespace ColorManager.ICC
             {
                 for (int x = 0; x < value.GetLength(0); x++)
                 {
-                    if (isFloat) { c += WriteSingle((float)value[x, y]); }
+                    if (isSingle) { c += WriteSingle((float)value[x, y]); }
                     else { c += WriteFix16(value[x, y]); }
                 }
             }
             return c;
         }
 
-        public int WriteMatrix(double[] value, bool isFloat)
+        /// <summary>
+        /// Writes a one dimensional matrix
+        /// </summary>        
+        /// <param name="value">The matrix to write</param>
+        /// <param name="isSingle">True if the values are encoded as Single; false if encoded as Fix16</param>
+        /// <returns>The number of bytes written</returns>
+        public int WriteMatrix(double[] value, bool isSingle)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             int c = 0;
             for (int i = 0; i < value.Length; i++)
             {
-                if (isFloat) { c += WriteSingle((float)value[i]); }
+                if (isSingle) { c += WriteSingle((float)value[i]); }
                 else { c += WriteFix16(value[i]); }
             }
             return c;
@@ -1122,16 +1292,12 @@ namespace ColorManager.ICC
         #endregion
 
         #region Write (C)LUT
-
-        public int WriteLUT16(LUT value)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-
-            int c = 0;
-            foreach (var item in value.Values) { c += WriteUInt16(SetRangeUInt16(item)); }
-            return c;
-        }
-
+        
+        /// <summary>
+        /// Writes an 8bit lookup table
+        /// </summary>
+        /// <param name="value">The LUT to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteLUT8(LUT value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1141,6 +1307,25 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes an 16bit lookup table
+        /// </summary>
+        /// <param name="value">The LUT to write</param>
+        /// <returns>The number of bytes written</returns>
+        public int WriteLUT16(LUT value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            int c = 0;
+            foreach (var item in value.Values) { c += WriteUInt16(SetRangeUInt16(item)); }
+            return c;
+        }
+
+        /// <summary>
+        /// Writes an color lookup table
+        /// </summary>
+        /// <param name="value">The CLUT to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCLUT(CLUT value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1166,6 +1351,11 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Writes a 8bit color lookup table
+        /// </summary>
+        /// <param name="value">The CLUT to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCLUT8(CLUT value)
         {
             int c = 0;
@@ -1179,6 +1369,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a 16bit color lookup table
+        /// </summary>
+        /// <param name="value">The CLUT to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCLUT16(CLUT value)
         {
             int c = 0;
@@ -1192,6 +1387,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a 32bit float color lookup table
+        /// </summary>
+        /// <param name="value">The CLUT to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCLUTf32(CLUT value)
         {
             int c = 0;
@@ -1209,6 +1409,11 @@ namespace ColorManager.ICC
 
         #region Write MultiProcessElement
 
+        /// <summary>
+        /// Writes a <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="value">The element to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteMultiProcessElement(MultiProcessElement value)
         {
             int c = WriteUInt32((uint)value.Signature);
@@ -1233,6 +1438,11 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Writes a CurveSet <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="value">The element to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCurveSetProcessElement(CurveSetProcessElement value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1246,6 +1456,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a Matrix <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="value">The element to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteMatrixProcessElement(MatrixProcessElement value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1254,6 +1469,11 @@ namespace ColorManager.ICC
                  + WriteMatrix(value.MatrixOx1, true);
         }
 
+        /// <summary>
+        /// Writes a CLUT <see cref="MultiProcessElement"/>
+        /// </summary>
+        /// <param name="value">The element to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCLUTProcessElement(CLUTProcessElement value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1265,6 +1485,11 @@ namespace ColorManager.ICC
 
         #region Write Curves
 
+        /// <summary>
+        /// Writes a <see cref="OneDimensionalCurve"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteOneDimensionalCurve(OneDimensionalCurve value)
         {
             int c = WriteUInt16((ushort)value.Segments.Length);
@@ -1277,6 +1502,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ResponseCurve"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteResponseCurve(ResponseCurve value)
         {
             int c = WriteUInt32((uint)value.CurveType);
@@ -1295,6 +1525,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="ParametricCurve"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteParametricCurve(ParametricCurve value)
         {
             int c = WriteUInt16(value.type);
@@ -1317,6 +1552,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="CurveSegment"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteCurveSegment(CurveSegment value)
         {
             int c = WriteUInt32((uint)value.Signature);
@@ -1333,6 +1573,11 @@ namespace ColorManager.ICC
             }
         }
 
+        /// <summary>
+        /// Writes a <see cref="FormulaCurveElement"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteFormulaCurveElement(FormulaCurveElement value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1353,6 +1598,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a <see cref="SampledCurveElement"/>
+        /// </summary>
+        /// <param name="value">The curve to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteSampledCurveElement(SampledCurveElement value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -1367,12 +1617,22 @@ namespace ColorManager.ICC
 
         #region Write Array
 
+        /// <summary>
+        /// Writes a byte array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(byte[] data)
         {
             DataStream.Write(data, 0, data.Length);
             return data.Length;
         }
 
+        /// <summary>
+        /// Writes a ushort array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(ushort[] data)
         {
             int c = 0;
@@ -1380,6 +1640,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a short array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(short[] data)
         {
             int c = 0;
@@ -1387,6 +1652,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a uint array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(uint[] data)
         {
             int c = 0;
@@ -1394,6 +1664,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes an int array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(int[] data)
         {
             int c = 0;
@@ -1401,6 +1676,11 @@ namespace ColorManager.ICC
             return c;
         }
 
+        /// <summary>
+        /// Writes a ulong array
+        /// </summary>
+        /// <param name="data">The array to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteArray(ulong[] data)
         {
             int c = 0;
@@ -1412,6 +1692,11 @@ namespace ColorManager.ICC
 
         #region Write Misc
 
+        /// <summary>
+        /// Write a number of empty bytes
+        /// </summary>
+        /// <param name="length">The number of bytes to write</param>
+        /// <returns>The number of bytes written</returns>
         public int WriteEmpty(int length)
         {
             for (int i = 0; i < length; i++)
@@ -1421,12 +1706,22 @@ namespace ColorManager.ICC
             return length;
         }
 
+        /// <summary>
+        /// Writes empty bytes to a 4-byte margin
+        /// </summary>
+        /// <returns>The number of bytes written</returns>
         public int WritePadding()
         {
             int p = 4 - (int)DataStream.Position % 4;
             return WriteEmpty(p >= 4 ? 0 : p);
         }
 
+        /// <summary>
+        /// Writes given bytes from pointer
+        /// </summary>
+        /// <param name="data">Pointer to the bytes to write</param>
+        /// <param name="length">The number of bytes to write</param>
+        /// <returns>The number of bytes written</returns>
         private unsafe int WriteBytes(byte* data, int length)
         {
             if (LittleEndian)
@@ -1443,6 +1738,11 @@ namespace ColorManager.ICC
             return length;
         }
 
+        /// <summary>
+        /// Writes curve data
+        /// </summary>
+        /// <param name="curves">The curves to write</param>
+        /// <returns>The number of bytes written</returns>
         private int WriteCurves(TagDataEntry[] curves)
         {
             int c = 0;
@@ -1463,6 +1763,13 @@ namespace ColorManager.ICC
 
         #region Subroutines
 
+        /// <summary>
+        /// Changes the value to fit into the given bounds (if out of bounds)
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <param name="min">The minimum value</param>
+        /// <param name="max">The maximum value</param>
+        /// <returns>The given value within the bounds</returns>
         private int SetRange(int value, int min, int max)
         {
             if (value > max) return max;
@@ -1470,6 +1777,13 @@ namespace ColorManager.ICC
             else return value;
         }
 
+        /// <summary>
+        /// Changes the value to fit into the given bounds (if out of bounds)
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <param name="min">The minimum value</param>
+        /// <param name="max">The maximum value</param>
+        /// <returns>The given value within the bounds</returns>
         private double SetRange(double value, double min, double max)
         {
             if (value > max) return max;
@@ -1477,6 +1791,12 @@ namespace ColorManager.ICC
             else return value;
         }
 
+        /// <summary>
+        /// Shortens a string to a given maximum length
+        /// </summary>
+        /// <param name="value">The string to check</param>
+        /// <param name="length">The maximum number of characters</param>
+        /// <returns>The given string within the bounds</returns>
         private string SetRange(string value, int length)
         {
             if (value.Length < length) return value.PadRight(length);
@@ -1484,6 +1804,11 @@ namespace ColorManager.ICC
             else return value;
         }
 
+        /// <summary>
+        /// Checks a double to fit into the range of 0-1 and scales it up to the range of an unsigned 16bit integer
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>The ushort representation of the given value</returns>
         private ushort SetRangeUInt16(double value)
         {
             if (value > 1) value = 1;
@@ -1491,6 +1816,11 @@ namespace ColorManager.ICC
             return (ushort)(value * ushort.MaxValue + 0.5);
         }
 
+        /// <summary>
+        /// Checks a double to fit into the range of 0-1 and scales it up to the range of an unsigned 8bit integer
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>The ushort representation of the given value</returns>
         private byte SetRangeUInt8(double value)
         {
             if (value > 1) value = 1;
@@ -1498,6 +1828,11 @@ namespace ColorManager.ICC
             return (byte)(value * byte.MaxValue + 0.5);
         }
 
+        /// <summary>
+        /// Fits an integer into the byte range and converts it to a byte
+        /// </summary>
+        /// <param name="value">The integer to convert</param>
+        /// <returns>The byte representation of the given value</returns>
         private byte SetRangeUInt8(int value)
         {
             if (value > byte.MaxValue) return byte.MaxValue;

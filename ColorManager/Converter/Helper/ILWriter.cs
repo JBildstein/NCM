@@ -176,7 +176,7 @@ namespace ColorManager.Conversion
         /// Writes the specified IL instruction
         /// </summary>
         /// <param name="opcode">The IL instruction to add</param>
-        /// <param name="ci">A <see cref="FieldInfo"/> for which a metadata token will be added</param>
+        /// <param name="field">A <see cref="FieldInfo"/> for which a metadata token will be added</param>
         public void Write(OpCode opcode, FieldInfo field)
         {
             ILG.Emit(opcode, field);
@@ -186,7 +186,7 @@ namespace ColorManager.Conversion
         /// Writes the specified IL instruction
         /// </summary>
         /// <param name="opcode">The IL instruction to add</param>
-        /// <param name="labels">A jump label to branch off from this position</param>
+        /// <param name="label">A jump label to branch off from this position</param>
         public void Write(OpCode opcode, Label label)
         {
             ILG.Emit(opcode, label);
@@ -206,7 +206,7 @@ namespace ColorManager.Conversion
         /// Writes the specified IL instruction
         /// </summary>
         /// <param name="opcode">The IL instruction to add</param>
-        /// <param name="ci">A <see cref="Type"/> for which a metadata token will be added</param>
+        /// <param name="tp">A <see cref="Type"/> for which a metadata token will be added</param>
         public void Write(OpCode opcode, Type tp)
         {
             ILG.Emit(opcode, tp);
@@ -216,7 +216,7 @@ namespace ColorManager.Conversion
         /// Writes the specified IL instruction
         /// </summary>
         /// <param name="opcode">The IL instruction to add</param>
-        /// <param name="ci">A helper to create a signature token</param>
+        /// <param name="signature">A helper to create a signature token</param>
         public void Write(OpCode opcode, SignatureHelper signature)
         {
             ILG.Emit(opcode, signature);

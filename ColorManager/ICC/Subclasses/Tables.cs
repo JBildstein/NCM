@@ -2,20 +2,36 @@
 
 namespace ColorManager.ICC
 {
+    /// <summary>
+    /// Color Lookup Table
+    /// </summary>
     public sealed class CLUT
     {
+        /// <summary>
+        /// The values that make up this table
+        /// </summary>
         public readonly double[][] Values;
+        /// <summary>
+        /// The CLUT data type
+        /// </summary>
         public readonly CLUTDataType DataType;
+        /// <summary>
+        /// Number of input channels
+        /// </summary>
         public readonly int InputChannelCount;
+        /// <summary>
+        /// Number of output channels
+        /// </summary>
         public readonly int OutputChannelCount;
+        /// <summary>
+        /// Number of grid points per input channel
+        /// </summary>
         public readonly byte[] GridPointCount;
 
         /// <summary>
         /// Creates a new instance of the <see cref="CLUT"/> class
         /// </summary>
         /// <param name="values">The CLUT values</param>
-        /// <param name="inChCount">The input channel count</param>
-        /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         /// <param name="type">The data type of this CLUT</param>
         public CLUT(double[][] values, byte[] gridPointCount, CLUTDataType type)
@@ -31,8 +47,6 @@ namespace ColorManager.ICC
         /// Creates a new instance of the <see cref="CLUT"/> class
         /// </summary>
         /// <param name="values">The CLUT values</param>
-        /// <param name="inChCount">The input channel count</param>
-        /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         public CLUT(ushort[][] values, byte[] gridPointCount)
             : this(gridPointCount?.Length ?? 1, values?[0]?.Length ?? 1, gridPointCount, CLUTDataType.UInt16)
@@ -55,8 +69,6 @@ namespace ColorManager.ICC
         /// Creates a new instance of the <see cref="CLUT"/> class
         /// </summary>
         /// <param name="values">The CLUT values</param>
-        /// <param name="inChCount">The input channel count</param>
-        /// <param name="outChCount">The output channel count</param>
         /// <param name="gridPointCount">The gridpoint count</param>
         public CLUT(byte[][] values, byte[] gridPointCount)
             : this(gridPointCount?.Length ?? 1, values?[0]?.Length ?? 1, gridPointCount, CLUTDataType.UInt8)
@@ -154,18 +166,24 @@ namespace ColorManager.ICC
         }
     }
 
+    /// <summary>
+    /// Lookup Table
+    /// </summary>
     public sealed class LUT
     {
+        /// <summary>
+        /// The values that make up this table
+        /// </summary>
         public readonly double[] Values;
 
         /// <summary>
         /// Creates a new instance of the <see cref="LUT"/> class
         /// </summary>
         /// <param name="values">The LUT values</param>
-        public LUT(double[] Values)
+        public LUT(double[] values)
         {
-            if (Values == null) throw new ArgumentNullException(nameof(Values));
-            this.Values = Values;
+            if (values == null) throw new ArgumentNullException(nameof(values));
+            Values = values;
         }
 
         /// <summary>
@@ -178,8 +196,8 @@ namespace ColorManager.ICC
 
             const double max = ushort.MaxValue;
 
-            this.Values = new double[values.Length];
-            for (int i = 0; i < values.Length; i++) this.Values[i] = values[i] / max;
+            Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) Values[i] = values[i] / max;
         }
 
         /// <summary>
@@ -192,8 +210,8 @@ namespace ColorManager.ICC
 
             const double max = byte.MaxValue;
 
-            this.Values = new double[values.Length];
-            for (int i = 0; i < values.Length; i++) this.Values[i] = values[i] / max;
+            Values = new double[values.Length];
+            for (int i = 0; i < values.Length; i++) Values[i] = values[i] / max;
         }
 
 
