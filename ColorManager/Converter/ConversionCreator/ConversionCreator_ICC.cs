@@ -1102,22 +1102,27 @@ namespace ColorManager.ICC.Conversion
             if (length == 0) throw new InvalidProfileException();
             else if (length > 1)
             {
-                var iflabel = ILG.DefineLabel();
+                var endifLabel = ILG.DefineLabel();
+                Label? ifLabel = null;
                 for (int i = 0; i < length; i++)
                 {
+                    if (i != 0) ILG.MarkLabel(ifLabel.Value);
+
                     //if (inColor[index] <= curve.BreakPoints[i]) *CurveSegmentCode*
-                    if (i < length)
+                    if (i < length - 1)
                     {
+                        ifLabel = ILG.DefineLabel();
+
                         WriteLdInput(index);
                         Write(OpCodes.Ldind_R8);
                         Write(OpCodes.Ldc_R8, curve.BreakPoints[i]);
-                        Write(OpCodes.Bgt_Un);
+                        Write(OpCodes.Bgt_Un, ifLabel.Value);
                         WriteCurveSegment(curve.Segments[i], index);
-                        Write(OpCodes.Br, iflabel);
+                        Write(OpCodes.Br, endifLabel);
                     }
-                    else WriteCurveSegment(curve.Segments[i], index);
+                    else { WriteCurveSegment(curve.Segments[i], index); }
                 }
-                ILG.MarkLabel(iflabel);
+                ILG.MarkLabel(endifLabel);
             }
             else WriteCurveSegment(curve.Segments[0], index);
         }
@@ -1233,29 +1238,50 @@ namespace ColorManager.ICC.Conversion
         /// <param name="index">The index of the color channel</param>
         private void WriteSampledCurveSegment(SampledCurveElement segment, int index)
         {
-            //TODO: WriteSampledCurveSegment is probably incorrect. inColor[index] goes from 0-1 while this is a segment >=0 - <=1
+            int length = segment.CurveEntries.Length;
 
-            //outColor[index] = lut.Values[(int)(inColor[index] * lut.CurveEntries - 1)];
-            WriteLdOutput(index);
-            WriteLdICCData(DataPos);
-            WriteLdInput(index);
-            Write(OpCodes.Ldind_R8);
-            Write(OpCodes.Ldc_R8, segment.CurveEntries.Length - 1d);
-            Write(OpCodes.Mul);
+            if (length == 0) throw new InvalidProfileException();
+            else if (length > 1)
+            {
+                var endifLabel = ILG.DefineLabel();
+                Label? ifLabel = null;
+                for (int i = 0; i < length; i++)
+                {
+                    if (i != 0) ILG.MarkLabel(ifLabel.Value);
 
-            //Normal rounding
-            //Write(OpCodes.Ldc_R8, 0.5);
-            //Write(OpCodes.Add);
+                    //if (inColor[index] <= segment.CurveEntries[i]) outColor[index] = segment.CurveEntries[i];
+                    if (i < length - 1)
+                    {
+                        ifLabel = ILG.DefineLabel();
 
-            Write(OpCodes.Conv_I4);
-            Write(OpCodes.Conv_I);
-            WriteLdInt(8);
-            Write(OpCodes.Mul);
-            Write(OpCodes.Add);
-            Write(OpCodes.Ldind_R8);
-            Write(OpCodes.Stind_R8);
+                        WriteLdInput(index);
+                        Write(OpCodes.Ldind_R8);
+                        Write(OpCodes.Ldc_R8, segment.CurveEntries[i]);
+                        Write(OpCodes.Bgt_Un, ifLabel.Value);
 
-            ICCData.Add(segment.CurveEntries);
+                        WriteLdOutput(index);
+                        Write(OpCodes.Ldc_R8, segment.CurveEntries[i]);
+                        Write(OpCodes.Stind_R8);
+
+                        Write(OpCodes.Br, endifLabel);
+                    }
+                    else
+                    {
+                        //outColor[index] = segment.CurveEntries[i];
+                        WriteLdOutput(index);
+                        Write(OpCodes.Ldc_R8, segment.CurveEntries[i]);
+                        Write(OpCodes.Stind_R8);
+                    }
+                }
+                ILG.MarkLabel(endifLabel);
+            }
+            else
+            {
+                //outColor[index] = segment.CurveEntries[i];
+                WriteLdOutput(index);
+                Write(OpCodes.Ldc_R8, segment.CurveEntries[0]);
+                Write(OpCodes.Stind_R8);
+            }
         }
 
         #endregion
