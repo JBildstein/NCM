@@ -1,26 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
+using ColorManager;
 using Eto.Forms;
-using Eto.Drawing;
 using Eto.Serialization.Xaml;
+using CConverter = ColorManager.ColorConverter;
 
 namespace ColorConverter
 {
     public class MainForm : Form
     {
+        ColorControl InColorCtrl { get; set; }
+        ColorControl OutColorCtrl { get; set; }
+        Button ConvertButton { get; set; }
+
         public MainForm()
         {
             XamlReader.Load(this);
+            ConvertButton.Click += ConvertButton_Click;
+
+            //Eto Bug, custom control is not assigned:
+            if (InColorCtrl == null)
+            {
+                InColorCtrl = Children
+                    .FirstOrDefault(t => t is ColorControl && t.ID == nameof(InColorCtrl))
+                    as ColorControl;
+            }
+
+            //Eto Bug, custom control is not assigned:
+            if (OutColorCtrl == null)
+            {
+                OutColorCtrl = Children
+                    .FirstOrDefault(t => t is ColorControl && t.ID == nameof(OutColorCtrl))
+                    as ColorControl;
+            }
         }
 
-        protected void HandleClickMe(object sender, EventArgs e)
+        private void ConvertButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("I was clicked!");
-        }
-
-        protected void HandleQuit(object sender, EventArgs e)
-        {
-            Application.Instance.Quit();
+            try
+            {
+                ConvertButton.Enabled = false;
+                Color colIn = InColorCtrl.GetColorInstance();
+                Color colOut = OutColorCtrl.GetColorInstance();
+                using (CConverter conv = new CConverter(colIn, colOut))
+                {
+                    conv.Convert();
+                }
+                OutColorCtrl.SetValues(colOut);
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK); }
+            finally { ConvertButton.Enabled = true; }
         }
     }
 }

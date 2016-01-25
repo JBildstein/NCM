@@ -1,44 +1,25 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form
-	xmlns="http://schema.picoe.ca/eto.forms" 
+	xmlns="http://schema.picoe.ca/eto.forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	Title="NCM Color Converter"	ClientSize="400, 350" BackgroundColor="White">
-  <Panel BackgroundColor="White">
-    <TableLayout Padding="6" Spacing="8,6">
-      <TableRow>
-        <TableCell ScaleWidth="True">
-          <DropDown />
-        </TableCell>
-        <TableCell ScaleWidth="True">
-          <DropDown />
-        </TableCell>
-      </TableRow>
-
-      <TableRow>
-        <TableCell ScaleWidth="True">
-          <DropDown />
-        </TableCell>
-        <TableCell ScaleWidth="True">
-          <DropDown />
-        </TableCell>
-      </TableRow>
-      <TableRow>
-          <StackLayout Spacing="6" Orientation="Horizontal">
-            <Label>R:</Label>
-            <StackLayoutItem Expand="True">
-              <TextBox />
-            </StackLayoutItem>
-          </StackLayout>
-      </TableRow>
-      
-      <TableRow ScaleHeight="True" />
-      <TableRow>
-        <TableCell />
-        <StackLayout Orientation="Horizontal">
-          <StackLayoutItem Expand="True" />
-          <Button Text="Convert" />
+  xmlns:local="clr-namespace:ColorConverter;assembly=ColorConverterLib"
+	Title="NCM Color Converter"	ClientSize="300, 250">
+  <StackLayout Padding="6" Spacing="6" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <StackLayoutItem Expand="True">
+      <Scrollable Border="None">
+        <StackLayout Spacing="6" Orientation="Horizontal" VerticalContentAlignment="Stretch">
+          <StackLayoutItem Expand="True">
+            <local:ColorControl ID="InColorCtrl" />
+          </StackLayoutItem>
+          <StackLayoutItem Expand="True">
+            <local:ColorControl ID="OutColorCtrl" ReadOnly="True" />
+          </StackLayoutItem>
         </StackLayout>
-      </TableRow>
-    </TableLayout>
-  </Panel>
+      </Scrollable>
+    </StackLayoutItem>
+    <StackLayout Orientation="Horizontal">
+      <StackLayoutItem Expand="True" />
+      <Button ID="ConvertButton">Convert</Button>
+    </StackLayout>
+  </StackLayout>  
 </Form>

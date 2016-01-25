@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackLayout Spacing="4" Orientation="Vertical" HorizontalContentAlignment="Stretch">
+    <DropDown ID="ModelDropDown" />
+    <DropDown ID="ColorspaceDropDown" />
+    <StackLayout ID="ModelSettingsLayout" Spacing="4" Orientation="Vertical" HorizontalContentAlignment="Stretch" />
+    <StackLayout ID="ValuesTable" Spacing="4" />
+  </StackLayout>
+</Panel>
