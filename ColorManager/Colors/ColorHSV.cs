@@ -3,7 +3,7 @@
 namespace ColorManager
 {
     /// <summary>
-    /// Stores information and values of the HSL color model
+    /// Stores information and values of the HSV color model
     /// </summary>
     public sealed class ColorHSV : ColorHSx
     {
